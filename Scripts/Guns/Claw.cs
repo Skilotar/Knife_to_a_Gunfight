@@ -185,7 +185,7 @@ namespace Knives
                         stabby.SlashDamageUsesBaseProjectileDamage = false;
                         stabby.SlashDamage = 1;
                         stabby.SlashDimensions = 30;
-                        stabby.SlashRange = 5;
+                        stabby.SlashRange = 6;
 
                         AkSoundEngine.PostEvent("Play_WPN_radiationlaser_shot_01", base.gameObject);
                         AkSoundEngine.PostEvent("Play_WPN_tachyon_loop_01", base.gameObject);

@@ -40,17 +40,14 @@ namespace Knives
 			if (player != null && GameManager.Instance.IsLoadingLevel == false && Lockout == false)
 			{
 				RoomHandler room = player.GetAbsoluteParentRoom();
-				
-
-				if (room != null && room.GetRoomName() == "Knives/Resources/JinxShop/JinxShop_bigger")
+				//if (room != null) ETGModConsole.Log(room.GetRoomName());
+				if (room != null && room.GetRoomName() == "JinxShop_bigger.room")
 				{
 					IsInRoom = true;
 					IPlayerInteractable nearestInteractable = room.GetNearestInteractable(player.sprite.WorldCenter, 1f, player);
 					if (nearestInteractable != null)
 					{
 						PickupObject foundItem = null;
-
-
 						if (nearestInteractable is CustomShopItemController)
 						{
 							//ETGModConsole.Log("getting interact");
@@ -127,7 +124,7 @@ namespace Knives
 				}
                 else
                 {
-					if (room.GetRoomName() != "Knives/Resources/JinxShop/JinxShop_bigger" && IsInRoom == true)
+					if (room.GetRoomName() != "JinxShop_bigger.room" && IsInRoom == true)
                     {
 						IsInRoom = false;
 						killandCool();

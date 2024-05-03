@@ -175,7 +175,7 @@ namespace Knives
                             ); ;
 
                 PrototypeDungeonRoom Mod_Shop_Room = RoomFactory.BuildFromResource("Knives/Resources/JinxShop/JinxShop_bigger.room").room;
-                ItsDaFuckinShopApi.RegisterShopRoom(MorgunObj, Mod_Shop_Room, new UnityEngine.Vector2(8f, 5.5f),3.1f); // 3.6
+                ItsDaFuckinShopApi.RegisterShopRoom(MorgunObj, Mod_Shop_Room, new UnityEngine.Vector2(8f, 5.5f),3.6f); // 3.6
                 MorgunGameobject = MorgunObj;
 
             }

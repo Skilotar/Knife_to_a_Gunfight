@@ -50,7 +50,7 @@ namespace Knives
             
             Remove_from_lootpool.RemovePickupFromLootTables(item);
             JinxItemDisplayStorageClass text = item.gameObject.GetOrAddComponent<JinxItemDisplayStorageClass>();
-            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.AdditionalBlanksPerFloor, -20);
+            //ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.AdditionalBlanksPerFloor, -20);
             text.jinxItemDisplayText = "Reloads block nearby bullets, Armor and Blanks are Weakend";
 
 

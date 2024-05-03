@@ -35,8 +35,8 @@ namespace Knives
             string longDesc = "Bullets gain a small chance to ignite, Burning enemies contract [Blastblight].\n" +
                 "Afflicted enemies will explode after 3 instances of damage or on death. \n\n" +
                 "" +
-                "Contains a mixture of the most flammable substances we know. A single spark would be more than enough to set this baby off!" +
-                "These canisters are extreamly expensive as they have been known to spontaneously combust durring transit. Fire insurance comes free with this purchase." +
+                "Contains a mixture of the most flammable substances we know. A single spark would be more than enough to set this baby off!\n" +
+                "These canisters are extremely expensive as they have been known to spontaneously combust durring transit. Fire insurance comes free with this purchase." +
                 "\n\n\n - Knife_to_a_Gunfight";
 
 

@@ -60,7 +60,7 @@ namespace Knives
 				SetDualWield(user);
 				//user.inventory.GunLocked.SetOverride("BearArms", true, null);
 				
-				AddStat(PlayerStats.StatType.Accuracy, .5f);
+				AddStat(PlayerStats.StatType.Accuracy, .25f);
 				user.stats.RecalculateStats(user, true);
 
 				GameObject Vfx = (PickupObjectDatabase.GetById(353).gameObject.GetComponent<RagePassiveItem>().OverheadVFX);
@@ -189,7 +189,7 @@ namespace Knives
 		
 		private static FieldInfo SecGunzFieldInfo = typeof(GunInventory).GetField("m_currentSecondaryGun", BindingFlags.NonPublic | BindingFlags.Instance);
 
-		private float duration = 8f;
+		private float duration = 12f;
 		private bool wasUsed = false;
         private GameObject instanceVFX;
     }

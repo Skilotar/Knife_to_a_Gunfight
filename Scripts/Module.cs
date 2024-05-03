@@ -25,7 +25,7 @@ namespace Knives
     {
         public const string GUID = "skilotar.etg.knifetoagunfight";
         public const string NAME = "Knife to a Gunfight";
-        public const string VERSION = "2.2.0";
+        public const string VERSION = "2.2.1";
         
         public static string FilePath;
         public static readonly string MOD_NAME = "Knife_to_a_Gunfight";
@@ -657,10 +657,11 @@ namespace Knives
         }
         public static void RunStartHook(Action<PlayerController, float> orig, PlayerController self, float invisibleDelay)
         {
-            orig(self, invisibleDelay);
+            
             self.gameObject.GetOrAddComponent<UnlockablesTracker>();
             self.gameObject.GetOrAddComponent<BlobuCrownController>();
             self.gameObject.GetOrAddComponent<JinxItemDisplay>();
+            orig(self, invisibleDelay);
         }
         public static void SpecialTutorialHook(Action<PlayerController> orig, PlayerController self)
         {

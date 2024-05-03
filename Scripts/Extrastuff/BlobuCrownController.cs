@@ -87,6 +87,17 @@ namespace Knives
 			Giftbox.overrideMimicChance = 0;
 			Giftbox.PreventFuse = true;
 			Giftbox.RegisterChestOnMinimap(Giftbox.GetAbsoluteParentRoom());
+
+			if(obj.CurrentRoom.PlayerHasTakenDamageInThisRoom == false)
+            {
+				Chest Giftbox2 = Chest.Spawn(chestprefab.GetComponent<Chest>(), obj.CurrentRoom.GetBestRewardLocation(new IntVector2(2, 1)));
+
+				Giftbox2.IsLocked = false;
+				Giftbox2.overrideMimicChance = 0;
+				Giftbox2.PreventFuse = true;
+				Giftbox2.RegisterChestOnMinimap(Giftbox.GetAbsoluteParentRoom());
+			}
+			
 			player.OnRoomClearEvent -= Player_OnRoomClearEvent;
 
 		}
