@@ -134,8 +134,9 @@ namespace Knives
 
         public override DebrisObject Drop(PlayerController player)
         {
-            player.healthHaver.ModifyHealing = (Action<HealthHaver, HealthHaver.ModifyHealingEventArgs>)Delegate.Remove(player.healthHaver.ModifyHealing, new Action<HealthHaver, HealthHaver.ModifyHealingEventArgs>(this.stopheal));
             player.OnEnteredCombat = (Action)Delegate.Remove(player.OnEnteredCombat, new Action(this.SpawnShields));
+            player.healthHaver.ModifyHealing = (Action<HealthHaver, HealthHaver.ModifyHealingEventArgs>)Delegate.Remove(player.healthHaver.ModifyHealing, new Action<HealthHaver, HealthHaver.ModifyHealingEventArgs>(this.stopheal));
+            
             return base.Drop(player);
         }
 

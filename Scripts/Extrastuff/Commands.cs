@@ -28,9 +28,12 @@ namespace Knives
 		// Token: 0x06000518 RID: 1304 RVA: 0x000301F4 File Offset: 0x0002E3F4
 		public static void Init()
 		{
-
+			/*
 			ETGModConsole.Commands.AddUnit("skidebugflow", (args) => 
-			{ DungeonHandler.debugFlow = !DungeonHandler.debugFlow; string status = DungeonHandler.debugFlow ? "enabled" : "disabled"; string color = DungeonHandler.debugFlow ? "00FF00" : "FF0000"; ETGModConsole.Log($"Ski flow {status}", false); });
+			{	DungeonHandler.debugFlow = !DungeonHandler.debugFlow; string status = DungeonHandler.debugFlow ? "enabled" : "disabled"; string color = DungeonHandler.debugFlow ? "00FF00" : "FF0000"; ETGModConsole.Log($"Ski flow {status}", false);
+				//GameManager.Instance.GetComponent<PauseMenuController>().StartCoroutine(GameManager.Instance.GetComponent<PauseMenuController>().HandleQuickRestart());
+			});
+			*/
 
 			ETGModConsole.Commands.AddGroup("rage_quit", delegate (string[] args)
 			{
@@ -127,6 +130,21 @@ namespace Knives
                 }
 				
 			});
+
+			ETGModConsole.Commands.GetGroup("ski").AddUnit("ToggleSkaterParryHitPause", delegate (string[] args)
+			{
+                if (AdvancedGameStatsManager.Instance.GetFlag(CustomDungeonFlags.SKIPSKATERPARRYPAUSE) != true)
+                {
+					AdvancedGameStatsManager.Instance.SetFlag(CustomDungeonFlags.SKIPSKATERPARRYPAUSE, true);
+					ETGModConsole.Log("Parry HitPause: -Off-");
+				}
+                else
+                {
+					AdvancedGameStatsManager.Instance.SetFlag(CustomDungeonFlags.SKIPSKATERPARRYPAUSE, false);
+					ETGModConsole.Log("Parry HitPause: -On-");
+				}
+			});
+
 
 		}
 		

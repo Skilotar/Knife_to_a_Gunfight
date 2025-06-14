@@ -43,7 +43,7 @@ namespace Knives
             gun.muzzleFlashEffects = gun3.muzzleFlashEffects;
             gun.gunClass = GunClass.RIFLE;
             gun.reloadTime = .85f;
-            gun.DefaultModule.cooldownTime = .25f;
+            gun.DefaultModule.cooldownTime = .3f;
             gun.DefaultModule.numberOfShotsInClip = 7;
             gun.SetBaseMaxAmmo(400);
             gun.quality = PickupObject.ItemQuality.B;
@@ -57,7 +57,7 @@ namespace Knives
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
             gun.barrelOffset.transform.localPosition = new Vector3(2f, .5f, 0f);
-            projectile.baseData.damage = 10f;
+            projectile.baseData.damage = 13f;
             projectile.baseData.speed *= .8f;
             projectile.baseData.range = 20f;
             projectile.StunApplyChance = .07f;

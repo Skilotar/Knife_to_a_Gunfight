@@ -73,14 +73,18 @@ namespace Knives
         public bool Smoking = false;
         public override void Update()
         {
-            if(this.Owner.PlayerHasActiveSynergy("Smoking Joe"))
+            if (this.Owner)
             {
-                Smoking = true;
+                if (this.Owner.PlayerHasActiveSynergy("Smoking Joe"))
+                {
+                    Smoking = true;
+                }
+                else
+                {
+                    Smoking = false;
+                }
             }
-            else
-            {
-                Smoking = false;
-            }
+           
             base.Update();
         }
         public bool hasbuff = false;
@@ -159,13 +163,13 @@ namespace Knives
             DebrisObject debrisObject = base.Drop(player);
             if(hasbuff == true)
             {
-                this.Owner.PostProcessProjectile -= Owner_PostProcessProjectile;
+                player.PostProcessProjectile -= Owner_PostProcessProjectile;
                 RemoveStat(PlayerStats.StatType.RateOfFire);
                 RemoveStat(PlayerStats.StatType.Accuracy);
                 RemoveStat(PlayerStats.StatType.Damage);
             }
-            
-            this.Owner.stats.RecalculateStats(Owner, true);
+
+            player.stats.RecalculateStats(player, true);
             
             return debrisObject;
         }

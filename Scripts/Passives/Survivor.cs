@@ -39,7 +39,7 @@ namespace Knives
 
             //Adds the actual passive effect to the item
             
-            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.EnemyProjectileSpeedMultiplier, .15f, StatModifier.ModifyMethod.ADDITIVE);
+            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.EnemyProjectileSpeedMultiplier, .10f, StatModifier.ModifyMethod.ADDITIVE);
             //Set the rarity of the item
 
             item.quality = PickupObject.ItemQuality.A;
@@ -80,8 +80,10 @@ namespace Knives
             System.Random rng = new System.Random();
             if(rng.Next(1,3) == 1)
             {
+
                 this.Owner.BloopItemAboveHead(base.sprite, "Knives/Resources/I_will_survive");
                 args.ModifiedDamage = 0;
+                player.healthHaver.TriggerInvulnerabilityPeriod();
 
             }
            

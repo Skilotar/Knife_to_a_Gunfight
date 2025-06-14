@@ -126,8 +126,12 @@ namespace Knives
             StartCoroutine(DoStealthyBits(player));
             player.SetIsStealthed(true, "Looks Dead to me");
             //no move
-            player.MovementModifiers += this.NoMotionModifier;
-            player.IsStationary = true;
+            if (!player.HasPassiveItem(279))
+            {
+                player.MovementModifiers += this.NoMotionModifier;
+                player.IsStationary = true;
+            }
+           
 
             //sound
             if(UnityEngine.Random.Range(1,2) == 1)
@@ -174,6 +178,7 @@ namespace Knives
         private IEnumerator doAnimation(PlayerController player)
         {
             yield return new WaitForSeconds(.01f);
+            
             FieldInfo leEnabler = typeof(PlayerController).GetField("m_handlingQueuedAnimation", BindingFlags.Instance | BindingFlags.NonPublic);
             leEnabler.SetValue(player, true);
             string text = "death";

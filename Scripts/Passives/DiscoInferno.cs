@@ -86,6 +86,22 @@ namespace Knives
             }
             
         }
+        public override DebrisObject Drop(PlayerController player)
+        {
+            RemoveStat(PlayerStats.StatType.RateOfFire);
+            AddStat(PlayerStats.StatType.RateOfFire, 0f);
+            RemoveStat(PlayerStats.StatType.Damage);
+            AddStat(PlayerStats.StatType.Damage, 0f);
+            RemoveStat(PlayerStats.StatType.MovementSpeed);
+            AddStat(PlayerStats.StatType.MovementSpeed, 0f);
+            RemoveStat(PlayerStats.StatType.ReloadSpeed);
+            AddStat(PlayerStats.StatType.ReloadSpeed, 0f);
+
+            this.Owner.stats.RecalculateStats(Owner, true);
+            hasBuff = false;
+
+            return base.Drop(player);
+        }
         private void AddStat(PlayerStats.StatType statType, float amount, StatModifier.ModifyMethod method = StatModifier.ModifyMethod.ADDITIVE)
         {
             StatModifier modifier = new StatModifier();

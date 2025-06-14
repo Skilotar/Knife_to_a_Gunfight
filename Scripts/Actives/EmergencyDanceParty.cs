@@ -327,7 +327,6 @@ namespace Knives
         {
             while (doingParty)
             {
-
                 int RNG = UnityEngine.Random.Range(0, validColors.Count);
                 RenderSettings.ambientLight = validColors[RNG];
                 CameraController camera = GameManager.Instance.MainCameraController;

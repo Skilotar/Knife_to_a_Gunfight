@@ -57,7 +57,7 @@ namespace Knives
 			//custom mount sfx here
 
 			//mounting
-			if(isOnTurret == false && !interactor.IsDodgeRolling)
+			if(isOnTurret == false && !interactor.IsDodgeRolling && !PhysicsEngine.Instance.OverlapCast(interactor.specRigidbody, null, true, true, null, null, false, base.sprite.WorldCenter, null, new SpeculativeRigidbody[0]))
             {
 				isOnTurret = true;
 				AkSoundEngine.PostEvent("Play_tur_mount", base.gameObject);

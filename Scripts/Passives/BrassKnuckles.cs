@@ -45,7 +45,9 @@ namespace Knives
 
             item.quality = PickupObject.ItemQuality.C;
 
+            ID = item.PickupObjectId;
         }
+        public static int ID;
 
         public override void Pickup(PlayerController player)
         {
@@ -78,9 +80,9 @@ namespace Knives
                         }
 
                     }
-
-
                 }
+
+
 
 
             }

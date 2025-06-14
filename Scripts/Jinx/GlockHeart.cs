@@ -32,7 +32,7 @@ namespace Knives
 
             //Ammonomicon entry variables
             string shortDesc = "Glass Half Empty";
-            string longDesc = "A heart torn from a mighty repilian beast. Halves users current health, but gain max health for every 50 kills." +
+            string longDesc = "A heart torn from a mighty repilian beast. Halves users current health, but gain max health for every 30 kills." +
             "\n\n\n - Knife_to_a_Gunfight";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
@@ -84,7 +84,7 @@ namespace Knives
 
         public override DebrisObject Drop(PlayerController player)
         {
-
+            player.OnKilledEnemy -= Player_OnKilledEnemy;
             return base.Drop(player);
         }
         private void AddStat(PlayerStats.StatType statType, float amount, StatModifier.ModifyMethod method = StatModifier.ModifyMethod.ADDITIVE)

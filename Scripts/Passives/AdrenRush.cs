@@ -70,7 +70,7 @@ namespace Knives
                 m_activations++;
                 if (m_activations >= 3)
                 {
-                    StartCoroutine(DoSpeedy());
+                    StartCoroutine(DoSpeedy(source));
                     m_activations = 0;
                 }
             }
@@ -94,14 +94,14 @@ namespace Knives
             base.Update();
         }
 
-        private IEnumerator DoSpeedy()
+        private IEnumerator DoSpeedy(PlayerController player)
         {
             Speeeeeeeeeeed = true;
 
             AkSoundEngine.PostEvent("Play_Speed_Up", base.gameObject);
             RemoveStat(PlayerStats.StatType.MovementSpeed);
             AddStat(PlayerStats.StatType.MovementSpeed, 2.5f);
-            this.Owner.stats.RecalculateStats(Owner, true);
+            player.stats.RecalculateStats(player, true);
 
             foreach (PlayerItem item in this.Owner.activeItems)
             {
@@ -118,19 +118,19 @@ namespace Knives
                 item.CurrentTimeCooldown = alttime;
                 item.CurrentDamageCooldown = altDam;
                 item.CurrentRoomCooldown = altRoom;
-                item.DidDamage(this.Owner,1); // For Some reason the Time Cooldown set needs this to update properly??
+                item.DidDamage(player, 1); // For Some reason the Time Cooldown set needs this to update properly??
                 // Dog roll Why?!
 
             }
             GameObject original = AdrenalineRush.RushPrefab;
             tk2dSprite OhGeez = original.GetComponent<tk2dSprite>();
-            this.Owner.BloopItemAboveHead(OhGeez, "");
+            player.BloopItemAboveHead(OhGeez, "");
             yield return new WaitForSeconds(6f);
 
             AkSoundEngine.PostEvent("Play_Speed_Down", base.gameObject);
             RemoveStat(PlayerStats.StatType.MovementSpeed);
             AddStat(PlayerStats.StatType.MovementSpeed, 0f);
-            this.Owner.stats.RecalculateStats(Owner, true);
+            player.stats.RecalculateStats(Owner, true);
             m_activations = 0;
             Speeeeeeeeeeed = false;
         }
@@ -142,7 +142,7 @@ namespace Knives
             DebrisObject debrisObject = base.Drop(player);
             RemoveStat(PlayerStats.StatType.MovementSpeed);
             AddStat(PlayerStats.StatType.MovementSpeed, 0f);
-            this.Owner.stats.RecalculateStats(Owner, true);
+            player.stats.RecalculateStats(Owner, true);
             player.OnKilledEnemy -= this.OnKilledEnemy;
             return debrisObject;
         }

@@ -70,7 +70,8 @@ namespace Knives
             projectile.baseData.range = 4f;
             projectile.baseData.force = 5;
             ProjectileSlashingBehaviour slashy = projectile.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-            slashy.SlashDamageUsesBaseProjectileDamage = true;
+            slashy.SlashDamageUsesBaseProjectileDamage = false;
+            slashy.SlashDamage = 4;
             slashy.InteractMode = SlashDoer.ProjInteractMode.DESTROY;
             slashy.SlashRange = 0f;
             slashy.SlashDimensions = 50f;
@@ -161,7 +162,7 @@ namespace Knives
                 }
                 if (gun.spriteAnimator.IsPlaying("Chainsaw_fire"))
                 {
-                    if (Sawing== false)
+                    if (Sawing == false)
                     {
                         StartCoroutine(DoSaw());
                     }
@@ -206,10 +207,11 @@ namespace Knives
             if( gun.spriteAnimator.CurrentFrame == 5) angle = -30;
             if (gun.spriteAnimator.CurrentFrame == 6) angle = -60f;
             if (gun.CurrentAngle > 90 || gun.CurrentAngle < -90) angle *= -1;
-            Projectile Comp = MiscToolMethods.SpawnProjAtPosi(proj, gun.barrelOffset.transform.position, this.gun.CurrentOwner as PlayerController, gun.CurrentAngle + angle);
+            Projectile Comp = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, gun.barrelOffset.transform.position, this.gun.CurrentOwner as PlayerController, gun.CurrentAngle + angle);
             //ETGModConsole.Log(gun.CurrentAngle + angle);
             ProjectileSlashingBehaviour slashy = Comp.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-            slashy.SlashDamageUsesBaseProjectileDamage = true;
+            slashy.SlashDamageUsesBaseProjectileDamage = false;
+            slashy.SlashDamage = 3 + ( 1* (this.gun.CurrentOwner as PlayerController).stats.GetStatValue(PlayerStats.StatType.Damage));
             slashy.InteractMode = SlashDoer.ProjInteractMode.DESTROY;
             slashy.SlashRange = 4f;
             slashy.SlashDimensions = 45f;

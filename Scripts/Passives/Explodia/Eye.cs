@@ -36,7 +36,7 @@ namespace Knives
             //Adds the actual passive effect to the item
 
             ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Accuracy, -.15f, StatModifier.ModifyMethod.ADDITIVE);
-            item.quality = PickupObject.ItemQuality.B;
+            item.quality = PickupObject.ItemQuality.A;
             item.RespawnsIfPitfall = true;
 
             ID = item.PickupObjectId;

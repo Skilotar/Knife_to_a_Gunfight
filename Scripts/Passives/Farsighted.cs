@@ -15,6 +15,8 @@ namespace Knives
 {
     public class Farsighted : PassiveItem
     {
+        
+
         //Call this method from the Start() method of your ETGModule extension
         public static void Register()
         {
@@ -53,8 +55,9 @@ namespace Knives
 
 
             item.quality = PickupObject.ItemQuality.B;
+            ID = item.PickupObjectId;
         }
-
+        public static int ID;
         public override void Pickup(PlayerController player)
         {
             player.PostProcessProjectile += this.PostProcessProjectile;
@@ -64,8 +67,25 @@ namespace Knives
 
         private void PostProcessProjectile(Projectile SourceProjectile, float chance)
         {
-
+            if(this.Owner.PlayerHasActiveSynergy("Full Spectrum Eye Exam"))
+            {
+                SourceProjectile.OnHitEnemy += this.HitEnemy;
+            }
             StartCoroutine(direction(SourceProjectile));
+        }
+
+        private void HitEnemy(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+        {
+            if(arg2.aiActor != null)
+            {
+                if(arg3 == false)
+                {
+                    if(Vector2.Distance(this.Owner.CenterPosition, arg2.aiActor.Position) >= 6)
+                    {
+                        arg2.healthHaver.ApplyDamage(arg1.baseData.damage * .5f, Vector2.zero, "I can see you");
+                    }
+                }
+            }
         }
 
         public IEnumerator direction(Projectile bullet)

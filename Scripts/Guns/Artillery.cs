@@ -29,7 +29,7 @@ namespace Knives
             gun.SetLongDescription("Active reload to double clipsize.\n\n" +
                 "A one of a kind revolver for a one of a kind man. For most this hulking mound of metal is too much to wield effectively, but to Erik the Great, it fit his hands perfectly. " +
                 "Erik towered over the battlefields of the frontier wars, his titanous size and artillery shell revolver could kill armies with panic alone." +
-                "\n\n\n - Knife_to_a_Gunfight\n\n" +
+                "\n\n\n - Knife_to_a_Gunfight\n" +
                 "Sprites by Lynceus");
             gun.SetupSprite(null, "revolver_cannon_idle_001", 1);
             gun.SetAnimationFPS(gun.shootAnimation, 6);

@@ -32,7 +32,8 @@ namespace Knives
             string longDesc = "Rolling provides a short firerate and speed boost.\n\n" +
                 "A fake horse for knights in training. It boasts a sturdy wooden frame and half a horsepower.\n" +
                 "It was customary for a squire to follow closely behind the knight in training clopping two coconut halves together." +
-                "\n\n\n - Knife_to_a_Gunfight";
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprite by Dallan";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!

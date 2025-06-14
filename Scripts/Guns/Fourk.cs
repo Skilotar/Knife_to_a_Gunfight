@@ -50,7 +50,7 @@ namespace Knives
             gun.DefaultModule.numberOfShotsInClip = int.MaxValue;
             gun.InfiniteAmmo = true;
             gun.DefaultModule.cooldownTime = .7f;
-            gun.quality = PickupObject.ItemQuality.D;
+            gun.quality = PickupObject.ItemQuality.C;
 
             gun.carryPixelOffset = new IntVector2(4, 0);
           
@@ -65,7 +65,7 @@ namespace Knives
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
 
-            projectile.baseData.damage = 10f;
+            projectile.baseData.damage = 15f;
             projectile.baseData.speed = 3f;
             projectile.baseData.range = 3f;
             projectile.baseData.force = 5;

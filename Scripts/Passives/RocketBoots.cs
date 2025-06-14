@@ -63,29 +63,33 @@ namespace Knives
         public int ID = 16;
         private void OnPreDodgeRoll(PlayerController player)
         {
-            
-            Projectile projectile = ((Gun)ETGMod.Databases.Items[ID]).DefaultModule.projectiles[0];
-            projectile.baseData.damage = .001f;
-            GameObject gameObject = SpawnManager.SpawnProjectile(projectile.gameObject, this.Owner.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (this.Owner.CurrentGun == null) ? 0f : this.Owner.CurrentGun.CurrentAngle + 170f), true);
-            Projectile component = gameObject.GetComponent<Projectile>();
-            if (ID == 16)
+            if(InternalCooldown <= 0)
             {
-                GameObject gameObject2 = SpawnManager.SpawnProjectile(projectile.gameObject, this.Owner.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (this.Owner.CurrentGun == null) ? 0f : this.Owner.CurrentGun.CurrentAngle - 170f), true);
-                Projectile component2 = gameObject2.GetComponent<Projectile>();
-                bool flag2 = component2 != null;
-                if (flag2)
+                Projectile projectile = ((Gun)ETGMod.Databases.Items[ID]).DefaultModule.projectiles[0];
+                projectile.baseData.damage = .001f;
+                GameObject gameObject = SpawnManager.SpawnProjectile(projectile.gameObject, this.Owner.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (this.Owner.CurrentGun == null) ? 0f : this.Owner.CurrentGun.CurrentAngle + 170f), true);
+                Projectile component = gameObject.GetComponent<Projectile>();
+                if (ID == 16)
                 {
-                    component2.Owner = this.Owner;
-                    component2.Shooter = this.Owner.specRigidbody;
+                    GameObject gameObject2 = SpawnManager.SpawnProjectile(projectile.gameObject, this.Owner.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (this.Owner.CurrentGun == null) ? 0f : this.Owner.CurrentGun.CurrentAngle - 170f), true);
+                    Projectile component2 = gameObject2.GetComponent<Projectile>();
+                    bool flag2 = component2 != null;
+                    if (flag2)
+                    {
+                        component2.Owner = this.Owner;
+                        component2.Shooter = this.Owner.specRigidbody;
+                    }
                 }
+                bool flag = component != null;
+
+                if (flag)
+                {
+                    component.Owner = this.Owner;
+                    component.Shooter = this.Owner.specRigidbody;
+                }
+                InternalCooldown = 1f;
             }
-            bool flag = component != null;
            
-            if (flag)
-            {
-                component.Owner = this.Owner;
-                component.Shooter = this.Owner.specRigidbody;
-            }
 
             
         }
@@ -123,9 +127,13 @@ namespace Knives
                 }
 
             }
+            if(InternalCooldown >= 0)
+            {
+                InternalCooldown -= BraveTime.DeltaTime;
+            }
 
             base.Update();
         }
-        
+        public float InternalCooldown = 0;        
     }
 }

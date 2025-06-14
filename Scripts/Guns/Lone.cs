@@ -33,7 +33,7 @@ namespace Knives
                 "\n\n\n - Knife_to_a_Gunfight");
             gun.SetupSprite(null, "Lone_idle_001", 1);
             gun.SetAnimationFPS(gun.shootAnimation, 9);
-            gun.SetAnimationFPS(gun.reloadAnimation, 7);
+            gun.SetAnimationFPS(gun.reloadAnimation, 6);
 
             gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
             
@@ -64,6 +64,7 @@ namespace Knives
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
             gun.barrelOffset.transform.localPosition = new Vector3(2f, .5f, 0f);
+            gun.carryPixelOffset = new IntVector2(6, 0);
             projectile.baseData.damage = 18f;
             projectile.baseData.speed *= .8f;
             projectile.baseData.range = 20f;
@@ -72,7 +73,11 @@ namespace Knives
             Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;
             gun.shellCasing = gun2.shellCasing;
 
-
+            GunGradualReload reload = gun.gameObject.GetOrAddComponent<GunGradualReload>();
+           
+            reload.reloadnumber = 1; // number of shells to load at a time
+            reload.additionalAudioEventsPerReload.Add("Play_WPN_colt1851_reload_01");
+            reload.reloadEndSound = "Play_WPN_elephantgun_reload_01";
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
             ID = gun.PickupObjectId;
@@ -131,10 +136,14 @@ namespace Knives
         public IEnumerator armdelay(Projectile bullet)
         {
             yield return new WaitForSecondsRealtime(.2f);
-            projectileStates state = bullet.gameObject.GetOrAddComponent<projectileStates>();
-            state.isloneStarStar = true;
-            bullet.HasDefaultTint = true;
-            bullet.DefaultTintColor = UnityEngine.Color.white;
+            if(bullet != null)
+            {
+                projectileStates state = bullet.gameObject.GetOrAddComponent<projectileStates>();
+                state.isloneStarStar = true;
+                bullet.HasDefaultTint = true;
+                bullet.DefaultTintColor = UnityEngine.Color.white;
+            }
+            
         }
         public int LoneCount;
 
@@ -156,7 +165,7 @@ namespace Knives
 
                 }
 
-
+                /*
                 if (gun.IsReloading && Key(GungeonActions.GungeonActionType.Shoot, gun.CurrentOwner as PlayerController) && gun.ClipShotsRemaining > 0)
                 {
                     LoneCount = gun.ClipShotsRemaining;
@@ -183,7 +192,7 @@ namespace Knives
                     }
                     
                 }
-
+                */
 
                 foreach (Projectile projectile in GetLoneBullets())
                 {
@@ -300,78 +309,18 @@ namespace Knives
                 base.OnReloadPressed(player, gun, bSOMETHING);
                 if(player.PlayerHasActiveSynergy("Dual Loader"))
                 {
-                    StartCoroutine(DuelgradualReload());
+                    GunGradualReload reload = gun.GetComponent<GunGradualReload>();
+                    reload.reloadnumber = 2;
                 }
                 else
                 {
-                    StartCoroutine(gradualReload());
+                    GunGradualReload reload = gun.GetComponent<GunGradualReload>();
+                    reload.reloadnumber = 1;
                 }
                
             }
         }
-        public static MethodInfo info = typeof(Gun).GetMethod("FinishReload", BindingFlags.Instance | BindingFlags.NonPublic);
-        public bool Key(GungeonActions.GungeonActionType action, PlayerController user)
-        {
-            return BraveInput.GetInstanceForPlayer(user.PlayerIDX).ActiveActions.GetActionFromType(action).IsPressed;
-        }
-
-
-        public IEnumerator gradualReload()
-        {
-           
-            PlayerController player = (PlayerController)this.gun.CurrentOwner;
-            if (this.gun.ClipShotsRemaining <= 0)
-            {
-                yield return new WaitForSeconds(1f * player.stats.GetStatValue(PlayerStats.StatType.ReloadSpeed));
-            }
-
-            yield return new WaitForSeconds(perload * player.stats.GetStatValue(PlayerStats.StatType.ReloadSpeed));
-            if (this.gun.ClipShotsRemaining != this.gun.ClipCapacity && gun.IsReloading)
-            {
-                this.gun.ClipShotsRemaining++;
-              
-            }
-            if (gun.IsReloading)
-            {
-                StartCoroutine(gradualReload());
-            }
-            
-        }
-
-        public IEnumerator DuelgradualReload()
-        {
-
-            PlayerController player = (PlayerController)this.gun.CurrentOwner;
-            if (this.gun.ClipShotsRemaining <= 0)
-            {
-                yield return new WaitForSeconds(.66f * player.stats.GetStatValue(PlayerStats.StatType.ReloadSpeed));
-            }
-
-            yield return new WaitForSeconds(perload * player.stats.GetStatValue(PlayerStats.StatType.ReloadSpeed));
-            if (this.gun.ClipShotsRemaining != this.gun.ClipCapacity && gun.IsReloading)
-            {
-                if(this.gun.ClipShotsRemaining == this.gun.ClipCapacity - 1 && gun.IsReloading)
-                {
-                    this.gun.ClipShotsRemaining++;
-                }
-                else
-                {
-                    this.gun.ClipShotsRemaining++;
-                    this.gun.ClipShotsRemaining++;
-                }
-               
-
-            }
-           
-            if (gun.IsReloading && player.PlayerHasActiveSynergy("Dual Loader"))
-            {
-                StartCoroutine(DuelgradualReload());
-            }
-            else if (gun.IsReloading)
-            {
-                StartCoroutine(gradualReload());
-            }
-
-        }
+       
+        
     }
 }

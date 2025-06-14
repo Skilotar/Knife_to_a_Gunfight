@@ -37,10 +37,9 @@ namespace Knives
         {
 			currentHighNoonStacks = 0;
         }
-
+		public GameObject target;
         private void Update()
 		{
-
 			if (aiactor.healthHaver != null)
 			{
 				if (player != null)
@@ -54,6 +53,8 @@ namespace Knives
 							{
 								AkSoundEngine.PostEvent("Play_Timekeep_whip", base.gameObject);
 								aiactor.RegisterOverrideColor(UnityEngine.Color.red, "HighNoon");
+								GameObject Vfx = (GameObject)BraveResources.Load("Global VFX/VFX_LockOn_Predator", ".prefab");
+								target = aiactor.PlayEffectOnActor(Vfx, new Vector3(0, 0, 0));
 								whip = true;
 							}
 							if(ring == true)
@@ -71,6 +72,8 @@ namespace Knives
 								Pixelator.Instance.DeregisterAdditionalRenderPass(newPass);
 								currentHighNoonStacks = 0;
 								aiactor.DeregisterOverrideColor("HighNoon");
+								if(target != null) UnityEngine.GameObject.Destroy(target);
+
 								whip = false;
 							}
 							
@@ -86,10 +89,12 @@ namespace Knives
 								newPass.SetFloat("_Radius", Mathf.Lerp(5f, 0f, (8 + currentHighNoonStacks) / this.aiactor.healthHaver.GetCurrentHealth()));
 								newPass.SetVector("_WorldCenter", aiactor.CenterPosition);
 								Pixelator.Instance.RegisterAdditionalRenderPass(newPass);
+								
 								ring = true;
 							}
 							newPass.SetFloat("_Radius", Mathf.Lerp(5f, 0f, (8 + currentHighNoonStacks) / this.aiactor.healthHaver.GetCurrentHealth()));
 							newPass.SetVector("_WorldCenter", aiactor.CenterPosition);
+
 						}
 						else
 						{

@@ -9,6 +9,7 @@ using Gungeon;
 using MonoMod.RuntimeDetour;
 using System.Reflection;
 using Dungeonator;
+using HarmonyLib;
 
 namespace Knives
 {
@@ -66,6 +67,7 @@ namespace Knives
 
                 startup = true;
             }
+            
             base.Pickup(player);
 
     
@@ -104,12 +106,29 @@ namespace Knives
                                             BlockletsModifier stop = proj.gameObject.GetOrAddComponent<BlockletsModifier>();
                                             stop.DieWithShield = false;
                                             
+                                            if(player.PlayerHasActiveSynergy("Two Shots Of Vodka"))
+                                            {
+                                                
+                                                Projectile proj2 = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, guon.transform.position, player, ang, 3 + UnityEngine.Random.Range(-12, 12));
+                                                proj2.AdditionalScaleMultiplier = .5f;
+                                                proj2.baseData.speed *= .7f;
+                                                proj2.baseData.damage = 3;
+                                                BlockletsModifier stop2 = proj2.gameObject.GetOrAddComponent<BlockletsModifier>();
+                                                stop2.DieWithShield = false;
+                                            }
                                         }
                                     }
                                     
                                 }
                             }
-                            cooldown = 1.5f;
+                            if (player.PlayerHasActiveSynergy("Two Shots Of Vodka"))
+                            {
+                                cooldown = 2f;
+                            }
+                            else
+                            {
+                                cooldown = 1.5f;
+                            }
                         }
                         else
                         {
@@ -118,9 +137,43 @@ namespace Knives
                     }
                 }
               
+                
 
             }
             base.Update();
+        }
+
+        [HarmonyPatch(typeof(PlayerOrbitalItem), nameof(PlayerOrbitalItem.HandleBreakOnOwnerDamage))]
+        public class WeakBlanks
+        {
+            [HarmonyPrefix]
+            public static bool Prefix(PlayerController arg1)
+            {
+                if (arg1 != null)
+                {
+                    if (arg1.PlayerHasActiveSynergy("On The Rocks"))
+                    {
+                        if (UnityEngine.Random.Range(0, 4f) < 3)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                    
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
         }
 
         public override DebrisObject Drop(PlayerController player)

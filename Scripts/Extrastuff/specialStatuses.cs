@@ -8,7 +8,7 @@ namespace Knives
 {
     class StatusEffectHelper
     {
-
+      
         public static GameActorillnessEffect GenerateillnessEffect(float duration, float dps, bool tintEnemy, Color bodyTint, bool tintCorpse, Color corpseTint)
         {
             GameActorillnessEffect commonillness = new GameActorillnessEffect
@@ -32,7 +32,9 @@ namespace Knives
             return commonillness;
         }
 
-        public class StatusEffectBulletMod : MonoBehaviour
+    }
+
+    public class StatusEffectBulletMod : MonoBehaviour
         {
             public StatusEffectBulletMod()
             {
@@ -81,6 +83,6 @@ namespace Knives
                 public Color effectTint;
                 public bool applyTint = false;
             }
-        }
+        
     }
 }

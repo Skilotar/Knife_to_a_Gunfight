@@ -178,7 +178,7 @@ namespace Knives
         {
 
 			postshot = true;
-			yield return new WaitForSeconds(.2f);
+			yield return new WaitForSeconds(.25f);
 			postshot = false;
            
         }
@@ -189,24 +189,23 @@ namespace Knives
 			base.Update();
 			if (this.Owner != null)
 			{
-				
-				if((this.Owner as PlayerController).PlayerHasActiveSynergy("King and Queen"))
-                {
+				PlayerController player = this.gun.CurrentOwner as PlayerController;
+				if ((this.Owner as PlayerController).PlayerHasActiveSynergy("King and Queen"))
+				{
 					gun.OverrideAngleSnap = 1f;
 				}
-                else
-                {
+				else
+				{
 					gun.OverrideAngleSnap = 45f;
 				}
 
 				if ((this.Owner as PlayerController).PlayerHasActiveSynergy("Bisharpshooter"))
 				{
-					if (this.Owner.Velocity.magnitude <= .1f && DoingStandTracking == false)
+					if (this.Owner.Velocity.magnitude <= .1f && DoingStandTracking == false && GameManager.Instance.IsLoadingLevel == false)
 					{
-
 						StartCoroutine(DoingStandTrack());
 					}
-                    
+
 				}
 				if ((this.Owner as PlayerController).PlayerHasActiveSynergy("Rolload"))
 				{
@@ -218,13 +217,35 @@ namespace Knives
 
 				}
 				if (m_laser2 == null && m_laser1 == null && this.gun.IsReloading == false && (this.Owner as PlayerController).IsDodgeRolling == false && this.gun.ClipShotsRemaining != 0 && postshot != true)
-                {
-					
-
-					StartCoroutine(doFunkyLaserSightGarbage(this.Owner as PlayerController));
-
+				{
+					doFunkyLaserSightGarbage(this.Owner as PlayerController);
+				}
+				if (m_laser2 != null && m_laser1 != null && this.gun.IsReloading == false && (this.Owner as PlayerController).IsDodgeRolling == false && this.gun.ClipShotsRemaining != 0 && postshot != true)
+				{
+					tk2dTiledSprite sprite1 = m_laser1.GetComponent<tk2dTiledSprite>();
+					sprite1.renderer.enabled = true;
+					tk2dTiledSprite sprite2 = m_laser2.GetComponent<tk2dTiledSprite>();
+					sprite2.renderer.enabled = true;
+				}
+				else
+				{
+					tk2dTiledSprite sprite1 = m_laser1.GetComponent<tk2dTiledSprite>();
+					sprite1.renderer.enabled = false;
+					tk2dTiledSprite sprite2 = m_laser2.GetComponent<tk2dTiledSprite>();
+					sprite2.renderer.enabled = false;
 				}
 
+				if (m_laser1 != null)
+				{
+					m_laser1.transform.rotation = Quaternion.Euler(0, 0, player.CurrentGun.CurrentAngle + (player.CurrentGun.DefaultModule.angleVariance * player.stats.GetStatModifier(PlayerStats.StatType.Accuracy)));
+					m_laser1.transform.position = this.gun.barrelOffset.transform.position;
+				}
+				if (m_laser2 != null)
+                {
+
+					m_laser2.transform.rotation = Quaternion.Euler(0, 0, player.CurrentGun.CurrentAngle - (player.CurrentGun.DefaultModule.angleVariance * player.stats.GetStatModifier(PlayerStats.StatType.Accuracy)));
+					m_laser2.transform.position = this.gun.barrelOffset.transform.position;
+				}
 				
 
 			}
@@ -254,7 +275,7 @@ namespace Knives
 			DoingStandTracking = true;
 			PlayerController EmergencyPlayerGone = this.Owner as PlayerController;
 			EmergencyPlayerGone.stats.RecalculateStats(EmergencyPlayerGone, true);
-			while (this.Owner.Velocity.magnitude <= .1f && this.Owner != null && GameManager.Instance.IsLoadingLevel == false)
+			while (this.Owner.Velocity.magnitude <= .1f && this.Owner != null)
             {
 
 				if (doingStat == false)
@@ -282,24 +303,13 @@ namespace Knives
 
         public GameObject m_laser1;
 		public GameObject m_laser2;
-		private IEnumerator doFunkyLaserSightGarbage(PlayerController player) // this is trash... 
+		private void doFunkyLaserSightGarbage(PlayerController player)
         {
-
-
 			Color color = UnityEngine.Color.red;
-			
-	
 			UnityEngine.GameObject laser1 = RenderLaserSight(gun.barrelOffset.transform.position, 100, 1, player.CurrentGun.CurrentAngle + (player.CurrentGun.DefaultModule.angleVariance * player.stats.GetStatModifier(PlayerStats.StatType.Accuracy)), true, color);
 			UnityEngine.GameObject laser2 = RenderLaserSight(gun.barrelOffset.transform.position, 100, 1, player.CurrentGun.CurrentAngle - (player.CurrentGun.DefaultModule.angleVariance * player.stats.GetStatModifier(PlayerStats.StatType.Accuracy)), true, color);
 			m_laser1 = laser1;
 			m_laser2 = laser2;
-			
-			yield return new WaitForEndOfFrame();
-			yield return new WaitForEndOfFrame();
-			UnityEngine.GameObject.Destroy(laser1);
-			UnityEngine.GameObject.Destroy(laser2);
-			m_laser1 = null;
-			m_laser2 = null;
 		}
 
 		public static GameObject RenderLaserSight(Vector2 position, float length, float width, float angle, bool alterColour = false, Color? colour = null)

@@ -51,7 +51,7 @@ namespace Knives
             gun.DefaultModule.numberOfShotsInClip = 1;
             gun.InfiniteAmmo = true;
             gun.quality = PickupObject.ItemQuality.S;
-            gun.encounterTrackable.EncounterGuid = "teleports behind you";
+            //gun.encounterTrackable.EncounterGuid = "teleports behind you";
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             
@@ -104,34 +104,42 @@ namespace Knives
 
                     foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
                     {
-                        if(multiplier > 1500)
+                        if(enemy != null)
                         {
-                            enemy.healthHaver.ApplyDamage(80, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
-                            this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
+                            if (multiplier > 1500)
+                            {
+                                enemy.healthHaver.ApplyDamage(80, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
+                                this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
+                            }
+                            else
+                            {
+                                enemy.healthHaver.ApplyDamage(2 * multiplier / 50, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
+                                this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
+                            }
+                            if (enemy.healthHaver.IsBoss)
+                            {
+                                enemy.healthHaver.ApplyDamage(45, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
+                                this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
+                                this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
+                            }
                         }
-                        else
-                        {
-                            enemy.healthHaver.ApplyDamage(2 * multiplier / 40, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
-                            this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
-                        }
-                        if (enemy.healthHaver.IsBoss)
-                        {
-                            enemy.healthHaver.ApplyDamage(45, Vector2.zero, "bracer", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, true);
-                            this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
-                            this.DoSafeExplosion(enemy.specRigidbody.UnitCenter);
-                        }
+                       
                     }
 
                     foreach (var projectile in GetBullets())
                     {
-                        if (projectile.Owner.healthHaver.IsBoss)
+                        if(projectile != null)
                         {
-                            PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 15f, 1f, 15f, 0f);
+                            if (projectile.Owner.healthHaver.IsBoss)
+                            {
+                                PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 15f, 1f, 15f, 0f);
+                            }
+                            else
+                            {
+                                PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 15f, 1f, 3f, 0f);
+                            }
                         }
-                        else
-                        {
-                            PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 15f, 1f, 3f, 0f);
-                        }
+                       
                     }
                     effects_controller = 0;
                     multiplier = 0;

@@ -31,6 +31,14 @@ namespace Knives
 			HonorSwipe = false;
 			HonorStab = false;
 			arcane = false;
+			USBproj = false;
+			ExpressProj = false;
+			thumper = false;
+			sludgePumpSmol = false;
+			sludgePumpBeeg = false;
+			planZ = false;
+			sleepy = false;
+			biotic = false;
 		}
 
 
@@ -46,6 +54,15 @@ namespace Knives
 
 		}
 
+		public bool sleepy;
+		public bool planZ;
+		public bool sludgePumpBeeg;
+		public bool sludgePumpSmol;
+		public bool thumper;
+		public bool ExpressProj;
+		public bool USBproj;
+		public bool Married;
+		public bool PlusMinus;
 		public bool arcane;
 		public bool picorispin;
 		public bool PepperCharge;
@@ -71,6 +88,7 @@ namespace Knives
 		public bool collideWhammy;
 
 		private Projectile projectile;
-	}
+        public bool biotic;
+    }
 }
 

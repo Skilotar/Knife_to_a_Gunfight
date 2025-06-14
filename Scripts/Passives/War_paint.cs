@@ -66,6 +66,13 @@ namespace Knives
 
         }
 
+        public override DebrisObject Drop(PlayerController player)
+        {
+            player.OnKilledEnemy -= this.OnKilledEnemy;
+
+            return base.Drop(player);
+        }
+
         public void OnKilledEnemy(PlayerController user)
         {
             

@@ -155,7 +155,7 @@ namespace Knives
         
         public override void OnPreDrop(PlayerController player)
         {
-            player.OnEnteredCombat = (Action)Delegate.Combine(player.OnEnteredCombat, new Action(this.detectHealth));
+            player.OnEnteredCombat = (Action)Delegate.Remove(player.OnEnteredCombat, new Action(this.detectHealth));
             
             base.OnPreDrop(player);
         }

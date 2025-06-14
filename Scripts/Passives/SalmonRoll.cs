@@ -57,7 +57,7 @@ namespace Knives
         public override void Pickup(PlayerController player)
         {
             PassiveItem.IncrementFlag(player, typeof(LiveAmmoItem));
-            PassiveItem.IncrementFlag(player, typeof(PegasusBootsItem));
+            //PassiveItem.IncrementFlag(player, typeof(PegasusBootsItem));
             player.OnIsRolling += Player_OnIsRolling;
             player.OnRolledIntoEnemy += Player_OnRolledIntoEnemy;
             base.Pickup(player);
@@ -91,7 +91,7 @@ namespace Knives
         {
             player.OnIsRolling -= Player_OnIsRolling;
             player.OnRolledIntoEnemy -= Player_OnRolledIntoEnemy;
-            PassiveItem.DecrementFlag(player, typeof(PegasusBootsItem));
+            //PassiveItem.DecrementFlag(player, typeof(PegasusBootsItem));
             PassiveItem.DecrementFlag(player, typeof(LiveAmmoItem));
             return base.Drop(player);
         }

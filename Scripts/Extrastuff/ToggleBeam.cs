@@ -18,6 +18,8 @@ namespace Knives
 			projectile = base.gameObject.GetComponent<Projectile>();
 			Player = projectile.Owner as PlayerController;
 			TargetAngle = projectile.Direction.ToAngle();
+
+			
 		}
 
 		public void Update()
@@ -45,7 +47,7 @@ namespace Knives
 
 				if(this.projectile.baseData.speed < 1f)
                 {
-					TargetAngle = TargetAngle - (60 * Time.deltaTime);
+					TargetAngle = TargetAngle - (75* Time.deltaTime);
 					this.projectile.SendInDirection(TargetAngle.DegreeToVector2(), true, true);
 				}
 
@@ -90,19 +92,23 @@ namespace Knives
 
 		public void DoBeamCreate(Projectile beamtofire, float Angle)
         {
+			
+
 			BeamController beamController1 = BeamToolbox.FreeFireBeamFromAnywhere(beamtofire, this.Player, this.projectile.gameObject, Vector2.zero, false, 0, 1f, true, true, Angle);
 			Projectile component1 = beamController1.GetComponent<Projectile>();
-			if(beamtofire == this.beam) component1.baseData.damage *= 1.2f;
+			
 			BasicBeamController beam = component1.gameObject.GetOrAddComponent<BasicBeamController>();
 			beam.penetration = 1;
 			beam.reflections = 0;
-			
 			LastKnownBeamController = beamController1;
+
+			
 		}
 
 
 		float TargetAngle = 0;
 		public BeamController LastKnownBeamController;
+		
 		public Projectile beam = (PickupObjectDatabase.GetById(20) as Gun).DefaultModule.projectiles[0].projectile;
 		public Projectile projectile;
 		public PlayerController Player;

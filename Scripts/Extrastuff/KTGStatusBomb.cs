@@ -83,8 +83,15 @@ namespace Knives
 
 						if (hitHard)
 						{
+                            if (aiactor.healthHaver.IsBoss)
+                            {
+								aiactor.healthHaver.ApplyDamage(100, Vector2.zero, "Big Angry", CoreDamageTypes.None, DamageCategory.Normal, true, null, true);
+                            }
+                            else
+                            {
+								aiactor.healthHaver.ApplyDamage(50, Vector2.zero, "Big Angry", CoreDamageTypes.None, DamageCategory.Normal, true, null, true);
 
-							aiactor.healthHaver.ApplyDamage(50, Vector2.zero, "Big Angry",CoreDamageTypes.None,DamageCategory.Normal,true,null,true);
+							}
 
 						}
 
@@ -109,7 +116,7 @@ namespace Knives
 
 
 		public ProximityMine proxy;
-		public float radius = 3;
+		public float radius = 3.5f;
 		public bool hitHard = false;
 		public bool DoesHex = false;
 		public bool DoesBlast = false;

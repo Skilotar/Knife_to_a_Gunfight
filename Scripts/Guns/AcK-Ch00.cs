@@ -4,6 +4,7 @@ using Gungeon;
 using MonoMod;
 using UnityEngine;
 using ItemAPI;
+using Alexandria.Misc;
 using Dungeonator;
 using System.Collections.Generic;
 using MultiplayerBasicExample;
@@ -39,11 +40,11 @@ namespace Knives
             gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Automatic;
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.reloadTime = 1f;
-            gun.DefaultModule.numberOfShotsInClip = 10;
+            gun.DefaultModule.numberOfShotsInClip = 8;
             gun.DefaultModule.cooldownTime = .8f;
             gun.SetBaseMaxAmmo(400);
             gun.quality = PickupObject.ItemQuality.C;
-
+            
             
             gun.PreventNormalFireAudio = true;
 
@@ -123,7 +124,7 @@ namespace Knives
                 {
                     component.Owner = player;
                     component.Shooter = player.specRigidbody;
-                    component.baseData.damage = 6f * player.stats.GetStatValue(PlayerStats.StatType.Damage);
+                    component.baseData.damage = 5f * player.stats.GetStatValue(PlayerStats.StatType.Damage);
                     component.baseData.speed *= (1f - (Math.Abs(angle) / 40));
                     component.UpdateSpeed();
                     if(pois != 1)

@@ -16,6 +16,7 @@ public class AmmoRegenComp : MonoBehaviour
 	private void Start()
 	{
 		this.m_gun = base.GetComponent<Gun>();
+
 	}
 	public float postShotRestartDelay = 0;
 	public void Update()
@@ -40,13 +41,11 @@ public class AmmoRegenComp : MonoBehaviour
         }
         if (this.m_gun.IsFiring)
         {
-			postShotRestartDelay = .35f;
+			postShotRestartDelay = .5f;
 
 		}
 	}
 
-	// Token: 0x06008822 RID: 34850 RVA: 0x00375C77 File Offset: 0x00373E77
-	
 	public float intervalTime;
 	public bool CombatRequired = false;
 	public float AmmoPer;

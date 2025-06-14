@@ -43,7 +43,7 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.reloadTime = 1.5f;
             gun.DefaultModule.numberOfShotsInClip = 34;
-            gun.DefaultModule.cooldownTime = .15f;
+            gun.DefaultModule.cooldownTime = .12f;
             gun.SetBaseMaxAmmo(1000);
             gun.ammo = 1000;
             gun.quality = PickupObject.ItemQuality.B;
@@ -57,7 +57,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 3f;
+            projectile.baseData.damage = 3.5f;
             projectile.baseData.speed *= 1.5f;
             projectile.baseData.range *= 1f;
             

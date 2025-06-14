@@ -119,10 +119,20 @@ namespace Knives
             Owner.FallingProhibited = true;
             Owner.ForceStopDodgeRoll();
             Owner.ForceStartDodgeRoll();
+
+            if (AdvancedGameStatsManager.Instance.GetFlag(CustomDungeonFlags.SKIPSKATERPARRYPAUSE) == false)
+            {
+                StartCoroutine(HitPause());
+            }
+            yield return new WaitForSecondsRealtime(0);
+            Owner.FallingProhibited = false;
+        }
+
+        private IEnumerator HitPause()
+        {
             BraveTime.SetTimeScaleMultiplier(0, base.gameObject);
             yield return new WaitForSecondsRealtime(.15f);
             BraveTime.SetTimeScaleMultiplier(1, base.gameObject);
-            Owner.FallingProhibited = false;
         }
     }
 }

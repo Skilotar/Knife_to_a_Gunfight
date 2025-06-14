@@ -14,21 +14,27 @@ namespace Knives
             parentRoom = parentRoom ?? transform.position.GetAbsoluteRoom();
             if (parentRoom != null)
             {
+                
                 parentRoom.BecameInvisible += ResetParentRoom;
             }
+           
         }
 
         public void ResetParentRoom()
         {
             if (parentRoom != null)
             {
-                parentRoom.ResetPredefinedRoomLikeDarkSouls();
+                
+                if (parentRoom.GetActiveEnemiesCount(RoomHandler.ActiveEnemyType.RoomClear) > 0)
+                {
+                    parentRoom.ResetPredefinedRoomLikeDarkSouls();
+                }
                 parentRoom.BecameInvisible -= ResetParentRoom;
                 parentRoom = null;
                 Destroy(gameObject);
             }
         }
-
+        public PlayerController player;
         public RoomHandler parentRoom;
     }
 }

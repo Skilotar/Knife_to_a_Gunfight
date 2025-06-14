@@ -20,7 +20,7 @@ namespace Knives
 			smelledChechPerf = false;
 			broken = true;
 			Rez = false;
-
+			caught = false;
 		}
 
 
@@ -36,6 +36,9 @@ namespace Knives
 			
 		}
 
+		public bool caught = false;
+		public bool oranged = false;
+		public Projectile connector = null;
 		public bool ignition = false;
 		public int currentHighNoonStacks;
 		public bool EnemyIsCool = false;

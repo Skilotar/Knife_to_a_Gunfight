@@ -48,7 +48,10 @@ namespace Knives
             item.IsKageBunshinItem = false;
 
             item.quality = PickupObject.ItemQuality.C;
+            ID = item.PickupObjectId;
         }
+
+        public static int ID;
 
 
         public static GameObject BuildPrefab()
@@ -251,7 +254,7 @@ namespace Knives
         public IEnumerator bombPreDet()
         {
             yield return new WaitForSecondsRealtime(.25f);
-            int random = rng.Next(1, 5);
+            int random = rng.Next(1, 4);
             switch (random)
             {
                 case 1: AkSoundEngine.PostEvent("Play_tape_01", base.gameObject);
@@ -265,10 +268,6 @@ namespace Knives
 
                 case 4: AkSoundEngine.PostEvent("Play_tape_04", base.gameObject);
                     break;
-
-                case 5: AkSoundEngine.PostEvent("Play_tape_05", base.gameObject);
-                    break;
-
             }
             yield return new WaitForSecondsRealtime(3.5f);
             UnhandleRadialIndicator();

@@ -17,7 +17,7 @@ using MonoMod;
 
 namespace Knives
 {
-	class DoomShotty : AdvancedGunBehaviour
+	class DoomShotty : MultiActiveReloadController
 	{
 
 		public static void Add()
@@ -25,9 +25,9 @@ namespace Knives
 
 			Gun gun = ETGMod.Databases.Items.NewGun("Super Shotgun", "Doom");
 			Game.Items.Rename("outdated_gun_mods:super_shotgun", "ski:super_shotgun");
-			gun.gameObject.AddComponent<DoomShotty>();
+			var Behav = gun.gameObject.AddComponent<DoomShotty>();
 			gun.SetShortDescription("Rip And Tear");
-			gun.SetLongDescription("Criticals to Jammed enemies, press reload again while reloading to grapple.\n\n" +
+			gun.SetLongDescription("Criticals to Jammed enemies, Active reload to grapple.\n\n" +
 				"Demons run at the sound of this gun. An unassuming distant click of the hammer sends shudders down the spines of the unholy. Give them HELL!" +
 				"\n\n- Knife_to_a_gunfight");
 			gun.SetupSprite(null, "Doom_idle_001", 1);
@@ -92,6 +92,18 @@ namespace Knives
 			gun.barrelOffset.transform.localPosition = new Vector3(1.25f, .8f, 0f);
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+			Behav.activeReloadEnabled = true;
+			Behav.canAttemptActiveReload = true;
+
+			Behav.reloads = new List<MultiActiveReloadData>
+			{
+				new MultiActiveReloadData(0.55f, 60, 90, 32, 20, false, false, new ActiveReloadData
+				{
+					damageMultiply = 1f,
+				}, true, "Grapple",6,2)
+
+			};
+
 			ID = gun.PickupObjectId;
 		}
 
@@ -138,23 +150,31 @@ namespace Knives
             }
         }
 
-        public override void OnReloadPressed(PlayerController player, Gun gun, bool bSOMETHING)
+		public override void OnActiveReloadSuccess(MultiActiveReload reload)
 		{
-			
 			InitGrapple();
-			
-			AkSoundEngine.PostEvent("Stop_WPN_All", base.gameObject);
-            if (gun.IsReloading)
-            {
-				StartCoroutine(slightparydelay());
+			base.OnActiveReloadSuccess(reload);
+
+			PlayerController owner = gun.CurrentOwner as PlayerController;
+			if (reload.Name == "Grapple")
+			{
+				AkSoundEngine.PostEvent("Play_OBJ_hook_shot_01", base.gameObject);
+				m_grappleModule.Trigger(owner);
+				Once = true;
+
+				tk2dSpriteAnimationClip clip = gun.spriteAnimator.GetClipByName("Doom_critical_fire");
+				gun.spriteAnimator.Play(clip, 0, 2 / gun.reloadTime, true);
 			}
+
+		}
+
+		public override void OnReloadPressed(PlayerController player, Gun gun, bool bSOMETHING)
+		{
+			AkSoundEngine.PostEvent("Stop_WPN_All", base.gameObject);
+            
 		}
 		public bool reloadDelay = false;
-		private IEnumerator slightparydelay()
-		{
-			yield return new WaitForSeconds(.1f);
-			reloadDelay = true;
-		}
+	
 
 		private void InitGrapple()
         {
@@ -196,42 +216,9 @@ namespace Knives
 					reloadDelay = false;
 				}
 
-				if (gun.IsReloading && reloadDelay == true)// press R to parry and skip reload
-				{
-					PlayerController player = (PlayerController)this.gun.CurrentOwner;
-					if (KeyDown(GungeonActions.GungeonActionType.Reload, (PlayerController)this.gun.CurrentOwner) )
-					{
-
-						if (Once == false)
-						{
-							AkSoundEngine.PostEvent("Play_OBJ_hook_shot_01", base.gameObject);
-							m_grappleModule.Trigger(player);
-							Once = true;
-
-							tk2dSpriteAnimationClip clip = gun.spriteAnimator.GetClipByName("Doom_critical_fire");
-							gun.spriteAnimator.Play(clip, 0, 2 / gun.reloadTime, true);
-						}
-					}
-
-				}
-
 			}
 
 		}
-
-		public bool KeyDown(GungeonActions.GungeonActionType action, PlayerController user)
-		{
-			if (!GameManager.Instance.IsLoadingLevel && user != null)
-			{
-				return BraveInput.GetInstanceForPlayer(user.PlayerIDX).ActiveActions.GetActionFromType(action).WasPressed;
-			}
-			else
-			{
-				return false;
-			}
-
-		}
-
 
 	}
 }

@@ -271,12 +271,13 @@ namespace Knives
                         Projectile component = gameObject.GetComponent<Projectile>();
                         component.Owner = this.projOwner;
                         ProjectileSlashingBehaviour Blood = component.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-                        Blood.SlashDamage = 8f;
-                        Blood.SlashDimensions = 45f;
+                        Blood.SlashDamage = 17f;
+                        Blood.SlashDimensions = 90f;
+                        Blood.SlashDamageUsesBaseProjectileDamage = false;
                         Blood.SlashVFX = Callahan.Bloody;
                         Blood.DestroyBaseAfterFirstSlash = true;
                         Blood.soundToPlay = null;
-                        Blood.SlashRange = 5f;
+                        Blood.SlashRange = 7f;
                         Stabbed = otherRigidbody.aiActor;
                         AkSoundEngine.PostEvent("Play_OBJ_candle_splat_01", base.gameObject);
                         AkSoundEngine.PostEvent("Play_OBJ_candle_splat_01", base.gameObject);

@@ -54,13 +54,13 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.DefaultModule.burstCooldownTime = .35f;
             gun.DefaultModule.burstShotCount = 2;
-            gun.reloadTime = 1.2f;
+            gun.reloadTime = 1.1f;
             gun.gunHandedness = GunHandedness.TwoHanded;
             gun.gunClass = GunClass.EXPLOSIVE;
-            gun.DefaultModule.cooldownTime = 1f;
+            gun.DefaultModule.cooldownTime = .7f;
             gun.DefaultModule.numberOfShotsInClip = 3;
-            gun.SetBaseMaxAmmo(120);
-            
+            gun.SetBaseMaxAmmo(100);
+            gun.carryPixelOffset = new IntVector2(5, 0);
             
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.B;
@@ -78,14 +78,14 @@ namespace Knives
             projectile.baseData.speed *= .8f;
             projectile.baseData.range = 60;
 
-            Projectile projectile2 = UnityEngine.Object.Instantiate<Projectile>((PickupObjectDatabase.GetById(157) as Gun).DefaultModule.projectiles[0]);
+            Projectile projectile2 = UnityEngine.Object.Instantiate<Projectile>((PickupObjectDatabase.GetById(15) as Gun).DefaultModule.projectiles[0]);
             projectile2.gameObject.SetActive(false);
             FakePrefab.MarkAsFakePrefab(projectile2.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile2);
             
             projectile2.HasDefaultTint = true;
             projectile2.DefaultTintColor = new Color(.50f, .07f, .04f);
-            projectile2.baseData.damage = 6f;
+            projectile2.baseData.damage = 5f;
             projectile2.baseData.speed *= .8f;
             projectile2.baseData.range = 60;
             ProjectileSplitController split = projectile2.gameObject.GetOrAddComponent<ProjectileSplitController>();
@@ -286,7 +286,7 @@ namespace Knives
                     useDefaultExplosion = false,
                     doDamage = true,
                     forceUseThisRadius = false,
-                    damageRadius = 3f,
+                    damageRadius = 3.5f,
                     damageToPlayer = 0,
                     damage = 14f,
                     breakSecretWalls = false,
@@ -422,7 +422,7 @@ namespace Knives
                     useDefaultExplosion = false,
                     doDamage = true,
                     forceUseThisRadius = false,
-                    damageRadius = 3f,
+                    damageRadius = 3.5f,
                     damageToPlayer = 0,
                     damage = 14f,
                     breakSecretWalls = false,

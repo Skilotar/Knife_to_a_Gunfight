@@ -83,7 +83,7 @@ namespace Knives
         public override DebrisObject Drop(PlayerController player)
         {
             player.inventory.OnGunChanged -= Inventory_OnGunChanged;
-           
+            player.healthHaver.OnDamaged -= HealthHaver_OnDamaged;
             return base.Drop(player);
         }
         public AIActor Vengance = null;

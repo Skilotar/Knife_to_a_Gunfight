@@ -32,7 +32,7 @@ namespace Knives
                 "\n\n\n - Knife_to_a_Gunfight");
             gun.SetupSprite(null, "SuperStar_idle_001", 1);
             gun.SetAnimationFPS(gun.shootAnimation, 9);
-            gun.SetAnimationFPS(gun.reloadAnimation, 5);
+            gun.SetAnimationFPS(gun.reloadAnimation, 6);
             gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
 
             for (int i = 0; i < 5; i++)
@@ -58,6 +58,8 @@ namespace Knives
                 UnityEngine.Object.DontDestroyOnLoad(projectile);
                 
                 gun.DefaultModule.ammoType = GameUIAmmoType.AmmoType.BLUE_SHOTGUN;
+
+
                 gun.DefaultModule.projectiles[0] = projectile;
                 bool flag = projectileModule != gun.DefaultModule;
                 if (flag)
@@ -72,8 +74,8 @@ namespace Knives
             gun.muzzleFlashEffects = (PickupObjectDatabase.GetById(157) as Gun).muzzleFlashEffects;
             gun.quality = PickupObject.ItemQuality.B;
             gun.gunClass = GunClass.SHOTGUN;
+            gun.carryPixelOffset = new IntVector2(6, 0);
 
-            
             Projectile shell = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             shell.gameObject.SetActive(false);
             FakePrefab.MarkAsFakePrefab(shell.gameObject);
@@ -84,6 +86,12 @@ namespace Knives
             gun.DefaultModule.finalProjectile = shell;
             shell.SetProjectileSpriteRight("Shell", 10, 4, false, tk2dBaseSprite.Anchor.MiddleCenter, 10, 4);
             Shell_g = shell;
+
+            GunGradualReload reload = gun.gameObject.GetOrAddComponent<GunGradualReload>();
+            
+            reload.reloadnumber = 1; // number of shells to load at a time
+            reload.additionalAudioEventsPerReload.Add("Play_WPN_elephantgun_reload_01");
+            reload.reloadEndSound = "Play_WPN_shotgun_reload";
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
@@ -150,7 +158,7 @@ namespace Knives
 
                 }
 
-                
+                /*
                 if (this.gun.IsReloading && Key(GungeonActions.GungeonActionType.Shoot, this.gun.CurrentOwner as PlayerController) && this.gun.ClipShotsRemaining > 0)
                 {
                     LoneCount = gun.ClipShotsRemaining;
@@ -158,7 +166,7 @@ namespace Knives
                     gun.ClipShotsRemaining = LoneCount;
                 }
                 
-                if(gun.ClipShotsRemaining <=0 && Key(GungeonActions.GungeonActionType.Shoot, this.gun.CurrentOwner as PlayerController))
+                if(gun.ClipShotsRemaining <= 0 && Key(GungeonActions.GungeonActionType.Shoot, this.gun.CurrentOwner as PlayerController))
                 {
                     PlayerController player = this.gun.CurrentOwner as PlayerController;
                     this.gun.ClipShotsRemaining = 0;
@@ -193,7 +201,7 @@ namespace Knives
 
                 }
 
-               
+               */
 
 
             }
@@ -209,7 +217,7 @@ namespace Knives
                 HasReloaded = false;
                 base.OnReload(player, gun);
                 
-                StartCoroutine(gradualReload());
+                //StartCoroutine(gradualReload());
                 
                 
             }

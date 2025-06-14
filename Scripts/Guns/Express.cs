@@ -22,7 +22,7 @@ namespace Knives
         {
             // Get yourself a new gun "base" first.
             // Let's just call it "Basic Gun", and use "jpxfrd" for all sprites and as "codename" All sprites must begin with the same word as the codename. For example, your firing sprite would be named "jpxfrd_fire_001".
-            Gun gun = ETGMod.Databases.Items.NewGun("Nitra_Express", "Express");
+            Gun gun = ETGMod.Databases.Items.NewGun("Nitra Express", "Express");
             // "kp:basic_gun determines how you spawn in your gun through the console. You can change this command to whatever you want, as long as it follows the "name:itemname" template.
             Game.Items.Rename("outdated_gun_mods:nitra_express", "ski:nitra_express");
             gun.gameObject.AddComponent<Express>();
@@ -73,17 +73,21 @@ namespace Knives
             projectile.baseData.damage = 30f;
             projectile.baseData.speed *= .8f;
             projectile.baseData.range = 60;
+            projectile.gameObject.GetOrAddComponent<projectileStates>().ExpressProj = true;
             gun.muzzleFlashEffects = new VFXPool { type = VFXPoolType.None, effects = new VFXComplex[0] };
             gun.UsesCustomCost = true;
             gun.CustomCost = 100;
             PierceProjModifier proj = projectile.gameObject.GetOrAddComponent<PierceProjModifier>();
             proj.penetratesBreakables = true;
             proj.penetration = 2;
-            projectile.gameObject.GetOrAddComponent<ExplosiveTrailProjMod>();
+            TrailProjMod trail = projectile.gameObject.GetOrAddComponent<TrailProjMod>();
+            trail.Explosive = true;
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
             ID = gun.PickupObjectId;
+            MainProj = projectile;
         }
+        public static Projectile MainProj;
         public static int ID;
 
         public override void OnPostFired(PlayerController player, Gun gun)
@@ -94,6 +98,13 @@ namespace Knives
         public override void PostProcessProjectile(Projectile projectile)
         {
             
+            if((this.gun.CurrentOwner as PlayerController).PlayerHasActiveSynergy("Double Expresso"))
+            {
+                if(projectile.gameObject.GetOrAddComponent<projectileStates>().ExpressProj == true)
+                {
+                    MiscToolMethods.SpawnProjAtPosi(MainProj, gun.barrelOffset.transform.position, (this.gun.CurrentOwner as PlayerController), gun, UnityEngine.Random.Range(-15, 15f));
+                }
+            }
             AkSoundEngine.PostEvent("Play_WPN_elephantgun_shot_01", base.gameObject);
             //StartCoroutine(Slight_delay());
            

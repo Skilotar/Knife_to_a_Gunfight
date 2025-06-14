@@ -67,10 +67,10 @@ namespace Knives
 
                         if (type == CharmBeamJankComp.CharmType.Clock)
                         {
-                           
                             ReverseSpeedRampMod ramp = m_projectile.gameObject.GetOrAddComponent<ReverseSpeedRampMod>();
                             ramp.isCharm = true;
                             ramp.doeffects = false;
+                            ramp.isBeam = true;
                         }
                     }
                 }
@@ -208,10 +208,12 @@ namespace Knives
                         {
                             Projectile yari = ((Gun)PickupObjectDatabase.GetById(16)).DefaultModule.projectiles[0].projectile;
                             Projectile whammy = MiscToolMethods.SpawnProjAtPosi(yari, this.player.CurrentGun.barrelOffset.transform.position, player, this.player.CurrentGun, 40);
-                            whammy.baseData.damage *= .5f;
+                            whammy.baseData.damage = 1f;
                             whammy.AdditionalScaleMultiplier *= .8f;
                             whammy.DefaultTintColor = ExtendedColours.lime;
                             whammy.HasDefaultTint = true;
+                            ExplosiveModifier boom = whammy.gameObject.GetOrAddComponent<ExplosiveModifier>();
+                            boom.explosionData.damage = 5f;
 
                             internalCooldown = .25f;
                             hitsToProc = 25;
@@ -264,7 +266,7 @@ namespace Knives
                             DeadlyDeadlyGoopManager goopManagerForGoopType = DeadlyDeadlyGoopManager.GetGoopManagerForGoopType(EasyGoopDefinitions.BlobulonGoopDef);
                             goopManagerForGoopType.TimedAddGoopCircle(arg2.aiActor.sprite.WorldCenter, 3f, 1f, false);
 
-                           
+
                             hitsToProc = 15;
                         }
                         else
@@ -321,7 +323,7 @@ namespace Knives
                     {
                         if (hitsToProc <= 0)
                         {
-                            if(type == CharmBeamJankComp.CharmType.Target)
+                            if (type == CharmBeamJankComp.CharmType.Target)
                             {
                                 arg2.aiActor.healthHaver.ApplyDamage(20, Vector2.zero, "Lucky?");
                             }
@@ -329,7 +331,7 @@ namespace Knives
                             {
                                 arg2.aiActor.healthHaver.ApplyDamage(30, Vector2.zero, "Lucky?");
                             }
-                            
+
                             AkSoundEngine.PostEvent("Play_Neon_critical", base.gameObject);
                             AkSoundEngine.PostEvent("Play_Neon_critical", base.gameObject);
                             arg2.aiActor.PlayEffectOnActor(EasyVFXDatabase.SmallMagicPuffVFX, new Vector3(0, 0, 0));
@@ -369,10 +371,159 @@ namespace Knives
                     {
 
                     }
+
+                    if (type == CharmBeamJankComp.CharmType.Bomb)
+                    {
+                        if (hitsToProc <= 0)
+                        {
+
+                            BlastBlightedStatusController boom = arg2.aiActor.gameObject.GetOrAddComponent<BlastBlightedStatusController>();
+                            boom.statused = true;
+
+                            internalCooldown = 1f;
+                            hitsToProc = 200;
+                        }
+                        else
+                        {
+                            hitsToProc--;
+                        }
+                    }
+
+                    if (type == CharmBeamJankComp.CharmType.Sushi)
+                    {
+                        if (hitsToProc <= 0)
+                        {
+                            MiscToolMethods.SpawnProjAtPosi(((Gun)PickupObjectDatabase.GetById(7)).DefaultModule.projectiles[0], arg2.specRigidbody.UnitCenter, player, UnityEngine.Random.Range(0, 360), 0, 1, false); ;
+
+                            internalCooldown = 1f;
+                            hitsToProc = 60;
+                        }
+                        else
+                        {
+                            hitsToProc--;
+                        }
+                    }
+                    if (type == CharmBeamJankComp.CharmType.Chicken)
+                    {
+                        if (arg3 == true)
+                        {
+                            for (int i = 0; i <= 2; i++)
+                            {
+                                GameObject MicroCuccoPrefab = EnemyDatabase.GetOrLoadByGuid(PickupObjectDatabase.GetById(572).GetComponent<CompanionItem>().CompanionGuid).GetComponent<CuccoController>().MicroCuccoPrefab;
+                                Vector2 vector = GameManager.Instance.MainCameraController.transform.position.XY() + UnityEngine.Random.insideUnitCircle.normalized * GameManager.Instance.MainCameraController.Camera.orthographicSize * 2f;
+                                GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MicroCuccoPrefab, vector, Quaternion.identity);
+                                MicroCuccoController birdup = gameObject.GetComponent<MicroCuccoController>();
+                                birdup.Initialize(player);
+                                birdup.Speed *= 1.5f;
+                                birdup.Damage = 6;
+                            }
+
+                        }
+                    }
+                    if (type == CharmBeamJankComp.CharmType.Dawn)
+                    {
+                        arg2.aiActor.UnbecomeBlackPhantom();
+                    }
+                    if (type == CharmBeamJankComp.CharmType.Chaos)
+                    {
+                        if (hitsToProc <= 0)
+                        {
+                            
+                            int RNG = (int)UnityEngine.Random.Range(0, 13);
+                            switch (RNG)
+                            {
+                                case 0: // Fire
+                                    arg2.aiActor.ApplyEffect(StaticStatusEffects.hotLeadEffect);
+                                    break;
+                                case 1:// Shroom
+                                    arg2.aiActor.ApplyEffect(StaticStatusEffects.irradiatedLeadEffect);
+                                    break;
+                                case 2:// ice
+                                    arg2.aiActor.ApplyEffect(StaticStatusEffects.frostBulletsEffect, .5f);
+                                    break;
+                                case 3: // Slime
+                                    arg2.aiActor.ApplyEffect(StaticStatusEffects.tripleCrossbowSlowEffect);
+                                    break;
+                                case 4: // Ducky
+                                    AkSoundEngine.PostEvent("Play_Ducky", base.gameObject);
+                                    DeadlyDeadlyGoopManager goopManagerForGoopType = DeadlyDeadlyGoopManager.GetGoopManagerForGoopType(EasyGoopDefinitions.WaterGoop);
+                                    goopManagerForGoopType.TimedAddGoopCircle(arg2.UnitCenter, 1f, 2f, false);
+                                    Projectile ducky = MiscToolMethods.SpawnProjAtPosi(RubberCharm.ducky, arg2.specRigidbody.UnitCenter, player, UnityEngine.Random.Range(0, 360));
+                                    BounceProjModifier bnc = ducky.gameObject.GetOrAddComponent<BounceProjModifier>();
+                                    bnc.bouncesTrackEnemies = true;
+                                    bnc.bounceTrackRadius = 40;
+                                    bnc.TrackEnemyChance = 100;
+                                    break;
+                                case 5: // Chicken
+                                    GameObject MicroCuccoPrefab = EnemyDatabase.GetOrLoadByGuid(PickupObjectDatabase.GetById(572).GetComponent<CompanionItem>().CompanionGuid).GetComponent<CuccoController>().MicroCuccoPrefab;
+                                    Vector2 vector = GameManager.Instance.MainCameraController.transform.position.XY() + UnityEngine.Random.insideUnitCircle.normalized * GameManager.Instance.MainCameraController.Camera.orthographicSize * 2f;
+                                    GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MicroCuccoPrefab, vector, Quaternion.identity);
+                                    MicroCuccoController birdup = gameObject.GetComponent<MicroCuccoController>();
+                                    birdup.Initialize(player);
+                                    birdup.Speed *= 1.5f;
+                                    birdup.Damage = 6;
+                                    break;
+                                case 6: // Sushi
+                                    MiscToolMethods.SpawnProjAtPosi(((Gun)PickupObjectDatabase.GetById(7)).DefaultModule.projectiles[0], arg2.specRigidbody.UnitCenter, player, UnityEngine.Random.Range(0, 360), 0, 1, false); ;
+                                    break;
+                                case 7: // clock
+                                    ReverseSpeedRampMod ramp = arg1.gameObject.GetOrAddComponent<ReverseSpeedRampMod>();
+                                    ramp.isCharm = true;
+                                    ramp.doeffects = false;
+                                    ramp.isBeam = true;
+                                    break;
+                                case 8: // mouse
+                                    RatCrown.SpawnRat(this.player, arg2.aiActor.sprite.WorldCenter);
+                                    break;
+                                case 9: // gnome
+                                    arg1.baseData.damage *= 1.15f;
+                                    break;
+                                case 10: // missile
+                                    Projectile yari = ((Gun)PickupObjectDatabase.GetById(16)).DefaultModule.projectiles[0].projectile;
+                                    Projectile whammy = MiscToolMethods.SpawnProjAtPosi(yari, this.player.CurrentGun.barrelOffset.transform.position, player, this.player.CurrentGun, 40);
+                                    whammy.baseData.damage = 1f;
+                                    whammy.AdditionalScaleMultiplier *= .8f;
+                                    whammy.DefaultTintColor = ExtendedColours.lime;
+                                    whammy.HasDefaultTint = true;
+                                    ExplosiveModifier boom = whammy.gameObject.GetOrAddComponent<ExplosiveModifier>();
+                                    boom.explosionData.damage = 5f;
+                                    break;
+                                case 11: // Burst
+                                    for (int i = 0; i < 6; i++)
+                                    {
+                                        Projectile pop1 = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, arg2.UnitCenter, player, player.CurrentGun.CurrentAngle + (i * 60));
+                                        pop1.HasDefaultTint = true;
+                                        pop1.DefaultTintColor = ExtendedColours.vibrantOrange;
+                                        PierceProjModifier poke = pop1.gameObject.GetOrAddComponent<PierceProjModifier>();
+                                        poke.penetration++;
+                                        pop1.OnHitEnemy += popcollide;
+                                        effected = arg2.aiActor;
+                                    }
+                                    break;
+                                case 12: // knife
+                                    Projectile swipe = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, arg2.UnitCenter, player, player.CurrentGun.CurrentAngle);
+                                    ProjectileSlashingBehaviour stabby = swipe.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
+                                    stabby.playerKnockback = 0;
+                                    stabby.DestroyBaseAfterFirstSlash = true;
+                                    stabby.SlashDamageUsesBaseProjectileDamage = false;
+                                    stabby.SlashDamage = Mathf.CeilToInt(arg1.baseData.damage * .2f);
+                                    stabby.InteractMode = SlashDoer.ProjInteractMode.IGNORE;
+                                    stabby.SlashVFX = (PickupObjectDatabase.GetById(335) as Gun).muzzleFlashEffects;
+                                    break;
+                            }
+                            internalCooldown = 1f;
+                            hitsToProc = 75;
+                        }
+                        else
+                        {
+                            hitsToProc--;
+                        }
+                    }
                 }
             }
         }
-
+       
+					
         public void DoSafeExplosion(Vector3 position)
         {
 
@@ -443,6 +594,11 @@ namespace Knives
             Meat,
             Slime,
             Radioactive,
+            Bomb,
+            Sushi,
+            Chicken,
+            Dawn,
+            Chaos,
             None,
         }
     }

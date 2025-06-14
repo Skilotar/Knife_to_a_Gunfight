@@ -17,6 +17,7 @@ namespace Knives
         public static GoopDefinition PlayerFriendlyWebGoop;
         public static GoopDefinition WebGoop;
         public static GoopDefinition WaterGoop;
+        public static GoopDefinition SludgeGoop;
         public static GoopDefinition CharmGoopDef = PickupObjectDatabase.GetById(310)?.GetComponent<WingsItem>()?.RollGoop;
         public static GoopDefinition GreenFireDef = (PickupObjectDatabase.GetById(698) as Gun).DefaultModule.projectiles[0].GetComponent<GoopModifier>().goopDefinition;
         public static GoopDefinition CheeseDef = (PickupObjectDatabase.GetById(808) as Gun).DefaultModule.projectiles[0].GetComponent<GoopModifier>().goopDefinition;
@@ -59,7 +60,7 @@ namespace Knives
             midInitWeb.SpeedModifierEffect = StaticStatusEffects.FriendlyWebGoopSpeedMod;
             PlayerFriendlyWebGoop = midInitWeb;
             #endregion
-
+            
             
 
         }

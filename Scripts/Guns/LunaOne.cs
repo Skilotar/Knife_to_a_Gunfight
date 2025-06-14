@@ -38,17 +38,19 @@ namespace Knives
             gun.muzzleFlashEffects.type = VFXPoolType.None;
             ProjectileModule projectileModule = gun.DefaultModule;
 
-            projectileModule.ammoCost = 1;
+            projectileModule.ammoCost = 3;
             projectileModule.shootStyle = ProjectileModule.ShootStyle.Beam;
             projectileModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-            projectileModule.cooldownTime = .10f;
+            projectileModule.cooldownTime = .1f;
             projectileModule.angleVariance = 0f;
-            projectileModule.numberOfShotsInClip = 5;
+            projectileModule.numberOfShotsInClip = 20;
+
+
 
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(projectileModule.projectiles[0]);
             projectile.gameObject.SetActive(false);
             projectileModule.projectiles[0] = projectile;
-            projectile.baseData.damage *= .40f;
+            projectile.baseData.damage *= 1f;
             projectile.baseData.range = 20f;
             
             projectile.baseData.force = 0;
@@ -90,19 +92,35 @@ namespace Knives
             OrbProjectile.gameObject.SetActive(false);
             Alexandria.ItemAPI.FakePrefab.MarkAsFakePrefab(OrbProjectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(OrbProjectile);
-            OrbProjectile.baseData.damage = 5f;
-            OrbProjectile.baseData.range *= 1f;
+            OrbProjectile.baseData.damage = 0f;
+            OrbProjectile.baseData.range *= 1.3f;
             OrbProjectile.baseData.speed *= 1.5f;
+
+            Projectile projectile3 = UnityEngine.Object.Instantiate<Projectile>(projectileModule.projectiles[0]);
+            Alexandria.ItemAPI.FakePrefab.MarkAsFakePrefab(projectile3.gameObject);
+            UnityEngine.Object.DontDestroyOnLoad(projectile3);
+            projectile3.gameObject.SetActive(false);
+            projectile3.baseData.damage *= 1.3f;
+            projectile3.baseData.range = 20f;
+            BasicBeamController beam3 = projectile3.GetComponentInChildren<BasicBeamController>();
+            if (!beam3.IsReflectedBeam)
+            {
+                beam3.reflections = 0;
+            }
+            beam3.penetration = 2;
+            sataliteBeam = projectile3;
 
             BounceProjModifier bnc = OrbProjectile.gameObject.GetOrAddComponent<BounceProjModifier>();
             bnc.numberOfBounces = 4;
             PierceProjModifier stab = OrbProjectile.gameObject.GetOrAddComponent<PierceProjModifier>();
             stab.penetration = 99;
+            OrbProjectile.pierceMinorBreakables = true;
             SlowingBulletsEffect slow = OrbProjectile.gameObject.GetOrAddComponent<SlowingBulletsEffect>();
             slow.ignoresizescale = true;
             slow.LifeSpan = 20;
             slow.Setmult = .85f;
             ProjToggleBeamMod pew = OrbProjectile.gameObject.GetOrAddComponent<ProjToggleBeamMod>();
+            pew.beam = beam3.projectile;
 
             //HitboxMonitor.DisplayHitbox(OrbProjectile.specRigidbody);
             OrbProjectile.specRigidbody.PixelColliders.Add(new PixelCollider
@@ -123,9 +141,8 @@ namespace Knives
                 ManualRightX = 0,
                 ManualRightY = 0,
             });
+
            
-            
-            
 
             OrbProjectile.transform.parent = gun.barrelOffset;
             OrbProjectile.SetProjectileSpriteRight("PlasmaBall", 15, 15, false, tk2dBaseSprite.Anchor.MiddleCenter, 13, 13);
@@ -134,6 +151,7 @@ namespace Knives
 
             ID = gun.PickupObjectId;
         }
+        public static Projectile sataliteBeam;
         public static int ID;
         public static Projectile orb;
         public bool statchanged = true;
@@ -158,7 +176,7 @@ namespace Knives
 
                 if (M_Borb != null) M_Borb.DieInAir();
                 gun.LoseAmmo(1);
-                gun.ClipShotsRemaining--;
+                gun.ClipShotsRemaining -= 1;
                 M_Borb = MiscToolMethods.SpawnProjAtPosi(orb, this.gun.barrelOffset.transform.position, this.gun.CurrentOwner as PlayerController, this.gun.CurrentAngle);
             }
         }
@@ -193,6 +211,7 @@ namespace Knives
                     gun.spriteAnimator.Play(clip, 0, 10, true);
                 }
                 
+
             }
         }
 

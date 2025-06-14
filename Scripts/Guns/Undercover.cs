@@ -54,14 +54,12 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            //projectile.baseData allows you to modify the base properties of your projectile module.
-            //In our case, our gun uses modified projectiles from the ak-47.
-            //Setting static values for a custom gun's projectile stats prevents them from scaling with player stats and bullet modifiers (damage, shotspeed, knockback)
-            //You have to multiply the value of the original projectile you're using instead so they scale accordingly. For example if the projectile you're using as a base has 10 damage and you want it to be 6 you use this
-            //In our case, our projectile has a base damage of 5.5, so we multiply it by 1.1 so it does 10% more damage from the ak-47.
+            
             projectile.baseData.damage = 0f;
             projectile.baseData.speed *= 1f;
-            projectile.PenetratesInternalWalls = true;
+            //projectile.PenetratesInternalWalls = true;
+
+            projectile.gameObject.GetOrAddComponent<PierceWallsProjMod>();
 
             gun.shellsToLaunchOnFire = 1;
             Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;
@@ -71,7 +69,10 @@ namespace Knives
             gun.gunClass = GunClass.PISTOL;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+
+        public static int ID;
 
 
         public override void OnPostFired(PlayerController player, Gun gun)
@@ -99,7 +100,7 @@ namespace Knives
                     {
                         PlayerController user = this.gun.CurrentOwner as PlayerController;
                         otherbody.healthHaver.IsVulnerable = true;
-                        otherbody.healthHaver.ApplyDamage(7 * user.stats.GetStatValue(PlayerStats.StatType.Damage), Vector2.zero, "Undercover", CoreDamageTypes.None, DamageCategory.Unstoppable, true, null, true);
+                        otherbody.healthHaver.ApplyDamage(6 * user.stats.GetStatValue(PlayerStats.StatType.Damage), Vector2.zero, "Undercover", CoreDamageTypes.None, DamageCategory.Unstoppable, true, null, true);
                     }
                    
                 }

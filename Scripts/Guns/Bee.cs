@@ -37,7 +37,7 @@ namespace Knives
             gun.SetAnimationFPS(gun.reloadAnimation, 18);
             gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
             gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).loopStart = 13;
-
+            
 
             gun.AddProjectileModuleFrom(PickupObjectDatabase.GetById(14) as Gun, true, false);
             // Here we just take the default projectile module and change its settings how we want it to bee.
@@ -59,7 +59,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-
+            
             projectile.baseData.damage = 2f;
             projectile.baseData.speed *= 1f;
             projectile.transform.parent = gun.barrelOffset;

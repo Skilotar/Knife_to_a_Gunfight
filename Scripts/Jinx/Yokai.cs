@@ -24,14 +24,14 @@ namespace Knives
             FingerTrap item = obj.AddComponent<FingerTrap>();
             ItemBuilder.AddSpriteToObject(itemName, resourceName, obj);
             string shortDesc = "Pranked";
-            string longDesc = "The spirit of a mischievous Gunjurer infests this paper finger trap. Once caught the trap will not let go and the ghost will manifest to laugh at you. This Spirit lantern's Bullets will afflict enemies with hex. Creatures afflicted with [Hex] may be damaged upon attacking." +
+            string longDesc = "The spirit of a mischievous gunjurer infests this paper finger trap. Once caught the trap will not let go and the ghost will manifest to laugh at you. This Spirit lantern's Bullets will afflict enemies with hex. Creatures afflicted with [Hex] may be damaged upon attacking." +
                 "\n\n - reload speed + companion" +
                 "\n\n\n  - Knife_to_a_Gunfight";
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
             item.quality = PickupObject.ItemQuality.B;
             item.CompanionGuid = guid;
 
-            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.ReloadSpeed, .45f);
+            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.ReloadSpeed, .4f);
 
             item.CanBeDropped = false;
             item.PersistsOnDeath = true;
@@ -254,6 +254,9 @@ namespace Knives
                     component.Owner = base.m_aiActor;
                     component.Shooter = Owner.specRigidbody;
                     component.collidesWithPlayer = false;
+                    HomingModifier home = component.gameObject.GetOrAddComponent<HomingModifier>();
+                    home.HomingRadius = 20;
+                    home.AngularVelocity = 270;
                     PierceProjModifier stabby = component.gameObject.GetComponent<PierceProjModifier>();
                     stabby.penetration = 0;
                     component.OnHitEnemy += this.onhitenemy;
@@ -261,7 +264,7 @@ namespace Knives
                 }
             }
             this.m_aiActor.MovementSpeed = 7.5f;
-            attackTimer = 4;
+            attackTimer = 3;
         }
 
         private void onhitenemy(Projectile proj, SpeculativeRigidbody hit, bool fatal)

@@ -45,7 +45,7 @@ namespace Knives
             gun.DefaultModule.cooldownTime = .0f;
             gun.gunClass = GunClass.CHARGE;
             gun.DefaultModule.numberOfShotsInClip = 1;
-            gun.SetBaseMaxAmmo(100);
+            gun.SetBaseMaxAmmo(500);
             gun.quality = PickupObject.ItemQuality.A;
 
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
@@ -85,7 +85,11 @@ namespace Knives
             MiscToolMethods.TrimAllGunSprites(gun);
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
+
         }
+
+        public static int ID;
 
         public static Projectile catcher;
         public override void OnDropped()
@@ -147,14 +151,14 @@ namespace Knives
 
         private bool HasReloaded;
         private bool once = true;
-        public Color color = UnityEngine.Color.red;
+        public Color beamcolor = UnityEngine.Color.red;
 
 
         private IEnumerator postShotFlashy()
         {
-            color = UnityEngine.Color.white;
+            beamcolor = UnityEngine.Color.white;
             yield return new WaitForSeconds(.2f);
-            color = UnityEngine.Color.red;
+            beamcolor = UnityEngine.Color.red;
         }
 
         //This block of code allows us to change the reload sounds.
@@ -173,10 +177,10 @@ namespace Knives
                 }
                 if (gun.GetChargeFraction() == 1)
                 {
-
                     if (once)
                     {
                         //Catch collection
+
                         once = false;
                         Projectile proj = MiscToolMethods.SpawnProjAtPosi(catcher, gun.barrelOffset.transform.position, Owner as PlayerController, gun);
                         ProjectileSlashingBehaviour stabby = proj.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
@@ -204,7 +208,7 @@ namespace Knives
                                 if (state.returnList[i] != null)
                                 {
                                     Projectile caught = state.returnList[i];
-                                    caught.baseData.damage = (5 + (40 / (state.returnList.Count))) * (Owner as PlayerController).stats.GetStatModifier(PlayerStats.StatType.Damage);
+                                    caught.baseData.damage = (10 + (30 / (state.returnList.Count))) * (Owner as PlayerController).stats.GetStatModifier(PlayerStats.StatType.Damage);
                                     caught.transform.parent = gun.barrelOffset.transform;
                                     caught.specRigidbody.enabled = false;
                                     caught.specRigidbody.Reinitialize();
@@ -214,12 +218,6 @@ namespace Knives
                         }
                        
                     }
-
-                    if (m_laser2 == null && m_laser1 == null && this.gun.IsReloading == false && (this.Owner as PlayerController).IsDodgeRolling == false && this.gun.ClipShotsRemaining != 0 && postshot != true)
-                    {
-                        StartCoroutine(doFunkyLaserSightGarbage(this.Owner as PlayerController));
-                    }
-
 
                 }
                 else
@@ -249,15 +247,51 @@ namespace Knives
                                         
                                         shoot.UpdateSpeed();
                                         shoot.SendInDirection(vec, true, true);
-                                       
+                                        gun.LoseAmmo(1);
                                     }
                                 }
                             }
                            
                             state.returnList.Clear();
                         }
+                        
                     }
                 }
+
+
+                if (m_laser2 == null && m_laser1 == null && this.gun.IsReloading == false && (this.Owner as PlayerController).IsDodgeRolling == false && this.gun.ClipShotsRemaining != 0 && postshot != true)
+                {
+                    doFunkyLaserSightGarbage(this.Owner as PlayerController);
+                }
+                if (this.gun.IsReloading == false && (this.Owner as PlayerController).IsDodgeRolling == false && this.gun.ClipShotsRemaining != 0 && postshot != true && gun.HasChargedProjectileReady)
+                {
+
+                    ToggleLaserVis(m_laser1, true);
+                    ToggleLaserVis(m_laser2, true);
+                    ToggleLaserVis(m_laser3, true);
+                    ToggleLaserVis(m_laser4, true);
+                    ToggleLaserVis(m_laser5, true);
+                    updateLaser(m_laser1, 30, beamcolor);
+                    updateLaser(m_laser2, -30, beamcolor);
+                    updateLaser(m_laser3, 0, beamcolor);
+                    updateLaser(m_laser4, 15, beamcolor);
+                    updateLaser(m_laser5, -15, beamcolor);
+                }
+                else
+                {
+                    ToggleLaserVis(m_laser1, false);
+                    ToggleLaserVis(m_laser2, false);
+                    ToggleLaserVis(m_laser3, false);
+                    ToggleLaserVis(m_laser4, false);
+                    ToggleLaserVis(m_laser5, false);
+                    updateLaser(m_laser1, 30, beamcolor);
+                    updateLaser(m_laser2, -30, beamcolor);
+                    updateLaser(m_laser3, 0, beamcolor);
+                    updateLaser(m_laser4, 15, beamcolor);
+                    updateLaser(m_laser5, -15, beamcolor);
+                }
+
+
 
             }
 
@@ -266,43 +300,56 @@ namespace Knives
             base.Update();
         }
 
+        private void ToggleLaserVis(GameObject laser, bool v)
+        {
+            if(laser != null)
+            {
+                if(v == true)
+                {
+                    tk2dTiledSprite sprite1 = laser.GetComponent<tk2dTiledSprite>();
+                    sprite1.renderer.enabled = true;
+                }
+                else
+                {
+                    tk2dTiledSprite sprite1 = laser.GetComponent<tk2dTiledSprite>();
+                    sprite1.renderer.enabled = false;
+                }
+                
+            }
+           
+        }
+
+        private void updateLaser(GameObject laser, float ang, Color color)
+        {
+            if(laser != null)
+            {
+                PlayerController player = this.gun.CurrentOwner as PlayerController;
+                laser.transform.rotation = Quaternion.Euler(0, 0, player.CurrentGun.CurrentAngle + ang);
+                laser.transform.position = this.gun.barrelOffset.transform.position;
+                tk2dTiledSprite sprite1 = laser.GetComponent<tk2dTiledSprite>();
+                sprite1.renderer.material.SetColor("_OverrideColor", (Color)color);
+            }
+            
+        }
+
         public GameObject m_laser1;
         public GameObject m_laser2;
         public GameObject m_laser3;
         public GameObject m_laser4;
         public GameObject m_laser5;
 
-        private IEnumerator doFunkyLaserSightGarbage(PlayerController player) // this is trash... 
+        private void doFunkyLaserSightGarbage(PlayerController player)
         {
-
-
-            
-            UnityEngine.GameObject laser1 = RenderLaserSight(gun.barrelOffset.transform.position, 120, 1, player.CurrentGun.CurrentAngle + 30, true, color);
-            
-            UnityEngine.GameObject laser2 = RenderLaserSight(gun.barrelOffset.transform.position, 120, 1, player.CurrentGun.CurrentAngle - 30, true, color);
-
-            UnityEngine.GameObject laser3 = RenderLaserSight(gun.barrelOffset.transform.position, 80, 1, player.CurrentGun.CurrentAngle, true, color);
-            UnityEngine.GameObject laser4 = RenderLaserSight(gun.barrelOffset.transform.position, 50, 1, player.CurrentGun.CurrentAngle + 15, true, color);
-            UnityEngine.GameObject laser5 = RenderLaserSight(gun.barrelOffset.transform.position, 50, 1, player.CurrentGun.CurrentAngle - 15 , true, color);
+            UnityEngine.GameObject laser1 = RenderLaserSight(gun.barrelOffset.transform.position, 120, 1, player.CurrentGun.CurrentAngle + 30, true, beamcolor);
+            UnityEngine.GameObject laser2 = RenderLaserSight(gun.barrelOffset.transform.position, 120, 1, player.CurrentGun.CurrentAngle - 30, true, beamcolor);
+            UnityEngine.GameObject laser3 = RenderLaserSight(gun.barrelOffset.transform.position, 80, 1, player.CurrentGun.CurrentAngle, true, beamcolor);
+            UnityEngine.GameObject laser4 = RenderLaserSight(gun.barrelOffset.transform.position, 50, 1, player.CurrentGun.CurrentAngle + 15, true, beamcolor);
+            UnityEngine.GameObject laser5 = RenderLaserSight(gun.barrelOffset.transform.position, 50, 1, player.CurrentGun.CurrentAngle - 15 , true, beamcolor);
             m_laser1 = laser1;
             m_laser2 = laser2;
             m_laser3 = laser3;
             m_laser4 = laser4;
             m_laser5 = laser5;
-
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-            UnityEngine.GameObject.Destroy(laser1);
-            UnityEngine.GameObject.Destroy(laser2);
-            UnityEngine.GameObject.Destroy(laser3);
-            UnityEngine.GameObject.Destroy(laser4);
-            UnityEngine.GameObject.Destroy(laser5);
-
-            m_laser1 = null;
-            m_laser2 = null;
-            m_laser3 = null;
-            m_laser4 = null;
-            m_laser5 = null;
         }
 
         public static GameObject RenderLaserSight(Vector2 position, float length, float width, float angle, bool alterColour = false, Color? colour = null)

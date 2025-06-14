@@ -89,7 +89,9 @@ namespace Knives
             gun.gunClass = GunClass.RIFLE;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+        public static int ID;
 
         public override void OnPostFired(PlayerController player, Gun gun)
         {

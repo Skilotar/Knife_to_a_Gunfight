@@ -70,7 +70,7 @@ namespace Knives
         public float ExplosionDamage = 5;
         private void OnNewFloorLoad(PlayerController obj)
         {
-            ExplosionDamage = 5 * GameManager.Instance.GetLastLoadedLevelDefinition().enemyHealthMultiplier;
+            ExplosionDamage = 4 * GameManager.Instance.GetLastLoadedLevelDefinition().enemyHealthMultiplier;
         }
 
         private void Player_OnRolledIntoEnemy(PlayerController arg1, AIActor arg2)
@@ -164,10 +164,10 @@ namespace Knives
 
         private ExplosionData smallPlayerSafeExplosion = new ExplosionData
         {
-            damageRadius = 3f,
+            damageRadius = 2.5f,
             damageToPlayer = 0f,
             doDamage = true,
-            damage = 10f,
+            damage = 6f,
             doDestroyProjectiles = false,
             doForce = true,
             debrisForce = 0f,
@@ -227,10 +227,12 @@ namespace Knives
             
         }
 
+       
+
         private IEnumerator ShortInvuln()
         {
             owner.healthHaver.IsVulnerable = false;
-            yield return new WaitForSeconds(.25f);
+            yield return new WaitForSeconds(.2f);
             yield return new WaitForEndOfFrame();
             owner.healthHaver.IsVulnerable = true;
         }
@@ -240,9 +242,22 @@ namespace Knives
         public bool RollActuallyStarted = false;
         public bool Boom = false;
         public bool fallen = false;
+        public bool PlayerHasModdedItem(string itemName)
+        {
+            PickupObject item = Gungeon.Game.Items.GetSafe(itemName);
+            if(item != null) // does this item exist??
+
+            {
+                return base.gameObject.GetComponent<CustomDodgeRoll>().owner.HasPassiveItem(item.PickupObjectId);
+            }
+            else
+            {
+                return false;
+            }
+        }
         public override IEnumerator ContinueDodgeRoll()
         {
-            if(owner.DodgeRollIsBlink == false && owner.WasPausedThisFrame == false && !owner.IsSlidingOverSurface)
+            if(owner.DodgeRollIsBlink == false && owner.WasPausedThisFrame == false && !owner.IsSlidingOverSurface && !PlayerHasModdedItem("ex:bloodied_scarf"))
             {
                 RollDirection = Vector2.zero;
                 AkSoundEngine.PostEvent("Play_Dizzy_RollCharge", base.gameObject);

@@ -192,6 +192,7 @@ namespace GungeonAPI
 				GameObject gameObject2 = ShrineFakePrefab.Clone(gameObject);
 				gameObject2.GetComponent<OldShrineFactory.CustomShrineController>().Copy(customShrineController);
 				gameObject2.name = text;
+				if (icon != null) this.room.associatedMinimapIcon = icon;
 				bool flag5 = this.isBreachShrine;
 				bool flag6 = flag5;
 				if (flag6)
@@ -211,6 +212,7 @@ namespace GungeonAPI
 					{
 						this.room = Alexandria.DungeonAPI.RoomFactory.CreateEmptyRoom(12, 12);
 					}
+					
 					OldShrineFactory.RegisterShrineRoom(gameObject2, this.room, text, this.offset, this.RoomWeight);
 				}
 				OldShrineFactory.builtShrines.Add(text, gameObject2);
@@ -260,6 +262,7 @@ namespace GungeonAPI
 				category = protoroom.category.ToString(),
 				weight = roomweight,
 			};
+			
 			//RoomFactory.RoomData roomData = RoomFactory.ExtractRoomDataFromResource(roomPath);
 			Alexandria.DungeonAPI.RoomFactory.rooms.Add(ID, roomData);
 			Alexandria.DungeonAPI.DungeonHandler.RegisterForShrine(roomData);
@@ -311,6 +314,7 @@ namespace GungeonAPI
 			}
 		}
 
+		public GameObject icon;
 		// Token: 0x0400001C RID: 28
 		public string name;
 
@@ -399,6 +403,11 @@ namespace GungeonAPI
 				base.GetComponent<SimpleInteractable>().OnAccept = this.OnAccept;
 				base.GetComponent<SimpleInteractable>().OnDecline = this.OnDecline;
 				base.GetComponent<SimpleInteractable>().CanUse = this.CanUse;
+				if(icon != null)
+                {
+					ConfigureOnPlacement(base.GetAbsoluteParentRoom());
+
+				}
 			}
 
 			// Token: 0x06000304 RID: 772 RVA: 0x0002207C File Offset: 0x0002027C
@@ -413,6 +422,7 @@ namespace GungeonAPI
 				this.OnAccept = other.OnAccept;
 				this.OnDecline = other.OnDecline;
 				this.CanUse = other.CanUse;
+				this.icon = other.icon;
 			}
 
 			// Token: 0x06000305 RID: 773 RVA: 0x000220F6 File Offset: 0x000202F6
@@ -425,7 +435,15 @@ namespace GungeonAPI
 			// Token: 0x06000306 RID: 774 RVA: 0x00022107 File Offset: 0x00020307
 			public void RegisterMinimapIcon(RoomHandler room)
 			{
-				this.m_instanceMinimapIcon = Minimap.Instance.RegisterRoomIcon(room, (GameObject)BraveResources.Load("Global Prefabs/Minimap_Shrine_Icon", ".prefab"));
+				if(icon != null)
+                {
+					this.m_instanceMinimapIcon = Minimap.Instance.RegisterRoomIcon(room, (GameObject)BraveResources.Load("Global Prefabs/Minimap_Shrine_Icon", ".prefab"));
+				}
+                else
+                {
+					this.m_instanceMinimapIcon = Minimap.Instance.RegisterRoomIcon(room, (GameObject)BraveResources.Load("Global Prefabs/Minimap_Shrine_Icon", ".prefab"));
+				}
+				
 			}
 
 			// Token: 0x06000307 RID: 775 RVA: 0x00022138 File Offset: 0x00020338
@@ -440,6 +458,8 @@ namespace GungeonAPI
 				}
 			}
 
+
+			public GameObject icon = null;
 			// Token: 0x04000155 RID: 341
 			public string ID;
 

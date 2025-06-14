@@ -41,10 +41,10 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
            
             gun.gunClass = GunClass.EXPLOSIVE;
-            gun.reloadTime = 1.5f;
-            gun.DefaultModule.cooldownTime = .7f;
+            gun.reloadTime = 1.3f;
+            gun.DefaultModule.cooldownTime = .6f;
             gun.DefaultModule.numberOfShotsInClip = 1;
-            gun.SetBaseMaxAmmo(60);
+            gun.SetBaseMaxAmmo(80);
             gun.quality = PickupObject.ItemQuality.A;
 
             gun.DefaultModule.ammoType = GameUIAmmoType.AmmoType.CUSTOM;

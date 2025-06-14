@@ -8,6 +8,8 @@ using Dungeonator;
 using ItemAPI;
 using System.Collections;
 using System;
+using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace Knives
 {
@@ -33,8 +35,8 @@ namespace Knives
             //Ammonomicon entry variables
             string shortDesc = "Just Dead Cels";
             string longDesc = "Your body can now stay alive through sheer power of hatred.\n\n" +
+                "Spawns a head that explodes into poison gas when it dies. Shoot or Active use to die." +
                 "" +
-                "First use spawns a head that can cause effects on contact. The second use destroys it." +
                 "\n\n\n - Knife_to_a_Gunfight";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
@@ -56,10 +58,8 @@ namespace Knives
 
 
         public AIActor host;
-        public int CamToggle = 0;
-        public int modifierController = 0;
-        
-
+        public bool CamToggle = false;
+        public bool modifierController = false;
         public override void  DoEffect(PlayerController player)
         {
             
@@ -67,50 +67,146 @@ namespace Knives
             {
                 player.StartCoroutine(ItemBuilder.HandleDuration(this, 10, player, DoActiveEffect));
                 //head
-                IntVector2 aim = Vector2Extensions.ToIntVector2(player.unadjustedAimPoint, VectorConversions.Round);
+                IntVector2 aim = Vector2Extensions.ToIntVector2(player.CenterPosition, VectorConversions.Round);
                 RoomHandler room = GameManager.Instance.Dungeon.data.GetAbsoluteRoomFromPosition(aim);
                 AIActor orLoadByGuid = EnemyDatabase.GetOrLoadByGuid("c2f902b7cbe745efb3db4399927eab34");
-
+                //AIActor orLoadByGuid = EnemyDatabase.GetOrLoadByGuid("cf27dd464a504a428d87a8b2560ad40a");
 
                 AIActor aiActor = AIActor.Spawn(orLoadByGuid.aiActor, player.CenterPosition, room, true, AIActor.AwakenAnimationType.Spawn, true);
-                PhysicsEngine.Instance.RegisterOverlappingGhostCollisionExceptions(aiActor.specRigidbody, null, false);
-                aiActor.CanTargetEnemies = true;
+                //PhysicsEngine.Instance.RegisterOverlappingGhostCollisionExceptions(aiActor.specRigidbody, null, false);
+                aiActor.specRigidbody.OnPreRigidbodyCollision += this.Oncollison;
+                aiActor.CanTargetEnemies = false;
                 aiActor.CanTargetPlayers = false;
                 aiActor.CustomPitDeathHandling += this.custompitdeathhandle;
                 aiActor.IgnoreForRoomClear = true;
                 aiActor.MovementSpeed = 10f;
                 aiActor.CompanionOwner = player;
-               
-
-               
+                aiActor.IsWorthShootingAt = true;
+                aiActor.HitByEnemyBullets = true;
+                
                 aiActor.reinforceType = AIActor.ReinforceType.Instant;
                 aiActor.HandleReinforcementFallIntoRoom(.1f);
+                aiActor.healthHaver.OnPreDeath += HealthHaver_OnPreDeath;
+
                 host = aiActor;
                 vangaurd = true;
                 MindControlEffect mindControl = aiActor.gameObject.GetOrAddComponent<MindControlEffect>();
                 mindControl.owner = player;
 
-               
 
-               
+                if (CheckForMonger(room) != true)
+                {
+                    CameraOverrideTarget cam = aiActor.gameObject.GetOrAddComponent<CameraOverrideTarget>();
+                    cam.startOverrideOnStart = true;
+                }
+                if (!room.HasActiveEnemies(RoomHandler.ActiveEnemyType.All)) return;
+                foreach (AIActor actor in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+                {
+                    if (actor.healthHaver.IsDead == false)
+                    {
+                        actor.OverrideTarget = host.specRigidbody;
+                        SetPrivateType<AIActor>(actor, "m_canTargetEnemies", true);
+                        if (actor.bulletBank != null)
+                        {
+                            actor.bulletBank.OnProjectileCreated += this.OnAiTriedToShoot;
+                        }
+                        if (actor.aiShooter != null)
+                        {
+                            actor.aiShooter.PostProcessProjectile += this.OnAiTriedToShoot;
+                        }
+
+                    }
+                }
 
                 player.IsEthereal = true;
                 player.SetIsStealthed(true, "cause they just are");
-                PassiveItem.IncrementFlag(player, typeof(LiveAmmoItem));
-                if (modifierController == 0)
+                player.healthHaver.IsVulnerable = false;
+                if (modifierController != true)
                 {
                     player.MovementModifiers += this.NoMotionModifier;
                     player.IsStationary = true;
-                    modifierController++;
+                    modifierController = true;
                 }
                 player.CurrentStoneGunTimer = 9999999f;
                 this.LastOwner.stats.RecalculateStats(LastOwner, true);
 
-                CamToggle = 1;
+                CamToggle = true;
               
 
             }
            
+        }
+
+        private void OnAiTriedToShoot(Projectile obj)
+        {
+            obj.specRigidbody.OnPreRigidbodyCollision += this.EnemyProjectile;
+        }
+
+        private void EnemyProjectile(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
+        {
+            if(otherRigidbody.aiActor != null)
+            {
+                if(otherRigidbody.aiActor.EnemyGuid != "c2f902b7cbe745efb3db4399927eab34")
+                {
+                    PhysicsEngine.SkipCollision = true;
+                }
+            }
+            
+        }
+
+        private bool CheckForMonger(RoomHandler room)
+        {
+            if(room != null)
+            {
+                List<AIActor> boi =  room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All);
+                foreach(AIActor actor in boi)
+                {
+                    if (actor.EnemyGuid == "f3b04a067a65492f8b279130323b41f0")
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void Oncollison(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
+        {
+            if(otherRigidbody == this.LastOwner.specRigidbody)
+            {
+                PhysicsEngine.SkipCollision = true;
+            }
+        }
+
+        private void HealthHaver_OnPreDeath(Vector2 obj)
+        {
+            RoomHandler room = this.LastOwner.CurrentRoom;
+            DoSafeExplosion(host.sprite.WorldCenter);
+            for (int i = 0; i < 12; i++)
+            {
+                Projectile poof = MiscToolMethods.SpawnProjAtPosi(CloudInABottle.cloudPoof, host.sprite.WorldCenter, this.LastOwner, 20 * i);
+                poof.PoisonApplyChance = 1;
+                poof.AppliesPoison = true;
+                poof.DefaultTintColor = new Color(0.46f, 0.59f, 0.13f);
+                poof.sprite.color.WithAlpha(0.75f);
+                poof.HasDefaultTint = true;
+            }
+
+            if (!room.HasActiveEnemies(RoomHandler.ActiveEnemyType.All)) return;
+            foreach (AIActor actor in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+            {
+                if(actor != null)
+                {
+                    if (actor.healthHaver.IsDead == false)
+                    {
+                        actor.OverrideTarget = this.LastOwner.specRigidbody;
+                        SetPrivateType<AIActor>(actor, "m_canTargetEnemies", false);
+                    }
+                }
+               
+            }
+
         }
 
         private void custompitdeathhandle(AIActor actor, ref bool suppressDamage)
@@ -120,7 +216,7 @@ namespace Knives
 
             player.MovementModifiers -= this.NoMotionModifier;
             player.IsStationary = false;
-            modifierController = 0;
+            modifierController = false;
             player.IsEthereal = false;
 
             if (host != null)
@@ -132,9 +228,9 @@ namespace Knives
             player.SetIsStealthed(false, "cause they just are");
 
 
-            CamToggle = 0;
-            GameManager.Instance.MainCameraController.StartTrackingPlayer();
-            GameManager.Instance.MainCameraController.SetManualControl(false, true);
+            CamToggle = false;
+            //GameManager.Instance.MainCameraController.StartTrackingPlayer();
+            //GameManager.Instance.MainCameraController.SetManualControl(false, true);
 
 
 
@@ -146,29 +242,21 @@ namespace Knives
 
             if(host != null)
             {
-
-
                 player.CurrentStoneGunTimer = 1f;
-
                 player.MovementModifiers -= this.NoMotionModifier;
                 player.IsStationary = false;
-                modifierController = 0;
+                modifierController = false;
                 player.IsEthereal = false;
-
+                player.healthHaver.IsVulnerable = true;
+                CamToggle = false;
+                player.SetIsStealthed(false, "cause they just are");
                 if (host != null)
                 {
                     host.healthHaver.ApplyDamage(99999, Vector2.zero, "unbound", CoreDamageTypes.Magic, DamageCategory.Unstoppable, true, null, false);
                     host = null;
                 }
-
-                player.SetIsStealthed(false, "cause they just are");
-
-
-                CamToggle = 0;
-                GameManager.Instance.MainCameraController.StartTrackingPlayer();
-                GameManager.Instance.MainCameraController.SetManualControl(false, true);
-
-
+                //GameManager.Instance.MainCameraController.StartTrackingPlayer();
+                //GameManager.Instance.MainCameraController.SetManualControl(false, true);
             }
 
 
@@ -176,22 +264,7 @@ namespace Knives
             base.DoActiveEffect(player);
         }
 
-        public void TargetNumber1(AIActor host, PlayerController user)
-        {
-            if (host != null && user.IsInCombat)
-            {
-                RoomHandler room = user.CurrentRoom;
-                foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
-                {
-                    if (enemy != host && host != null)
-                    {
-                        enemy.OverrideTarget = host.specRigidbody;
-
-                    }
-
-                }
-            }
-        }
+       
         public bool vangaurd = false;
         private void NoMotionModifier(ref Vector2 voluntaryVel, ref Vector2 involuntaryVel)
         {
@@ -211,42 +284,25 @@ namespace Knives
                         this.DoActiveEffect(this.LastOwner);
                     }
 
-                    if (host != null && CamToggle == 1)
+                    if (host != null && CamToggle)
                     {
                         // in head state
-                        CameraController m_camera = GameManager.Instance.MainCameraController;
-                        m_camera.StopTrackingPlayer();
-                        m_camera.SetManualControl(true, false);
-                        m_camera.OverridePosition = host.CenterPosition;
-                        TargetNumber1(host, this.LastOwner);
+                        //CameraController m_camera = GameManager.Instance.MainCameraController;
+                        //m_camera.StopTrackingPlayer();
+                        //m_camera.SetManualControl(true, false);
+                        //m_camera.OverridePosition = host.CenterPosition;
                         RoomHandler room = this.LastOwner.CurrentRoom;
-                        proximity(this.LastOwner);
-                        foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+                        if (host != null)
                         {
-                            System.Random rng = new System.Random();
-                            int chanceToFire = rng.Next(1, 80);
-
-                            if (chanceToFire == 1 && enemy != host)
+                            if (KeyDown(GungeonActions.GungeonActionType.Shoot, (PlayerController)this.LastOwner))
                             {
-                                enemy.aiShooter.ShootAtTarget();
+                                host.healthHaver.ApplyDamage(9999f,Vector2.zero,"you should explode yourself NOW");
                             }
+
+                           
+
                         }
-                        //poison
-                        List<AIActor> activeEnemies = base.LastOwner.CurrentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All);
-                        Vector2 centerPosition = host.specRigidbody.UnitCenter;
-                        foreach (AIActor aiactor in activeEnemies)
-                        {
-                            bool flag3 = Vector2.Distance(aiactor.CenterPosition, centerPosition) < 1.5f && aiactor.healthHaver.GetMaxHealth() > 0f && aiactor != null && aiactor.specRigidbody != null && base.LastOwner != null;
 
-                            if (flag3 && aiactor != host)
-                            {
-                                aiactor.ApplyEffect(Game.Items["irradiated_lead"].GetComponent<BulletStatusEffectItem>().HealthModifierEffect, 4f, null);
-                                aiactor.ApplyEffect(Game.Items["hot_lead"].GetComponent<BulletStatusEffectItem>().HealthModifierEffect, 4f, null);
-                                aiactor.ApplyEffect(Game.Items["battery_bullets"].GetComponent<BulletStatusEffectItem>().HealthModifierEffect, 4f, null);
-
-
-                            }
-                        }
 
                         //Keep superHot watch from breaking everything
 
@@ -261,6 +317,56 @@ namespace Knives
                 CanBeUsed(this.LastOwner);
             }
                 base.Update();
+        }
+
+
+
+        public void DoSafeExplosion(Vector3 position)
+        {
+
+            ExplosionData defaultSmallExplosionData2 = GameManager.Instance.Dungeon.sharedSettingsPrefab.DefaultSmallExplosionData;
+            this.smallPlayerSafeExplosion.effect = defaultSmallExplosionData2.effect;
+            this.smallPlayerSafeExplosion.ignoreList = defaultSmallExplosionData2.ignoreList;
+            this.smallPlayerSafeExplosion.ss = defaultSmallExplosionData2.ss;
+            Exploder.Explode(position, this.smallPlayerSafeExplosion, Vector2.zero, null, false, CoreDamageTypes.None, false);
+           
+
+        }
+
+        private ExplosionData smallPlayerSafeExplosion = new ExplosionData
+        {
+            damageRadius = 4f,
+            damageToPlayer = 0f,
+            doDamage = true,
+            damage = 15f,
+            doDestroyProjectiles = true,
+            doForce = true,
+            debrisForce = 0f,
+            preventPlayerForce = true,
+            explosionDelay = 0f,
+            usesComprehensiveDelay = false,
+            doScreenShake = false,
+            playDefaultSFX = true,
+            breakSecretWalls = true,
+            secretWallsRadius = 3,
+            force = 2,
+            forceUseThisRadius = true,
+
+
+        };
+
+
+        public bool KeyDown(GungeonActions.GungeonActionType action, PlayerController user)
+        {
+            if (!GameManager.Instance.IsLoadingLevel && user != null)
+            {
+                return BraveInput.GetInstanceForPlayer(user.PlayerIDX).ActiveActions.GetActionFromType(action).WasPressed;
+            }
+            else
+            {
+                return false;
+            }
+
         }
         public IEnumerator stophotwatch()
         {
@@ -278,17 +384,7 @@ namespace Knives
         {
             if (user.IsInCombat)
             {
-                if (this.LastOwner.CurrentRoom != null && this.LastOwner.CurrentRoom.HasActiveEnemies(RoomHandler.ActiveEnemyType.All))
-                {
-                    foreach (AIActor aiactor in this.LastOwner.CurrentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
-                    {
-                        if (aiactor != null && aiactor.healthHaver != null && aiactor.healthHaver.IsBoss)
-                        {
-                            return false;
-                        }
-
-                    }
-                }
+                
                 return true;
             }
             else
@@ -296,14 +392,22 @@ namespace Knives
                 return false;
             }
         }
+        private static void SetPrivateType<T>(T obj, string field, bool value)
+        {
+            FieldInfo f = typeof(T).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance);
+            f.SetValue(obj, value);
+        }
+
 
         public Vector2 standing;
         public Vector2 bullet;
         public void proximity(PlayerController player)
         {   // gets and compares distance to every bullet checking id they are witin 1.55 meters and awards stacks
             standing = host.CenterPosition;
-            foreach (var projectile in GetBullets())
+            List<Projectile> bullets = GetBullets(); // I am in pain
+            for (int i = bullets.Count - 1; i >= 0; i--)
             {
+                Projectile projectile = bullets[i];
                 float health = host.healthHaver.GetCurrentHealth();
                 if (health > 0.0)
                 {
@@ -323,27 +427,30 @@ namespace Knives
 
 
         }
-        public List<Projectile> GetBullets()
+        private static List<Projectile> GetBullets()
         {
             List<Projectile> list = new List<Projectile>();
-            var allProjectiles = StaticReferenceManager.AllProjectiles;
+            ReadOnlyCollection<Projectile> allProjectiles = StaticReferenceManager.AllProjectiles;
             for (int i = 0; i < allProjectiles.Count; i++)
             {
                 Projectile projectile = allProjectiles[i];
-                if (projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks)
+                bool flag = projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks;
+                if (flag)
                 {
-                    if (projectile.Owner != null && projectile.Owner != host)
+                    bool flag2 = projectile.Owner != null;
+                    if (flag2)
                     {
-
-
-                        list.Add(projectile);
-
+                        bool flag3 = projectile.isFakeBullet || projectile.Owner is AIActor || (projectile.Shooter != null && projectile.Shooter.aiActor != null) || projectile.ForcePlayerBlankable;
+                        if (flag3)
+                        {
+                            list.Add(projectile);
+                        }
                     }
                 }
             }
             return list;
         }
-       
+
     }
 
 

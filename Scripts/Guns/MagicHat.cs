@@ -78,7 +78,7 @@ namespace Knives
             split.distanceBasedSplit = true;
             split.distanceTillSplit = 1f;
             split.numberofsplits = 0;
-            split.dmgMultAfterSplit = .8f;
+            split.dmgMultAfterSplit = 1f;
             split.amtToSplitTo = 3;
             split.sizeMultAfterSplit = projectile.AdditionalScaleMultiplier * 1.06f;
             split.splitAngles = 45f;

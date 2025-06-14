@@ -60,9 +60,13 @@ namespace Knives
 
             foreach (var projectile in GetBullets())
             {
+                SpawnManager.PoolManager.Remove(projectile.transform);
                 PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 2f, 1f, 4f, 0f);
                 projectile.RemoveBulletScriptControl();
                 projectile.BulletScriptSettings.preventPooling = true;
+                projectile.RemoveBulletScriptControl();
+                projectile.AdjustPlayerProjectileTint(ExtendedColours.honeyYellow, 1);
+
                 projectile.baseData.speed *= 0f;
                 
                 projectile.baseData.damage *= 0.5f;
@@ -108,11 +112,5 @@ namespace Knives
             player.OnUsedBlank -= this.OnUsedBlank;
             return base.Drop(player);
         }
-        public override void OnDestroy()
-        {
-            Owner.OnUsedBlank -= this.OnUsedBlank;
-            base.OnDestroy();
-        }
-
     }
 }

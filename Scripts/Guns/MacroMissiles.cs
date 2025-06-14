@@ -67,11 +67,11 @@ namespace Knives
 
             ExplosiveModifier boom = projectile.gameObject.GetOrAddComponent<ExplosiveModifier>();
             boom.explosionData.damage = 5f;
-            
+            MicroRocket = projectile;
             ReverseSpeedRampMod ram = projectile.gameObject.GetOrAddComponent<ReverseSpeedRampMod>();
             ram.doeffects = false;
             ram.isGun = true;
-
+           
             projectile.transform.parent = gun.barrelOffset;
             gun.gunClass = GunClass.EXPLOSIVE;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
@@ -80,7 +80,7 @@ namespace Knives
         }
 
         public static int ID;
-
+        public static Projectile MicroRocket;
 
         public override void OnPostFired(PlayerController player, Gun gun)
         {

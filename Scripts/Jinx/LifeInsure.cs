@@ -52,8 +52,6 @@ namespace Knives
             player1.healthHaver.OnPreDeath += HealthHaver_OnPreDeath;
             player1.OnNewFloorLoaded += this.OnLoadedFloor;
             base.Pickup(player);
-
-
         }
 
         private void HealthHaver_OnPreDeath(Vector2 obj)
@@ -85,6 +83,7 @@ namespace Knives
         public override DebrisObject Drop(PlayerController player)
         {
 
+            player.healthHaver.OnPreDeath -= HealthHaver_OnPreDeath;
             player.OnNewFloorLoaded -= this.OnLoadedFloor;
             return base.Drop(player);
         }

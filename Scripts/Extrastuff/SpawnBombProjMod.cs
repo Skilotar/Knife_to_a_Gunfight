@@ -53,10 +53,12 @@ namespace Knives
 						component4.PlaceAtPositionByAnchor(vector2, tk2dBaseSprite.Anchor.MiddleCenter);
 					}
 					Vector2 vector3 = parentOwner.unadjustedAimPoint - parentOwner.LockedApproximateSpriteCenter;
-					DebrisObject debrisObject = LootEngine.DropItemWithoutInstantiating(gameObject, this.parentOwner.CurrentGun.barrelOffset.position, vector3, tossforce, false, false, true, false);
+					DebrisObject debis = LootEngine.DropItemWithoutInstantiating(gameObject, this.parentOwner.CurrentGun.barrelOffset.position, vector3, tossforce, false, false, true, false);
+					
+					//debis.decayOnBounce = 0;
+					//debis.bounceCount = 8;
 
-
-                    if (doesSpecialVfx)
+					if (doesSpecialVfx)
                     {
 						PlayBombCustomVFX play = gameObject.GetOrAddComponent<PlayBombCustomVFX>();
 						play.VFX = VFX;

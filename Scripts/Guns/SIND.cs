@@ -28,14 +28,14 @@ namespace Knives
                 "\n- Knife_to_a_Gunfight");
             
             gun.SetupSprite(null, "SIND_idle_001", 4);
-            gun.SetAnimationFPS(gun.shootAnimation, 8);
+            gun.SetAnimationFPS(gun.shootAnimation, 10);
             gun.SetAnimationFPS(gun.reloadAnimation, 24);
-            gun.SetAnimationFPS(gun.chargeAnimation, 6);
+            gun.SetAnimationFPS(gun.chargeAnimation, 5);
 
 
             gun.AddProjectileModuleFrom((PickupObjectDatabase.GetById(180) as Gun), true, true);
             gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.chargeAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
-            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.chargeAnimation).loopStart = 8;
+            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.chargeAnimation).loopStart = 7;
 
             Gun gun2 = (PickupObjectDatabase.GetById(180) as Gun);
             gun.muzzleFlashEffects = gun2.muzzleFlashEffects;
@@ -158,10 +158,61 @@ namespace Knives
 
             AkSoundEngine.PostEvent("Play_WPN_plasmacell_reload_01", base.gameObject);
         }
+
+        public override void OnPickup(GameActor owner)
+        {
+            PlayerController player = (PlayerController)owner;
+            try
+            {
+                base.OnPickup(player);
+                player.GunChanged += this.OnGunChanged;
+            }
+            catch (Exception e)
+            {
+                Tools.Print("Copper OnPickup", "FFFFFF", true);
+                Tools.PrintException(e);
+            }
+            base.OnPickup(owner);
+        }
+
+        private void OnGunChanged(Gun oldGun, Gun newGun, bool arg3)
+        {
+            try
+            {
+                DarknessCalled = false;
+                ETGModMainBehaviour.Instance.gameObject.GetOrAddComponent<CustomDarknessHandler>().FlashlightAngle = 25;
+                CustomDarknessHandler.shouldBeDark.RemoveOverride("SIND");
+
+            }
+            catch (Exception e)
+            {
+                Tools.Print("Copper OnGunChanged", "FFFFFF", true);
+                Tools.PrintException(e);
+            }
+        }
+
+
+        public override void OnPostDrop(GameActor owner)
+        {
+            PlayerController player = (PlayerController)owner;
+            try
+            {
+                player.GunChanged -= this.OnGunChanged;
+                base.OnPostDrop(player);
+            }
+            catch (Exception e)
+            {
+                Tools.Print("Copper OnPostDrop", "FFFFFF", true);
+                Tools.PrintException(e);
+            }
+
+            DarknessCalled = false;
+        }
         public override void OnDropped()
         {
             ETGModMainBehaviour.Instance.gameObject.GetOrAddComponent<CustomDarknessHandler>().FlashlightAngle = 25;
             CustomDarknessHandler.shouldBeDark.RemoveOverride("SIND");
+            DarknessCalled = false;
             base.OnDropped();
         }
 

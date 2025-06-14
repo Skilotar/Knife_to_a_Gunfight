@@ -41,7 +41,8 @@ namespace Knives
                 "Charm weapons increase projectile speed. \n\n" +
                 "Explosive weapons increase reload speed. \n\n" +
                 "" +
-                "\n\n\n - Knife_to_a_Gunfight";
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprite in collab with Lynceus";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!

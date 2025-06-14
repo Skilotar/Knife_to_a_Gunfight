@@ -18,7 +18,7 @@ namespace Knives
         {
             // Get yourself a new gun "base" first.
             // Let's just call it "Basic Gun", and use "jpxfrd" for all sprites and as "codename" All sprites must begin with the same word as the codename. For example, your firing sprite would be named "jpxfrd_fire_001".
-            Gun gun = ETGMod.Databases.Items.NewGun("First Impression", "First");
+            Gun gun = ETGMod.Databases.Items.NewGun("First Impression", "Impress");
             // "kp:basic_gun determines how you spawn in your gun through the console. You can change this command to whatever you want, as long as it follows the "name:itemname" template.
             Game.Items.Rename("outdated_gun_mods:first_impression", "ski:first_impression");
             gun.gameObject.AddComponent<FirstImpression>();
@@ -28,7 +28,7 @@ namespace Knives
                 "\n\n\n - Knife_to_a_Gunfight"); ;
 
 
-            gun.SetupSprite(null, "First_idle_001", 8);
+            gun.SetupSprite(null, "Impress_idle_001", 8);
 
             
             gun.SetAnimationFPS(gun.shootAnimation, 17);
@@ -79,6 +79,8 @@ namespace Knives
             specialsyn = projectile2;
             gun.carryPixelOffset = new IntVector2(0, 2);
             gun.AddCurrentGunStatModifier(PlayerStats.StatType.MovementSpeed, 1.5f, StatModifier.ModifyMethod.ADDITIVE);
+
+            /*
             gun.sprite.usesOverrideMaterial = true;
             Material mat = new Material(EnemyDatabase.GetOrLoadByName("GunNut").sprite.renderer.material);
             mat.SetColor("_EmissiveColor", new Color32(255, 255, 255, 255));
@@ -104,6 +106,8 @@ namespace Knives
             material.SetTexture("_MainTex", sharedMaterials[0].GetTexture("_MainTex"));
             sharedMaterials[sharedMaterials.Length - 1] = material;
             component.sharedMaterials = sharedMaterials;
+            */
+
             projectile.transform.parent = gun.barrelOffset;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
             gun.SetupUnlockOnCustomFlag(CustomDungeonFlags.FIRST_IMPRESS, true);
@@ -133,7 +137,7 @@ namespace Knives
             gun.CanBeDropped = false;
             yield return new WaitForSeconds(1.2f);
             hasAttackedThisCombat = true;
-            gun.CanBeDropped = false;
+            gun.CanBeDropped = true;
             player.inventory.GunLocked.RemoveOverride("Impress_Safe");
             gun.DefaultModule.cooldownTime = .5f;
         }
@@ -175,7 +179,7 @@ namespace Knives
             else
             {
 
-                tk2dSpriteAnimationClip clip = gun.spriteAnimator.GetClipByName("First_critical_fire");
+                tk2dSpriteAnimationClip clip = gun.spriteAnimator.GetClipByName("Impress_critical_fire");
                 gun.spriteAnimator.Play(clip, 0, 10, true);
 
                 projectile.baseData.damage = 50;
@@ -185,17 +189,10 @@ namespace Knives
                 slashy.SlashDimensions = 75;
                 slashy.DoSound = false;
                 slashy.SlashVFX.type = VFXPoolType.None;
-                int sound = rng.Next(1, 3);
-                if(sound == 1)
-                {
-                    AkSoundEngine.PostEvent("Play_impress_fire_Special_001", base.gameObject);
-                    AkSoundEngine.PostEvent("Play_impress_fire_Special_001", base.gameObject);
-                }
-                else
-                {
-                    AkSoundEngine.PostEvent("Play_impress_fire_Special_002", base.gameObject);
-                    AkSoundEngine.PostEvent("Play_impress_fire_Special_002", base.gameObject);
-                }
+                
+                AkSoundEngine.PostEvent("Play_impress_fire_Special_001", base.gameObject);
+                AkSoundEngine.PostEvent("Play_impress_fire_Special_001", base.gameObject);
+                
                 if ((this.Owner as PlayerController).PlayerHasActiveSynergy("Strike First"))
                 {
 

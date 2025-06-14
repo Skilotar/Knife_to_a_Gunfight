@@ -101,7 +101,7 @@ namespace Knives
 
         }
         public static int ID;
-
+        public static PlayerController lastowner;
 
         public override void PostProcessProjectile(Projectile projectile)
         {
@@ -133,6 +133,7 @@ namespace Knives
                 {
                     (this.gun.CurrentOwner as PlayerController).healthHaver.OnDamaged += HealthHaver_OnDamaged;
                     setup = true;
+                    lastowner = (this.gun.CurrentOwner as PlayerController);
                 }
 
               
@@ -142,38 +143,37 @@ namespace Knives
             base.Update();
         }
 
-        private bool CheckIfCharmed(AIActor boi)
-        {
-            
-            GameActorEffect effect = boi.GetEffect(StaticStatusEffects.charmingRoundsEffect.effectIdentifier); // uses effect Identifier    // Hey Future me. DONT use the resistnaceType on the get effect method. it don't work fam.
-            if (effect != null)
-            {
-                //ETGModConsole.Log(effect.effectIdentifier.ToString());
-                return true;
-            }
-            else
-            {
-                //ETGModConsole.Log("Null effect");
-                return false;
-            }
-
-
-
-        }
-
+        
         private void HealthHaver_OnDamaged(float resultValue, float maxValue, CoreDamageTypes damageTypes, DamageCategory damageCategory, Vector2 damageDirection)
         {
             if(resultValue > 0)
             {
-                if((this.gun.CurrentOwner as PlayerController).CurrentGun == this.gun)
+                if(lastowner != null)
                 {
-                    this.gun.LoseAmmo(40);
-                    AkSoundEngine.PostEvent("Play_OBJ_pot_shatter_01",base.gameObject);
-                    if(this.gun.CurrentAmmo == 0)
+                    if (lastowner.HasPickupID(Pot.ID))
                     {
-                        this.gun.spriteAnimator.Play("BeamOS_empty");
+                        if (lastowner.CurrentGun == this.gun)
+                        {
+                            this.gun.LoseAmmo(40);
+                            AkSoundEngine.PostEvent("Play_OBJ_pot_shatter_01", base.gameObject);
+                            if (this.gun.CurrentAmmo == 0)
+                            {
+                                this.gun.spriteAnimator.Play("BeamOS_empty");
+                            }
+                        }
+                        else
+                        {
+                            lastowner.healthHaver.OnDamaged -= HealthHaver_OnDamaged;
+                            setup = false;
+                        }
+                    }
+                    else
+                    {
+                        lastowner.healthHaver.OnDamaged -= HealthHaver_OnDamaged;
+                        setup = false;
                     }
                 }
+                
             }
         }
 

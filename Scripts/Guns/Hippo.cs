@@ -47,12 +47,12 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             
             gun.GainsRateOfFireAsContinueAttack = true;
-            gun.RateOfFireMultiplierAdditionPerSecond = .4f;
+            gun.RateOfFireMultiplierAdditionPerSecond = .42f;
             
             gun.reloadTime = 1.9f;
             gun.DefaultModule.numberOfShotsInClip = 70;
             gun.DefaultModule.cooldownTime = .22f;
-            gun.SetBaseMaxAmmo(500);
+            gun.SetBaseMaxAmmo(600);
             gun.quality = PickupObject.ItemQuality.C;
             gun.encounterTrackable.EncounterGuid = "Hungry hippo";
 
@@ -71,7 +71,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 3f;
+            projectile.baseData.damage = 3.5f;
             projectile.baseData.speed *= .5f;
             projectile.baseData.range *= 1f;
 

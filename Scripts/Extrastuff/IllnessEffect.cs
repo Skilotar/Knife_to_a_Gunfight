@@ -35,6 +35,7 @@ namespace Knives
 				component.name = GameActorillnessEffect.vfxName;
 				component.PlaceAtPositionByAnchor(actor.sprite.WorldTopCenter, tk2dBaseSprite.Anchor.LowerCenter);
 				component.scale = Vector3.one;
+				actor.healthHaver.AllDamageMultiplier *= 1.4f;
 
 				if (RatCrown.HasSynergy)
 				{

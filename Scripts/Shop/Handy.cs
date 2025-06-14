@@ -47,6 +47,7 @@ namespace Knives
 
             List<int> LootTable = new List<int>()
                 {
+                    
                     // all items sold based off Body parts/ prostetics handy has found.
                     114, //bionic leg
                     213, //trigger finger
@@ -80,6 +81,7 @@ namespace Knives
                     MutantLiver.itemID,//Mutant Liver
                     Second_Brain.ID,//Second Brain
 
+                   
 
                 };
 
@@ -151,7 +153,7 @@ namespace Knives
                         ); 
 
                 PrototypeDungeonRoom Mod_Shop_Room = RoomFactory.BuildFromResource("Knives/Resources/ArmsDealerShop/ArmsDealerShop_bigger.room").room;
-                RegisterShopRoom(HandyObj, Mod_Shop_Room, new UnityEngine.Vector2(7.5f, 5f),1.1f); // 1.1
+                RegisterShopRoom(HandyObj, Mod_Shop_Room, new UnityEngine.Vector2(7.5f, 5f),1.2f); // 1.2
                 
                 HandyGameobject = HandyObj;
 

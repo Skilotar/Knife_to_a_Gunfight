@@ -29,7 +29,9 @@ namespace Knives
 
             //Ammonomicon entry variables
             string shortDesc = "Bad To The Bone";
-            string longDesc = "An ancient pick that oozes tar in an unnatural and unsettling fashion. Deal Large damage back to an enemy that hits you with a projectile. \n\n\n - Knife_to_a_Gunfight";
+            string longDesc = "An ancient pick that oozes tar in an unnatural and unsettling fashion. Deal Large damage back to an enemy that hits you with a projectile." +
+                " \n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprite in collab with Dallan";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -98,6 +100,7 @@ namespace Knives
                             {
                                 //ETGModConsole.Log(1);
                                 pick.owner.healthHaver.ApplyDamage(75, Vector2.zero, "BONED", CoreDamageTypes.Void, DamageCategory.Unstoppable, true, null,false);
+                                projectile.DieInAir();
                             }
                         }
                        

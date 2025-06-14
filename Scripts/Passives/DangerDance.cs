@@ -6,6 +6,7 @@ using UnityEngine;
 using ItemAPI;
 using Brave.BulletScript;
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace Knives
 {
@@ -81,9 +82,10 @@ namespace Knives
 
 
             Vector2 standing = player.CenterPosition;
-            foreach (var projectile in GetBullets())
+            List<Projectile> bullets = GetBullets(); // I am in pain
+            for (int i = bullets.Count - 1; i >= 0; i--)
             {
-               
+                Projectile projectile = bullets[i];
                 if (player.healthHaver.IsAlive)
                 {
                     Vector2 bullet = projectile.LastPosition;
@@ -113,15 +115,18 @@ namespace Knives
         private static List<Projectile> GetBullets()
         {
             List<Projectile> list = new List<Projectile>();
-            var allProjectiles = StaticReferenceManager.AllProjectiles;
+            ReadOnlyCollection<Projectile> allProjectiles = StaticReferenceManager.AllProjectiles;
             for (int i = 0; i < allProjectiles.Count; i++)
             {
                 Projectile projectile = allProjectiles[i];
-                if (projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks)
+                bool flag = projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks;
+                if (flag)
                 {
-                    if (projectile.Owner != null)
+                    bool flag2 = projectile.Owner != null;
+                    if (flag2)
                     {
-                        if (projectile.collidesWithEnemies = false || projectile.isFakeBullet || projectile.Owner is AIActor || (projectile.Shooter != null && projectile.Shooter.aiActor != null) || projectile.ForcePlayerBlankable || projectile.IsBulletScript)
+                        bool flag3 = projectile.isFakeBullet || projectile.Owner is AIActor || (projectile.Shooter != null && projectile.Shooter.aiActor != null) || projectile.ForcePlayerBlankable;
+                        if (flag3)
                         {
                             list.Add(projectile);
                         }
@@ -130,6 +135,7 @@ namespace Knives
             }
             return list;
         }
+
         private void AddStat(PlayerStats.StatType statType, float amount, StatModifier.ModifyMethod method = StatModifier.ModifyMethod.ADDITIVE)
         {
             StatModifier modifier = new StatModifier();

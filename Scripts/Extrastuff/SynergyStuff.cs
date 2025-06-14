@@ -23,7 +23,6 @@ namespace Knives
 			lance.SynergyGunId = Lance2.lncplusID;
 			lance.SynergyToCheck = "Upgraded";
 
-
 			/*
 			FirstImpress_FormController first = PickupObjectDatabase.GetById(FirstImpression.StandardID).gameObject.AddComponent<FirstImpress_FormController>();
 			*/
@@ -41,6 +40,11 @@ namespace Knives
 			advancedTransformGunSynergyProcessor3.NonSynergyGunId = Phalanx.ID;
 			advancedTransformGunSynergyProcessor3.SynergyGunId = Phalanx_syn.ID;
 			advancedTransformGunSynergyProcessor3.SynergyToCheck = "Perfect Form";
+
+			AdvancedTransformGunSynergyProcessor BigArrow = (PickupObjectDatabase.GetById(ShatterBow.ID) as Gun).gameObject.AddComponent<AdvancedTransformGunSynergyProcessor>();
+			BigArrow.NonSynergyGunId = ShatterBow.ID;
+			BigArrow.SynergyGunId = ShatterBow_big.ID;
+			BigArrow.SynergyToCheck = "B.F.S.";
 
 			//Umbra_FormController Umbra = PickupObjectDatabase.GetByEncounterName("Umbra").gameObject.AddComponent<Umbra_FormController>();
 		}

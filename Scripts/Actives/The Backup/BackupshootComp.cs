@@ -143,7 +143,7 @@ namespace Knives
 			doingShooty = false;
 		}
 
-		 private List<AIActor> roomEnemies = new List<AIActor>();
+		private List<AIActor> roomEnemies = new List<AIActor>();
 
 
 		private AIActor GetEnemyTarget()

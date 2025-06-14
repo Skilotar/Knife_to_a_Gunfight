@@ -40,7 +40,8 @@ namespace Knives
                 "A tooth to those he will bestow\n" +
                 "A Frumious Fang, this Gnarled Barb!\n" +
 
-                "\n\n\n - Knife_to_a_Gunfight"); ;
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprites in collab with Dallan"); 
 
 
             gun.SetupSprite(null, "FrumiousFang_idle_001", 8);

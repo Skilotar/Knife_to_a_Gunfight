@@ -89,6 +89,7 @@ namespace Knives
 		{
 			if (wasUsed && user)
 			{
+				user.CurrentStoneGunTimer += .5f;
 				foreach (Gun gun in user.inventory.AllGuns)
 				{
 					if (gun.gameObject.GetComponent<DualWieldForcer>() != null)
@@ -135,7 +136,11 @@ namespace Knives
 			{
 				if(PriorCurrentGun == null)
                 {
-					partnerGun = user.inventory.AllGuns[Random.Range(currentGunIndex + 1, user.inventory.AllGuns.Count)];
+					partnerGun = user.inventory.AllGuns[user.inventory.AllGuns.Count - 1]; // default to last gun in inventory
+					if(partnerGun == user.CurrentGun)
+                    {
+						partnerGun = user.inventory.AllGuns[0];
+					}
 				}
                 else
                 {
@@ -143,6 +148,13 @@ namespace Knives
 				}
 				
 			}
+            if (partnerGun.HasShootStyle(ProjectileModule.ShootStyle.Beam)) // I HATE BEAMS AAAAH HAHAHAHAHA
+            {
+				Gun swapper = partnerGun;
+				partnerGun =  user.CurrentGun;
+				user.ChangeToGunSlot(this.LastOwner.inventory.AllGuns.IndexOf(swapper), true);
+			}
+
 			partnerID = partnerGun.PickupObjectId;
 			
 			if ((Gun)SecGunzFieldInfo.GetValue(user.inventory) != null)
@@ -153,6 +165,7 @@ namespace Knives
 			DualWieldForcer dualWieldForcer = user.CurrentGun.gameObject.AddComponent<DualWieldForcer>();
 			dualWieldForcer.PartnerGunID = partnerID;
 			dualWieldForcer.TargetPlayer = user;
+
 		}
 
 		private void AddStat(PlayerStats.StatType statType, float amount, StatModifier.ModifyMethod method = StatModifier.ModifyMethod.ADDITIVE)
@@ -206,8 +219,9 @@ namespace Knives
 					this.m_isCurrentlyActive = true;
 					
 					this.TargetPlayer.inventory.SetDualWielding(true, "synergy");
-
 					
+
+
 					if (TargetPlayer.inventory.CurrentGun && TargetPlayer.inventory.CurrentSecondaryGun && TargetPlayer.inventory.CurrentGun != TargetPlayer.inventory.CurrentSecondaryGun)
 					{
 						Tools.Print("Dual Gun Error", "ffffff", true);
@@ -277,14 +291,18 @@ namespace Knives
 			}
 		}
 
+		
+
 		private void DisableEffect(bool forceDisable = false)
 		{
 			if (this.m_isCurrentlyActive || forceDisable)
 			{
 				this.m_isCurrentlyActive = false;
+				//this.TargetPlayer.CurrentStoneGunTimer += .5f;
 				//this.TargetPlayer.inventory.GunLocked.RemoveOverride("gunzerking");
 				this.TargetPlayer.inventory.SetDualWielding(false, "synergy");
 				this.TargetPlayer.GunChanged -= this.HandleGunChanged;
+				
 				this.TargetPlayer.stats.RecalculateStats(this.TargetPlayer, false, false);
 				this.TargetPlayer = null;
 			}
@@ -295,7 +313,7 @@ namespace Knives
 			bool result;
 			if (!p)
 			{
-				Console.WriteLine("NULL PLAYER");
+				ETGModConsole.Log("NULL PLAYER");
 				result = false;
 			}
 			else
@@ -304,7 +322,7 @@ namespace Knives
 				bool flag4 = flag3;
 				if (flag4)
 				{
-					Console.WriteLine("CURAMMO 0");
+					ETGModConsole.Log("CURAMMO 0");
 					result = false;
 				}
 				else
@@ -318,14 +336,14 @@ namespace Knives
 						bool flag8 = flag7;
 						if (flag8)
 						{
-							Console.WriteLine("IDX4GUN <0");
+							ETGModConsole.Log("IDX4GUN <0");
 							return false;
 						}
 						bool flag9 = p.inventory.AllGuns[indexForGun].CurrentAmmo == 0;
 						bool flag10 = flag9;
 						if (flag10)
 						{
-							Console.WriteLine("PARTNERAMMO 0");
+							ETGModConsole.Log("PARTNERAMMO 0");
 							return false;
 						}
 					}
@@ -335,7 +353,7 @@ namespace Knives
 						bool flag12 = flag11;
 						if (flag12)
 						{
-							Console.WriteLine("SECONDARYAMMO 0");
+							ETGModConsole.Log("SECONDARYAMMO 0");
 							return false;
 						}
 					}
@@ -373,6 +391,13 @@ namespace Knives
 		private void Update()
 		{
 			this.CheckStatus();
+			if (this.m_isCurrentlyActive)
+			{
+				if (this.gun.IsReloading)
+				{
+					this.TargetPlayer.CurrentSecondaryGun.Reload();
+				}
+			}
 		}
 
 		private void OnDestroy()

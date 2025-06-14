@@ -129,6 +129,8 @@ namespace Knives
 			//do audio 
 			AkSoundEngine.PostEvent("Play_WPN_tiger_growl_01", base.gameObject);
 			AkSoundEngine.PostEvent("Play_WPN_tiger_growl_01", base.gameObject);
+			AkSoundEngine.PostEvent("Play_WPN_tiger_growl_01", base.gameObject);
+
 
 			//do windup
 			GameObject Wind = player.PlayEffectOnActor(EasyVFXDatabase.HexWind, new Vector3(0f, 0f, 0f));

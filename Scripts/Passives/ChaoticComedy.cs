@@ -39,7 +39,7 @@ namespace Knives
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
 
             //Adds the actual passive effect to the item
-           
+            
             item.CanBeDropped = false;
 
             item.IgnoredByRat = true;
@@ -73,9 +73,11 @@ namespace Knives
                     {
                         if (currentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All) != null)
                         {
-                            foreach (AIActor aiactor in currentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+                            List<AIActor> actors = currentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All);
+                            for (int i = actors.Count - 1; i >= 0; i--)
                             {
-                                if (aiactor.healthHaver != null && aiactor.CompanionOwner != this.Owner)
+                                AIActor aiactor = actors[i];
+                                if (aiactor != null && aiactor.healthHaver != null && aiactor.CompanionOwner != this.Owner)
                                 {
 
                                     if (aiactor.healthHaver.IsBoss)//floor boss

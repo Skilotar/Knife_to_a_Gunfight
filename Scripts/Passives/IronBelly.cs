@@ -39,7 +39,8 @@ namespace Knives
                 "The Hegemony of man only installed these units into a few groups. " +
                 "The unit was discontinued as adverse affects of the excess calorical intake lead to health issues."
                  +
-                "\n\n\n -Knife_to_a_Gunfight";
+                "\n\n\n -Knife_to_a_Gunfight" +
+                "\n Sprite in collab with Lynceus";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!

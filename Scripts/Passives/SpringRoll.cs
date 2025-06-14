@@ -48,7 +48,9 @@ namespace Knives
             item.quality = PickupObject.ItemQuality.C;
 
 
+            ID = item.PickupObjectId;
         }
+        public static int ID;
         public override void Pickup(PlayerController player)
         {
             PassiveItem.IncrementFlag(player, typeof(LiveAmmoItem));
@@ -75,7 +77,7 @@ namespace Knives
         public override DebrisObject Drop(PlayerController player)
         {
             player.AdditionalCanDodgeRollWhileFlying.RemoveOverride("Spring");
-            this.Owner.SetIsFlying(false, "spring"); ;
+            player.SetIsFlying(false, "spring"); ;
             player.OnIsRolling -= Player_OnIsRolling;
             player.OnRolledIntoEnemy -= Player_OnRolledIntoEnemy;
             PassiveItem.DecrementFlag(player, typeof(PegasusBootsItem));

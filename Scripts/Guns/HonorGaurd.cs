@@ -82,6 +82,7 @@ namespace Knives
             
             projectileStates state = projectile.gameObject.GetOrAddComponent<projectileStates>();
             state.HonorStab = true;
+
             ProjectileSlashingBehaviour stabby = projectile.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
             stabby.SlashDimensions = 30;
             stabby.SlashDamageUsesBaseProjectileDamage = false;

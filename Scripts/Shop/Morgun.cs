@@ -93,6 +93,11 @@ namespace Knives
                    BuiltDifferent.itemID,
                    PlasmaBuckler.ID,
 
+                   Black_Coffee.itemID,
+                   LunksAdventureGuide.itemID,
+                   TwitchingEye.itemID,
+                   CementShoes.itemID
+
                 };
 
                 JinxLootTable = LootTableTools.CreateLootTable();
@@ -175,7 +180,7 @@ namespace Knives
                             ); ;
 
                 PrototypeDungeonRoom Mod_Shop_Room = RoomFactory.BuildFromResource("Knives/Resources/JinxShop/JinxShop_bigger.room").room;
-                ItsDaFuckinShopApi.RegisterShopRoom(MorgunObj, Mod_Shop_Room, new UnityEngine.Vector2(8f, 5.5f),3.6f); // 3.6
+                ItsDaFuckinShopApi.RegisterShopRoom(MorgunObj, Mod_Shop_Room, new UnityEngine.Vector2(8f, 5.5f),3.2f); // 3.2
                 MorgunGameobject = MorgunObj;
 
             }

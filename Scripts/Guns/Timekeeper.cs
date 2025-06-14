@@ -51,9 +51,9 @@ namespace Knives
             gun.reloadTime = 1f;
             gun.DefaultModule.cooldownTime = .3f;
             gun.DefaultModule.numberOfShotsInClip = 6;
-            gun.SetBaseMaxAmmo(300);
+            gun.SetBaseMaxAmmo(350);
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
-            gun.quality = PickupObject.ItemQuality.B;
+            gun.quality = PickupObject.ItemQuality.A;
             gun.barrelOffset.transform.localPosition = new Vector3(41/16f, 26 / 16f, 0f);
 
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>((PickupObjectDatabase.GetById(15) as Gun).DefaultModule.projectiles[0]);
@@ -85,7 +85,7 @@ namespace Knives
             ProjectileModule.ChargeProjectile item2 = new ProjectileModule.ChargeProjectile
             {
                 Projectile = projectile2,
-                ChargeTime = 1.2f,
+                ChargeTime = 1.15f,
                 
             };
             gun.DefaultModule.chargeProjectiles = new List<ProjectileModule.ChargeProjectile>
@@ -141,15 +141,7 @@ namespace Knives
         {
             if(current != this.gun)
             {
-                PlayerController player = this.gun.CurrentOwner as PlayerController;
-                Pixelator.Instance.SetFreezeFramePower(0, false);
-                this.gun.RemoveStatFromGun(PlayerStats.StatType.MovementSpeed);
-                player.stats.RecalculateStats(player);
 
-                AkSoundEngine.PostEvent("Stop_Timekeep_HighNoon", base.gameObject);
-               
-
-                base.OnGunsChanged(previous, current, newGun);
             }
            
         }
@@ -193,16 +185,22 @@ namespace Knives
                     {
                         if (actor.specRigidbody != null)
                         {
-                            if (OMITBMathsAndLogicExtensions.PositionBetweenRelativeValidAngles(Targets[i].specRigidbody.UnitCenter, player.CurrentGun.barrelOffset.transform.position, gun.CurrentAngle, 35, 80))
+
+
+                            if (OMITBMathsAndLogicExtensions.PositionBetweenRelativeValidAngles(Targets[i].specRigidbody.UnitCenter, player.CurrentGun.barrelOffset.transform.position, gun.CurrentAngle, 60, 120))
                             {
                                 Shootsound();
+                                player.forceAimPoint = actor.CenterPosition;
+                                
                                 Vector2 vector = actor.CenterPosition - (Vector2)this.gun.barrelOffset.transform.position;
                                 float angle = vector.ToAngle();
                                 Projectile Shot = MiscToolMethods.SpawnProjAtPosi((PickupObjectDatabase.GetById(15) as Gun).DefaultModule.projectiles[0], this.gun.barrelOffset.transform.position, player, angle);
                                 Shot.baseData.damage = 10f + (actor.gameObject.GetOrAddComponent<HighNoonTracker>().currentHighNoonStacks);
-                                Shot.baseData.speed *= 2f;
+                                Shot.baseData.speed *= 4f;
                                 Shot.AdditionalScaleMultiplier *= .8f;
                                 Shot.ignoreDamageCaps = true;
+                                Shot.specRigidbody.OnPreRigidbodyCollision += SkipCollide;
+                                Shot.pierceMinorBreakables = true;
                                 ImprovedAfterImage trail = Shot.gameObject.GetOrAddComponent<ImprovedAfterImage>();
                                 trail.shadowLifetime = .3f;
                                 trail.shadowTimeDelay = .0001f;
@@ -211,17 +209,32 @@ namespace Knives
 
                                 gun.spriteAnimator.Play("TimeKeeper_fire");
                                 gun.LoseAmmo(1);
-                                gun.ClipShotsRemaining--;
-                                
-                                yield return new WaitForSeconds(.13f);
+                                gun.LoseAmmo(1);
+
+                                yield return new WaitForSeconds(.1f);
                             }
                         }
                     }
                 }
             }
+            player.forceAimPoint = null;
             gun.reloadTime = 2;
             gun.Reload();
             gun.reloadTime = 1;
+        }
+
+        private void SkipCollide(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
+        {
+            if(otherRigidbody.aiActor != null)
+            {
+                if(otherRigidbody.aiActor.healthHaver != null)
+                {
+                    if (otherRigidbody.aiActor.healthHaver.IsDead)
+                    {
+                        PhysicsEngine.SkipCollision = true;
+                    }
+                }
+            }
         }
 
         public int currentrotate;
@@ -231,12 +244,15 @@ namespace Knives
         {
             if (gun.CurrentOwner)
             {
+
                 PlayerController player = this.gun.CurrentOwner as PlayerController;
                 if(setup == false)
                 {
                     TimeKeeperCleanup buzzbuzz = player.gameObject.GetOrAddComponent<TimeKeeperCleanup>();
                     buzzbuzz.player = player;
                     buzzbuzz.gun = this.gun;
+                    PlayerSepiaHandler sepia = player.gameObject.GetOrAddComponent<PlayerSepiaHandler>();
+
 
                 }
                 if (!gun.PreventNormalFireAudio)
@@ -249,8 +265,9 @@ namespace Knives
 
                 }
                 if (gun.GetChargeFraction() > .1f)
-                { 
-                    Pixelator.Instance.SetFreezeFramePower(gun.GetChargeFraction(), false);
+                {
+                    PlayerSepiaHandler sep = player.GetComponent<PlayerSepiaHandler>();
+                    sep.sepiaLevel = gun.GetChargeFraction();
                     reset = true;
                 }
                 else
@@ -258,23 +275,24 @@ namespace Knives
                     if (reset == true)
                     {
                         reset = false;
-                        Pixelator.Instance.SetFreezeFramePower(0, false);
+                        PlayerSepiaHandler sep = player.GetComponent<PlayerSepiaHandler>();
+                        sep.sepiaLevel = 0;
                     }
                 }
                
                 if (gun.GetChargeFraction() == 1)
                 {
                     gun.SetShortDescription("ITS HIGH NOOON!");
-                   
-                    if(knownTime > 0)
+                    
+                    if(doingNoon == false)
                     {
                         StartCoroutine(doTumble());
                         
                         this.gun.RemoveStatFromGun(PlayerStats.StatType.MovementSpeed);
-                        this.gun.AddStatToGun(PlayerStats.StatType.MovementSpeed, -2.5f,StatModifier.ModifyMethod.ADDITIVE);
+                        this.gun.AddStatToGun(PlayerStats.StatType.MovementSpeed, -2f,StatModifier.ModifyMethod.ADDITIVE);
                         player.stats.RecalculateStats(player);
                         AkSoundEngine.PostEvent("Play_Timekeep_HighNoon", base.gameObject);
-                        knownTime = -1;
+                        doingNoon = true;
                         internaltimer = .2f;
                     }
                     
@@ -293,18 +311,30 @@ namespace Knives
 
                                         if (actor != null)
                                         {
-                                            if (OMITBMathsAndLogicExtensions.PositionBetweenRelativeValidAngles(actor.specRigidbody.UnitCenter, player.CurrentGun.barrelOffset.transform.position, gun.CurrentAngle, 35, 80))
+                                            if (OMITBMathsAndLogicExtensions.PositionBetweenRelativeValidAngles(actor.specRigidbody.UnitCenter, player.CurrentGun.barrelOffset.transform.position, gun.CurrentAngle, 60, 90))
                                             {
 
                                                 HighNoonTracker state = actor.gameObject.GetOrAddComponent<HighNoonTracker>();
                                                 state.currentHighNoonStacks ++;
                                                 
+
+                                                if (state.currentHighNoonStacks >= 30) // 3 seconds 
+                                                {
+                                                    state.currentHighNoonStacks++;
+                                                    state.currentHighNoonStacks++;
+                                                }
+                                                if (state.currentHighNoonStacks >= 60) // 6 seconds
+                                                {
+                                                    state.currentHighNoonStacks++;
+                                                    state.currentHighNoonStacks++;
+                                                } // max charge time of 7
+
                                                 state.player = player;
 
                                             }
                                         }
                                     }
-                                    internaltimer = .075f;
+                                    internaltimer = .1f;
                                 }
                                 
                             }
@@ -314,28 +344,34 @@ namespace Knives
                 }
                 else
                 {
-                    
-                    if (System.DateTime.Now.Minute != knownTime)
+
+                    if (doingNoon == true)
                     {
                         AkSoundEngine.PostEvent("Stop_Timekeep_HighNoon", base.gameObject);
                         this.gun.RemoveStatFromGun(PlayerStats.StatType.MovementSpeed);
                         player.stats.RecalculateStats(player);
-                        UpdateTimeKeep(this.gun);
-                        knownTime = System.DateTime.Now.Minute;
+                        doingNoon = false;
                     }
-
-                    
-
                 }
 
                 if(internaltimer >= 0)
                 {
                     internaltimer -= BraveTime.DeltaTime;
                 }
-
+                
+                if (System.DateTime.Now.Minute != knownTime && GameManager.Instance.IsPaused != true)
+                {
+                    if(this.gun == player.CurrentGun)
+                    {
+                        UpdateTimeKeep(this.gun);
+                        knownTime = System.DateTime.Now.Minute;
+                    }
+                }
+                
             }
 
         }
+        bool doingNoon = false;
 
         private IEnumerator doTumble()
         {
@@ -343,8 +379,8 @@ namespace Knives
             Vector2 dir = this.gun.barrelOffset.transform.position - this.gun.barrelOffset.transform.TransformPoint(0, 5, 0);
             GameObject tumble = UnityEngine.Object.Instantiate<GameObject>(weed.gameObject, this.gun.barrelOffset.transform.TransformPoint(0, 5, 0), Quaternion.identity);
             DebrisObject debrisObject = LootEngine.DropItemWithoutInstantiating(tumble, this.gun.barrelOffset.transform.TransformPoint(0, 5, 0), dir, 7, false, false, true, false);
-            
-            while(bounces > 0)
+            m_tumble = debrisObject;
+            while (bounces > 0)
             {
                 if (GetPrivateType<DebrisObject, bool>(debrisObject, "onGround"))
                 {
@@ -359,7 +395,7 @@ namespace Knives
             yield return null;
         }
 
-       
+        public static DebrisObject m_tumble;
         public List<AIActor> Targets = new List<AIActor>();
         public bool reset = false;
         int knownTime = -1;
@@ -383,6 +419,7 @@ namespace Knives
 
         public static void UpdateTimeKeep(Gun gun)
         {
+            
             bool morning = true;
             int hour = System.DateTime.Now.Hour;
             if (hour > 12)

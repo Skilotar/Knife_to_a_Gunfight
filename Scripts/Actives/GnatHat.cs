@@ -162,12 +162,12 @@ namespace Knives
         {
 
             //if not in or near wall
-
+            if(GameManager.Instance.IsLoadingLevel) return base.CanBeUsed(user) && false;
             RoomHandler room;
             room = GameManager.Instance.Dungeon.data.GetAbsoluteRoomFromPosition(Vector2Extensions.ToIntVector2(user.CenterPosition, VectorConversions.Round));
             CellData cellaim = room.GetNearestCellToPosition(user.CenterPosition);
             CellData cellaimmunis = room.GetNearestCellToPosition(user.CenterPosition - new Vector2(0, 1f));
-            if (cellaim.HasWallNeighbor(true, true) == false && cellaimmunis.HasWallNeighbor(true, true) == false)
+            if (cellaim.HasWallNeighbor(true, true) == false && cellaimmunis.HasWallNeighbor(true, true) == false && !MiscToolMethods.CheckForWalls(user))
             {
                 return base.CanBeUsed(user) && true;
             }

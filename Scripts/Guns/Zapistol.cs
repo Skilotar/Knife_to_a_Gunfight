@@ -59,6 +59,8 @@ namespace Knives
             projectile.baseData.speed = 60;
             projectile.PenetratesInternalWalls = true;
             projectile.AdditionalScaleMultiplier *= .5f;
+            projectile.name = "Mr.Zappy";
+
             PierceProjModifier stabby = projectile.gameObject.GetOrAddComponent<PierceProjModifier>();
             stabby.penetration = 4;
             
@@ -89,13 +91,16 @@ namespace Knives
             gun.gunClass = GunClass.PISTOL;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+        public static int ID;
 
         public override void OnPostFired(PlayerController player, Gun gun)
         {
             AkSoundEngine.PostEvent("Play_ENM_pop_shot_01", base.gameObject);
         }
 
+       
         public override void PostProcessProjectile(Projectile projectile)
         {
            
@@ -108,7 +113,7 @@ namespace Knives
         {
             if (gun.CurrentOwner)
             {
-
+                //((gun.CurrentOwner) as PlayerController).gameObject.GetOrAddComponent<HitManMarkedStatus>();
                 if (!gun.PreventNormalFireAudio)
                 {
                     this.gun.PreventNormalFireAudio = true;
@@ -118,9 +123,6 @@ namespace Knives
                     this.HasReloaded = true;
 
                 }
-
-
-
             }
 
         }

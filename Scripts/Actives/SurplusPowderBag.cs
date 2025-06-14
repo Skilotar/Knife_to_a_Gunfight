@@ -27,7 +27,7 @@ namespace Knives
             //Ammonomicon entry variables
             string shortDesc = "Surplus";
             string longDesc = 
-                "One of many bags of gunpowder purchased from off planet by the gungeoneers. \n\nAfflicts enemies with[BlastBlight].Afflicted enemies will explode after 3 instances of damage or on death. " +
+                "One of many bags of gunpowder purchased from off planet by the gungeoneers. \n\nAfflicts enemies with [BlastBlight]. \n Afflicted enemies will explode after 3 instances of damage or on death. " +
 
                 "\n\n\n - Knife_to_a_Gunfight";
 

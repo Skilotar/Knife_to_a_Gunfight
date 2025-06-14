@@ -29,7 +29,7 @@ namespace Knives
             
             //These two lines determines the description of your gun, ".SetShortDescription" being the description that appears when you pick up the gun and ".SetLongDescription" being the description in the Ammonomicon entry. 
             gun.SetShortDescription("Now With 100% Less Horse");
-            gun.SetLongDescription("\nThis is a terribly worn lance made from metal and dragun peices. It seems to have been forged as an attempt to relive adventures of a diffrent time. However, since this is the gungeon, this lance has been equipt with rocket boosters to avoid Kaliber's curse. \n\n" +
+            gun.SetLongDescription("\nThis is a terribly worn lance made from metal and dragun pieces. It seems to have been forged as an attempt to relive adventures of a different time. However, since this is the gungeon, this lance has been equipped with rocket boosters to avoid Kaliber's curse. \n\n" +
                 "By far the most effective way to use this weapon is to slightly tilt it toward your adversary whilst you charge them." +
                 "\n\n\n - Knife_to_a_Gunfight");
                 
@@ -61,10 +61,11 @@ namespace Knives
             gun.DefaultModule.numberOfShotsInClip = 5000;
             gun.DefaultModule.cooldownTime = .01f;
             gun.muzzleFlashEffects.type = VFXPoolType.None;
-            
+
             gun.quality = PickupObject.ItemQuality.C;
-            //gun.encounterTrackable.EncounterGuid = "Big Pokey STICK!";
             
+            //gun.encounterTrackable.EncounterGuid = "Big Pokey STICK!";
+
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             gun.barrelOffset.transform.localPosition = new Vector3(0f, .5f, 0f);
             projectile.gameObject.SetActive(false);
@@ -103,9 +104,9 @@ namespace Knives
             projectile3.gameObject.SetActive(false);
             FakePrefab.MarkAsFakePrefab(projectile3.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile3);
-            projectile3.baseData.damage = 35f;
+            projectile3.baseData.damage = 25f;
             projectile3.baseData.force *= 0.1f;
-            projectile3.baseData.range = 20f;
+            projectile3.baseData.range = 10f;
             projectile3.baseData.speed *= .8f;
             projectile3.shouldFlipVertically = true;
             projectile3.shouldRotate = true;

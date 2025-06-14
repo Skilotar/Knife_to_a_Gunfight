@@ -24,19 +24,25 @@ namespace Knives
 
         private void Boi_GunChanged(Gun oldgun, Gun newgun, bool arg3)
         {
-            
-			if (newgun.gameObject.GetComponent<GunApplyFlyMod>() != null) // new also has
+            if(Boi != null)
             {
-				Boi.AdditionalCanDodgeRollWhileFlying.SetOverride("Feather", true);
-				Boi.SetIsFlying(true, "FlyModFly");
-			}
-            else // new doesnt has
-            {
-				Boi.AdditionalCanDodgeRollWhileFlying.SetOverride("Feather", false);
-				Boi.SetIsFlying(false, "FlyModFly");
+                if (Boi.inventory.ContainsGun(gun.PickupObjectId))
+                {
+					if (newgun.gameObject.GetComponent<GunApplyFlyMod>() != null) // new also has
+					{
+						Boi.AdditionalCanDodgeRollWhileFlying.SetOverride("Feather", true);
+						Boi.SetIsFlying(true, "FlyModFly");
+					}
+					else // new doesnt has
+					{
+						Boi.AdditionalCanDodgeRollWhileFlying.SetOverride("Feather", false);
+						Boi.SetIsFlying(false, "FlyModFly");
+					}
+				}
+				
 			}
 
-        }
+		}
 
         private void Update()
 		{

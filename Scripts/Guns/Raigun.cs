@@ -44,8 +44,8 @@ namespace Knives
             gun.reloadTime = 0f;
             gun.DefaultModule.cooldownTime = .02f;
             gun.DefaultModule.numberOfShotsInClip = 1800;
-            gun.SetBaseMaxAmmo(1800);
-            gun.ammo = 1800;
+            gun.SetBaseMaxAmmo(2000);
+            gun.ammo = 2000;
 
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.A;
@@ -118,7 +118,10 @@ namespace Knives
             gun.gunClass = GunClass.FULLAUTO;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+        public static int ID;
+
         bool revedup = false;
         System.Random rng = new System.Random();
         protected override void  OnPickup(GameActor owner)

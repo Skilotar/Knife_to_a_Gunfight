@@ -56,8 +56,10 @@ namespace Knives
         public void DoVeryMuchUnsafeExplosion(Vector3 position)
         {
             Hurt(this.LastOwner);
+            this.LastOwner.healthHaver.TriggerInvulnerabilityPeriod(2);
+            SilencerInstance.DestroyBulletsInRange(this.LastOwner.CenterPosition, 60, true, false);
             DoSafeExplosion(position);
-           
+            
             AssetBundle assetBundle = ResourceManager.LoadAssetBundle("shared_auto_001");
             GameObject Nuke = assetBundle.LoadAsset<GameObject>("assets/data/vfx prefabs/impact vfx/vfx_explosion_nuke.prefab");
             GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(Nuke);
@@ -112,7 +114,7 @@ namespace Knives
         }
         public void DoSafeExplosion(Vector3 position)
         {
-
+            
             ExplosionData defaultSmallExplosionData2 = GameManager.Instance.Dungeon.sharedSettingsPrefab.DefaultSmallExplosionData;
             this.smallPlayerSafeExplosion.effect = defaultSmallExplosionData2.effect;
             this.smallPlayerSafeExplosion.ignoreList = defaultSmallExplosionData2.ignoreList;

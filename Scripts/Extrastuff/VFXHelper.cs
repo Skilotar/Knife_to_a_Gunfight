@@ -273,7 +273,7 @@ namespace Knives
             pool.effects = new VFXComplex[] { complex };
             return complex;
         }
-        public static VFXPool CreateVFXPool(string name, List<string> spritePaths, int fps, IntVector2 Dimensions, tk2dBaseSprite.Anchor anchor, bool usesZHeight, float zHeightOffset, bool persist = false, VFXAlignment alignment = VFXAlignment.NormalAligned, float emissivePower = -1, Color? emissiveColour = null, VFXPoolType type = VFXPoolType.All)
+        public static VFXPool CreateVFXPool(string name, List<string> spritePaths, int fps, IntVector2 Dimensions, tk2dBaseSprite.Anchor anchor, bool usesZHeight, float zHeightOffset, bool persist = false, VFXAlignment alignment = VFXAlignment.NormalAligned, float emissivePower = -1, Color? emissiveColour = null, VFXPoolType type = VFXPoolType.All, bool attached = true, bool orphaned = false)
         {
             GameObject Obj = new GameObject(name);
             VFXPool pool = new VFXPool();
@@ -331,7 +331,8 @@ namespace Knives
             }
             animator.playAutomatically = true;
             animator.DefaultClipId = animator.GetClipIdByName("start");
-            vfObj.attached = true;
+            vfObj.orphaned = orphaned;
+            vfObj.attached = attached;
             vfObj.persistsOnDeath = persist;
             vfObj.usesZHeight = usesZHeight;
             vfObj.zHeight = zHeightOffset;

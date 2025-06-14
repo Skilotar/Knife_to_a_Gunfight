@@ -17,40 +17,28 @@ namespace Knives
 		public void Start()
 		{
 			this.AiActor = base.GetComponent<AIActor>();
-			if (AiActor.GetComponent<AIShooter>())
-            {
-				this.shooter = AiActor.GetComponent<AIShooter>();
-				if (shooter.CurrentGun != null && AiActor.healthHaver.IsBoss == false)
-				{
-
-					
-					shooter.ToggleGunAndHandRenderers(false, "Disarmed");
-					shooter.customShootCooldownPeriod = 999;
-					
-
-				}
-                else
-                {
-
-                }
-			}
-			
-			
+			DisarmedStatus.fleeData = new FleePlayerData();
+			DisarmedStatus.fleeData.Player = player;
+			DisarmedStatus.fleeData.StartDistance = 20f;
+          
 		}
 
-		bool toggle = false;
-		
+        
 
-		public void Update()
+        public void Update()
 		{
-            if (toggle)
-            {
-				
-				
-			}
+
+			AiActor.aiShooter.customShootCooldownPeriod = 999999;
+			AiActor.CanTargetPlayers = false;
+			AiActor.CanTargetEnemies = false;
+			AiActor.behaviorSpeculator.FleePlayerData = DisarmedStatus.fleeData;
+			FleePlayerData fleePlayerData = new FleePlayerData();
+
+
 		}
 
-
+		private static FleePlayerData fleeData;
+		public PlayerController player;
 		public BulletScriptSource source;
 		public AIShooter shooter;
 		private AIActor AiActor;

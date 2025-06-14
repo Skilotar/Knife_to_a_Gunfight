@@ -41,7 +41,7 @@ namespace Knives
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
             ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.AdditionalItemCapacity, 1);
-
+            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Timed, 2f);
 
             item.quality = PickupObject.ItemQuality.SPECIAL;
             item.numberOfUses = 1;

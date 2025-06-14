@@ -13,7 +13,7 @@ namespace Knives
         public static void Register()
         {
             //The name of the item
-            string itemName = "Cigarlet";
+            string itemName = "Cigarlet"; // dont smoke kids
 
             //Refers to an embedded png in the project. Make sure to embed your resources! Google it
             string resourceName = "Knives/Resources/Cigarlet";
@@ -48,6 +48,7 @@ namespace Knives
 
         public static int ID;
         int timesused = 0;
+        public static PlayerController KnownOwner;
         private void OnUsedBlank(PlayerController arg1, int arg2)
         {
             timesused++;
@@ -59,6 +60,7 @@ namespace Knives
         {
            
             player.OnUsedBlank += this.OnUsedBlank;
+            KnownOwner = player;
             base.Pickup(player);
         }
         public override DebrisObject Drop(PlayerController player)
@@ -68,7 +70,7 @@ namespace Knives
         }
         public override void OnDestroy()
         {
-            Owner.OnUsedBlank -= this.OnUsedBlank;
+            KnownOwner.OnUsedBlank -= this.OnUsedBlank;
             base.OnDestroy();
         }
 

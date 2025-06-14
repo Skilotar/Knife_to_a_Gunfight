@@ -58,7 +58,7 @@ namespace Knives
 
         public void OnHitEnemy(Projectile proj, SpeculativeRigidbody body, bool yes)
 		{
-			if (TargetProjectile != null)
+			if (TargetProjectile != null || yes)
             {
 				if(body.aiActor != null)
                 {
@@ -66,9 +66,10 @@ namespace Knives
 					{
 						if (!body.aiActor.healthHaver.IsBoss)
 						{
-							body.aiActor.Velocity.Set(0, 0);
+							body.aiActor.knockbackDoer.SetImmobile(true, "FollowUpPush");
 							Vector2 vector = TargetProjectile.sprite.WorldCenter - proj.sprite.WorldCenter;
-							body.aiActor.knockbackDoer.ApplyKnockback(vector, (float)Vector2.Distance(proj.sprite.WorldCenter, TargetProjectile.sprite.WorldCenter) * 8, true);
+							body.aiActor.knockbackDoer.SetImmobile(false, "FollowUpPush");
+							body.aiActor.knockbackDoer.ApplyKnockback(vector, (float)Vector2.Distance(proj.sprite.WorldCenter, TargetProjectile.sprite.WorldCenter) * 15, true);
 						}
 
 					}
@@ -78,7 +79,19 @@ namespace Knives
             }
             else
             {
-				proj.baseData.force = 10;
+				if(body.aiActor != null)
+                {
+					if (body.aiActor.healthHaver != null && body.aiActor.knockbackDoer != null)
+					{
+						if (!body.aiActor.healthHaver.IsBoss)
+						{
+							body.aiActor.knockbackDoer.SetImmobile(true, "FollowUpPush");
+							body.aiActor.knockbackDoer.SetImmobile(false, "FollowUpPush");
+							proj.baseData.force = 50;
+						}
+					}
+				}
+				
             }
 			
 		}

@@ -203,7 +203,10 @@ namespace Knives
                         {
                             dodshoot();
                             dodshoot();
+                            dodshoot();
+                            
                         }
+                        dodshoot();
                         dodshoot();
                     }
                     yield return null;
@@ -221,9 +224,10 @@ namespace Knives
                         {
                             dodshoot();
                             dodshoot();
+                            dodshoot();
                         }
                         dodshoot();
-
+                        dodshoot();
                     }
                     yield return null;
                 }
@@ -263,7 +267,7 @@ namespace Knives
                     stabby.penetration = 0;
                     component.OnHitEnemy += this.onhitenemy;
                     
-                    AkSoundEngine.PostEvent("Play_ENM_blobulord_bubble_01", base.m_gameObject);
+                   
                 }
             }
             this.m_aiActor.MovementSpeed = 7.5f;

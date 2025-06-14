@@ -43,7 +43,7 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.reloadTime = 1.3f;
             gun.DefaultModule.cooldownTime = .3f;
-            gun.DefaultModule.numberOfShotsInClip = 8;
+            gun.DefaultModule.numberOfShotsInClip = 6;
             gun.SetBaseMaxAmmo(250);
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.B;
@@ -56,7 +56,7 @@ namespace Knives
             gun.DefaultModule.projectiles[0] = projectile;
             gun.carryPixelOffset = new IntVector2(6, 0);
             gun.barrelOffset.transform.localPosition = new Vector3(1.2f, .6f, 0f);
-            projectile.baseData.damage = 8f;
+            projectile.baseData.damage = 7f;
             projectile.baseData.speed *= 1.3f;
             projectile.DefaultTintColor = UnityEngine.Color.black;
             projectile.HasDefaultTint = true;
@@ -83,7 +83,12 @@ namespace Knives
                 false, //Uses a Z height off the ground
                 0, //The Z height, if used
                 false,
-               VFXAlignment.Fixed
+               VFXAlignment.Fixed,
+               -1,
+               null,
+               VFXPoolType.All,
+               false,
+               true
                );
 
            
@@ -112,7 +117,15 @@ namespace Knives
             {
                 if(arg2.aiActor.healthHaver != null)
                 {
-                    arg2.aiActor.healthHaver.AllDamageMultiplier = arg2.aiActor.healthHaver.AllDamageMultiplier * 1.05f;
+                    
+                    if (arg2.aiActor.healthHaver.AllDamageMultiplier <= 1.5f)
+                    {
+                        arg2.aiActor.healthHaver.AllDamageMultiplier = arg2.aiActor.healthHaver.AllDamageMultiplier + .015f;
+                    }
+                    else
+                    {
+                        arg2.aiActor.healthHaver.AllDamageMultiplier = 1.5f;
+                    }
                 }
             }
         }

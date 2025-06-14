@@ -95,7 +95,7 @@ namespace Knives
 								actors = MiscToolMethods.RandomNoRepeats(absoluteRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.RoomClear), 1);
 							}
 
-							if (actors[0] != null)
+							if (actors[0] != null && actors.Count > 0)
 							{
 								holder = actors[0];
 								actors.Clear();
@@ -104,7 +104,7 @@ namespace Knives
 									holder.ApplyEffect(HolderDummyEffect);
 									holder.ForceBlackPhantomParticles = true;
 									holder.LocalTimeScale = 1.5f;
-									holder.healthHaver.SetHealthMaximum(holder.healthHaver.GetMaxHealth() * 2);
+									holder.healthHaver.SetHealthMaximum(holder.healthHaver.GetMaxHealth() * 4);
 									holder.healthHaver.OnPreDeath += HealthHaver_OnPreDeath;
 
 									AkSoundEngine.PostEvent("Play_ENM_jammer_curse_01", base.gameObject);
@@ -131,7 +131,7 @@ namespace Knives
 						weightedmax -= 5;
 						if (weightedmax < 4)
 						{
-							weightedmax = 2;
+							weightedmax = 5;
 						}
 					}
 					//ETGModConsole.Log(weightedmax.ToString());

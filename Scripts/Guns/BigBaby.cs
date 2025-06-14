@@ -21,7 +21,8 @@ namespace Knives
             gun.gameObject.AddComponent<BigBaby>();
             gun.SetShortDescription("You Woke Up The Baby");
             gun.SetLongDescription("A massive firey laser shotgun used by an even massive-er man. Fires two shots at once." +
-                "\n\n\n - Knife_to_a_Gunfight");
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprites in collab with Dallan");
 
             gun.SetupSprite(null, "BigBaby_idle_001", 8);
             gun.gunSwitchGroup = (PickupObjectDatabase.GetById(51) as Gun).gunSwitchGroup;
@@ -51,7 +52,9 @@ namespace Knives
                 UnityEngine.Object.DontDestroyOnLoad(projectile);
                 projectile.baseData.damage = 3f;
                 projectile.baseData.speed *= 2f;
+
                 projectile.shouldRotate = true;
+                
                 projectile.SetProjectileSpriteRight("Baby", 15, 9, false, tk2dBaseSprite.Anchor.MiddleCenter, 17, 11);
                 
 
@@ -79,9 +82,25 @@ namespace Knives
         }
         public override void PostProcessProjectile(Projectile projectile)
         {
-            
+            if((this.Owner as PlayerController).PlayerHasActiveSynergy("Hush Big Baby"))
+            {
+                projectile.OnHitEnemy += Sleepytime;
+            }
             base.PostProcessProjectile(projectile);
         }
+
+        private void Sleepytime(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+        {
+            if(arg2.aiActor != null)
+            {
+                if( UnityEngine.Random.Range(0,10f) < 1)
+                {
+                    SleepStatus status = arg2.aiActor.gameObject.GetOrAddComponent<SleepStatus>();
+                    status.statused = true;
+                }
+            }
+        }
+
         public static int ID;
         
     }

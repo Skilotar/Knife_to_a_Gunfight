@@ -68,6 +68,7 @@ namespace Knives
 			projectile.baseData.damage = 5f;
 			projectile.baseData.speed *= .7f;
 			projectile.baseData.range = 20f;
+			projectile.gameObject.GetOrAddComponent<projectileStates>().thumper = true;
 			//ExplosiveModifier boom = projectile.gameObject.GetOrAddComponent<ExplosiveModifier>();
 			//boom.explosionData = smallPlayerSafeExplosion;
 			
@@ -75,43 +76,94 @@ namespace Knives
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
 
 
+			ID = gun.PickupObjectId;
 		}
+		public static int ID;
 
 		public System.Random rand = new System.Random();
 		public override void PostProcessProjectile(Projectile projectile)
 		{
-			pressDetProjModifier press = projectile.gameObject.GetOrAddComponent<pressDetProjModifier>();
-			press.isThumperRocket = true;
-			projectile.OnHitEnemy = (Action<Projectile, SpeculativeRigidbody, bool>)Delegate.Combine(projectile.OnHitEnemy, new Action<Projectile, SpeculativeRigidbody, bool>(OnHitEnemy));
-			//AkSoundEngine.PostEvent("Play_WPN_flare_shot_01", base.gameObject);
+			if(projectile.gameObject.GetOrAddComponent<projectileStates>().thumper == true)
+            {
+				pressDetProjModifier press = projectile.gameObject.GetOrAddComponent<pressDetProjModifier>();
+				press.isThumperRocket = true;
+				projectile.OnHitEnemy = (Action<Projectile, SpeculativeRigidbody, bool>)Delegate.Combine(projectile.OnHitEnemy, new Action<Projectile, SpeculativeRigidbody, bool>(OnHitEnemy));
+				projectile.specRigidbody.OnPreTileCollision += this.OnhitTile;
+				projectile.specRigidbody.OnPreRigidbodyCollision += this.OnHitBody;
+				//AkSoundEngine.PostEvent("Play_WPN_flare_shot_01", base.gameObject);
+			}
+
 
 		}
 
-        private void OnHitEnemy(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+		public void DoBoom(SpeculativeRigidbody myRigidbody)
+        {
+			Projectile arg1 = myRigidbody.projectile;
+			pressDetProjModifier press = arg1.gameObject.GetOrAddComponent<pressDetProjModifier>();
+			press.isThumperRocket = false;
+
+			DoSafeExplosion(arg1.LastPosition);
+			PlayerController player = this.gun.CurrentOwner as PlayerController;
+			RoomHandler room = player.CurrentRoom;
+			if (room != null)
+			{
+				if (room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All) != null)
+				{
+					if (room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All).Count > 0)
+					{
+						foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+						{
+							if (enemy.aiActor != null)
+							{
+								if (Vector2.Distance(enemy.Position, arg1.LastPosition) < 4)
+								{
+									enemy.ApplyEffect(PickupObjectDatabase.GetById(295).GetComponent<BulletStatusEffectItem>().FireModifierEffect);
+								}
+							}
+
+						}
+					}
+				}
+			}
+			if(Vector2.Distance(arg1.LastPosition,player.CenterPosition) < 4)
+            {
+				Vector2 dir = player.CenterPosition - (Vector2)arg1.LastPosition;
+				player.knockbackDoer.ApplyKnockback(dir, 20);
+            }
+
+			PhysicsEngine.SkipCollision = true;
+			arg1.DieInAir();
+		}
+
+        private void OnHitBody(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
+        {
+            if(otherRigidbody.aiActor == null)
+            {
+				if (myRigidbody.projectile != null)
+				{
+					DoBoom(myRigidbody);
+				}
+			}
+        }
+
+        private void OnhitTile(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, PhysicsEngine.Tile tile, PixelCollider tilePixelCollider)
+        {
+			if(myRigidbody.projectile != null)
+            {
+				DoBoom(myRigidbody);
+			}
+
+		}
+
+		private void OnHitEnemy(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
         {
 			if(arg2.aiActor != null)
             {
-				pressDetProjModifier press = arg1.gameObject.GetOrAddComponent<pressDetProjModifier>();
-				press.isThumperRocket = false;
-
-				DoSafeExplosion(arg1.LastPosition);
-				PlayerController player = this.gun.CurrentOwner as PlayerController;
-				RoomHandler room = player.CurrentRoom;
-				if (room != null)
-				{
-					foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
-					{
-						if (enemy.aiActor != null)
-						{
-							if (Vector2.Distance(enemy.Position, arg1.LastPosition) < 5)
-							{
-								enemy.ApplyEffect(PickupObjectDatabase.GetById(295).GetComponent<BulletStatusEffectItem>().FireModifierEffect);
-							}
-						}
-
-					}
-				}
-
+				if(arg1 != null)
+                {
+					DoBoom(arg1.specRigidbody);
+                }
+				
 			}
 
 
@@ -150,7 +202,7 @@ namespace Knives
 			damageRadius = 5f,
 			damageToPlayer = 0f,
 			doDamage = true,
-			damage = 10f,
+			damage = 13f,
 			doDestroyProjectiles = true,
 			doForce = true,
 			debrisForce = 0f,
@@ -162,6 +214,7 @@ namespace Knives
 			breakSecretWalls = true,
 			secretWallsRadius = 3,
 			force = 20,
+			
 			forceUseThisRadius = true,
 
 

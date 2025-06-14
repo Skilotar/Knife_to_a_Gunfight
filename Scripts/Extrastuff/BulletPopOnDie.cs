@@ -3,8 +3,7 @@ using ItemAPI;
 using UnityEngine;
 
 namespace Knives
-{   //this code is by Nevernamed
-	// Token: 0x02000192 RID: 402
+{  
 	public class BulletPopOnDie : MonoBehaviour
 	{
 		// Token: 0x0600086B RID: 2155 RVA: 0x0006760C File Offset: 0x0006580C

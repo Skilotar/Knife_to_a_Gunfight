@@ -134,7 +134,7 @@ namespace Knives
 
             if (posi.GetPositionOfNearestEnemy(true) != null)
 			{
-				posi.GetAbsoluteRoom().ApplyActionToNearbyEnemies(posi, 6f, new Action<AIActor, float>(this.ProcessEnemy));
+				posi.GetAbsoluteRoom().ApplyActionToNearbyEnemies(posi, 7f, new Action<AIActor, float>(this.ProcessEnemy));
 			}
 
 			

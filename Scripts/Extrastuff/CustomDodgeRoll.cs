@@ -105,7 +105,7 @@ namespace Knives
 
                 customDodgeRoll.DodgeButtonHeld = true;
                 customDodgeRoll.AbortDodgeRoll();
-                customDodgeRoll.TryDodgeRoll();// okay go
+                customDodgeRoll.TryDodgeRoll(); // okay go
                 
             }
             yield break;

@@ -8,6 +8,8 @@ using UnityEngine;
 using Dungeonator;
 using SaveAPI;
 using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
+using HarmonyLib;
+using System.Collections;
 
 namespace Knives
 {
@@ -29,10 +31,7 @@ namespace Knives
 
                 Hook ReinforceAction = new Hook(typeof(RoomHandler).GetMethod("TriggerReinforcementLayer", BindingFlags.Instance | BindingFlags.Public), typeof(Hooks).GetMethod("TriggerReinforcementLayerHook"));
 
-
-
-
-
+                new Hook(typeof(GameUIHeartController).GetMethod("UpdateHealth", BindingFlags.Instance | BindingFlags.Public), typeof(Guardian_Heart).GetMethod("UpdateHealthHook"));
             }
             catch (Exception e)
             {
@@ -45,5 +44,7 @@ namespace Knives
             return orig(self, index, removeLayer, disableDrops, specifyObjectIndex, specifyObjectCount, instant);
         }
         public static System.Action<RoomHandler> OnReinforcementWave;
+
+        
     }
 }

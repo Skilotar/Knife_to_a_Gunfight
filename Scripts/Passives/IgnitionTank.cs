@@ -37,7 +37,8 @@ namespace Knives
                 "" +
                 "Contains a mixture of the most flammable substances we know. A single spark would be more than enough to set this baby off!\n" +
                 "These canisters are extremely expensive as they have been known to spontaneously combust durring transit. Fire insurance comes free with this purchase." +
-                "\n\n\n - Knife_to_a_Gunfight";
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprite in collab with Dallan";
 
 
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");

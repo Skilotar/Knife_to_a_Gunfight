@@ -62,6 +62,8 @@ namespace Knives
             projectile.baseData.speed *= 1.3f;
             projectile.PlayerKnockbackForce = 3f;
             projectile.gameObject.GetOrAddComponent<projectileStates>().Explodia = true;
+            ExplosiveModifier boom = projectile.gameObject.GetComponent<ExplosiveModifier>();
+            boom.IgnoreQueues = true;
             gun.carryPixelOffset = new IntVector2(4, 0);
             gun.shellsToLaunchOnFire = 1;
             Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;

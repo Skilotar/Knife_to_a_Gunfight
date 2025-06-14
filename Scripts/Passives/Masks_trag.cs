@@ -110,24 +110,22 @@ namespace Knives
         }
         private void FixGuon()
         {
-            bool flag = base.Owner && base.Owner.GetComponent<Masks_trag.BaBoom>() != null;
-            bool flag2 = flag;
-            bool flag3 = flag2;
-            bool flag4 = flag3;
+            bool flag4 = base.Owner != null && base.Owner.GetComponent<Masks_trag.BaBoom>() != null;
+
             if (flag4)
             {
                 base.Owner.GetComponent<Masks_trag.BaBoom>().Destroy();
+                PlayerController owner = base.Owner;
+                owner.gameObject.AddComponent<Masks_trag.BaBoom>();
             }
             bool flag5 = this.m_extantOrbital != null;
-            bool flag6 = flag5;
-            bool flag7 = flag6;
-            if (flag7)
+ 
+            if (flag5)
             {
                 SpeculativeRigidbody specRigidbody = this.m_extantOrbital.GetComponent<PlayerOrbital>().specRigidbody;
                 specRigidbody.OnPreRigidbodyCollision = (SpeculativeRigidbody.OnPreRigidbodyCollisionDelegate)Delegate.Combine(specRigidbody.OnPreRigidbodyCollision, new SpeculativeRigidbody.OnPreRigidbodyCollisionDelegate(this.OnPreCollison));
             }
-            PlayerController owner = base.Owner;
-            owner.gameObject.AddComponent<Masks_trag.BaBoom>();
+            
         }
         private void OnPreCollison(SpeculativeRigidbody myRigidbody, PixelCollider myCollider, SpeculativeRigidbody other, PixelCollider otherCollider)
         {

@@ -31,7 +31,7 @@ namespace Knives
             string longDesc =
 
                 "Why This Watch of Course!\n\n" +
-                "Morgun la Laye's precious timepiece gifted to you for assisting her research of Hex.  \n______________ \n" +
+                "Morgun la Faye's precious timepiece gifted to you for assisting her research of Hex.  \n______________ \n" +
                 "Use once to set a spot and again to return to it." +
                 "\n\n\n - Knife_to_a_Gunfight";
 
@@ -39,7 +39,7 @@ namespace Knives
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
 
-            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 150f);
+            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 100f);
             item.consumable = false;
             item.quality = PickupObject.ItemQuality.B;
 
@@ -122,6 +122,7 @@ namespace Knives
             zoomy.shadowLifetime = 2.5f;
             zoomy.minTranslation = 0.1f;
             looping = true;
+            TeleBack = false;
             StartCoroutine(SoundLoop());
             
         }
@@ -154,7 +155,7 @@ namespace Knives
 
         public override void  DoActiveEffect(PlayerController user)
         {
-            
+            TeleBack = true;
             EndEffect(user);
             base.DoActiveEffect(user);
         }
@@ -163,11 +164,38 @@ namespace Knives
             if(m_spot != null)
             {
                 looping = false;
-                TeleportPlayerToCursorPosition.StartTeleport(player, m_spot.transform.position + new Vector3(.5f,.5f,0));
-                UnityEngine.GameObject.DestroyObject(m_spot);
+                if (TeleBack)
+                {
+                    player.StartCoroutine(Dotele(player));
+                    
+                }
+                else
+                {
+                    if(DoingTele == false)
+                    UnityEngine.GameObject.DestroyObject(m_spot);
+                }
                 zoomy.spawnShadows = false;
             }
         }
+
+        private IEnumerator Dotele(PlayerController player)
+        {
+            DoingTele = true;
+            Vector2 okay = m_spot.gameObject.GetComponent<tk2dBaseSprite>().WorldCenter;
+            while(Vector2.Distance(player.specRigidbody.UnitCenter, okay) > 2)
+            {
+                TeleportPlayerToCursorPosition.StartTeleport(player, okay);
+                player.healthHaver.TriggerInvulnerabilityPeriod();
+                yield return new WaitForEndOfFrame();
+                yield return null;
+            }
+            
+            UnityEngine.GameObject.DestroyObject(m_spot);
+            DoingTele = false;
+        }
+
+        public bool TeleBack = false;
+        public bool DoingTele = false;
 
         public override void  OnPreDrop(PlayerController user)
         {

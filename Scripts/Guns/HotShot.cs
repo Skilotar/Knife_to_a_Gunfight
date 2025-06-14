@@ -135,7 +135,9 @@ namespace Knives
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
 
 
+			ID = gun.PickupObjectId;
 		}
+		public static int ID;
 		public override void  OnPickedUpByPlayer(PlayerController player)
 		{
 			this.gun.HasBeenPickedUp = true;

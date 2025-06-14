@@ -52,7 +52,7 @@ namespace Knives
 				Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(projectileModule.projectiles[0]);
 				projectile.gameObject.SetActive(false);
 				projectileModule.projectiles[0] = projectile;
-				projectile.baseData.damage = 7f;
+				projectile.baseData.damage = 6f;
 				
 				projectileModule.angleVariance = 56;
 				projectile.baseData.speed *= .5f;

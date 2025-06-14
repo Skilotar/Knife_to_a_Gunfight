@@ -54,7 +54,7 @@ namespace Knives
                 this.instanceVFX = player.PlayEffectOnActor(Vfx, new Vector3(0f, 1.375f, 0f), true, true, false);
             }
 
-            yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(5);
 
             this.instanceVFX.GetComponent<tk2dSpriteAnimator>().PlayAndDestroyObject("rage_face_vfx_out", null);
             this.instanceVFX = null;

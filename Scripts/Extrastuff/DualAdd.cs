@@ -28,6 +28,18 @@ namespace Knives
             DualWieldController barrelbros2 = PickupObjectDatabase.GetById(MonkeyBarrel.mbID).gameObject.AddComponent<DualWieldController>();
             barrelbros2.PartnerGunID = PickupObjectDatabase.GetById(7).PickupObjectId;
 
+
+
+            DualWieldController PlusleAndMinun = PickupObjectDatabase.GetById(Plustle.ID).gameObject.AddComponent<DualWieldController>();
+            PlusleAndMinun.PartnerGunID = Mingun.ID;
+
+            DualWieldController PlusleAndMinun2 = PickupObjectDatabase.GetById(Mingun.ID).gameObject.AddComponent<DualWieldController>();
+            PlusleAndMinun2.PartnerGunID = Plustle.ID;
+
+
+            //DualWieldController Test = PickupObjectDatabase.GetById(610).gameObject.AddComponent<DualWieldController>();
+            //Test.PartnerGunID = 15;
+
             //DualWieldController SuperStars = PickupObjectDatabase.GetByEncounterName("LoneStar").gameObject.AddComponent<DualWieldController>();
             //SuperStars.PartnerGunID = PickupObjectDatabase.GetByEncounterName("StarBurst").PickupObjectId;
 

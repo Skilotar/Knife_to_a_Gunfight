@@ -90,9 +90,12 @@ namespace Knives
 
                     if (this.Owner.PlayerHasActiveSynergy("Autonomus Ultra Instinct"))
                     {
-                        foreach (var projectile in GetBullets())
+
+                        List<Projectile> bullets = GetBullets(); // I am in pain
+                        for (int i = bullets.Count - 1; i >= 0; i--)
                         {
-                            if (Vector2.Distance(this.Owner.CenterPosition, projectile.sprite.WorldCenter) < 2f)
+                            Projectile projectile = bullets[i];
+                            if (Vector2.Distance(this.Owner.CenterPosition, projectile.sprite.WorldCenter) < 2.7f)
                             {
                                 Vector2 dir = (Vector2)projectile.sprite.WorldCenter - this.Owner.CenterPosition;
                                 attackKick(dir);
@@ -112,10 +115,7 @@ namespace Knives
                 }
                 else
                 {
-                    if(this.Owner.PlayerHasActiveSynergy("Autonomus Ultra Instinct"))
-                    {
-                        GlobalSparksDoer.EmitFromRegion(GlobalSparksDoer.EmitRegionStyle.RADIAL, 4, .5f, this.Owner.sprite.WorldBottomLeft, this.Owner.sprite.WorldTopRight, Vector3.up, 0, 0, null, null, ExtendedColours.silvedBulletsSilver, GlobalSparksDoer.SparksType.SOLID_SPARKLES);
-                    }
+                    
                 }
             }
 
@@ -130,8 +130,8 @@ namespace Knives
             stabby.SlashDimensions = 30;
             stabby.SlashRange = 3.2f;
             stabby.SlashDamageUsesBaseProjectileDamage = false;
-            stabby.SlashDamage = 5;
-            stabby.slashKnockback = 40;
+            stabby.SlashDamage = 8;
+            stabby.slashKnockback = 50;
             stabby.InteractMode = SlashDoer.ProjInteractMode.IGNORE;
             if (this.Owner.PlayerHasActiveSynergy("Autonomus Ultra Instinct")) stabby.InteractMode = SlashDoer.ProjInteractMode.DESTROY;
             stabby.soundToPlay = "";
@@ -156,15 +156,18 @@ namespace Knives
         private static List<Projectile> GetBullets()
         {
             List<Projectile> list = new List<Projectile>();
-            var allProjectiles = StaticReferenceManager.AllProjectiles;
+            ReadOnlyCollection<Projectile> allProjectiles = StaticReferenceManager.AllProjectiles;
             for (int i = 0; i < allProjectiles.Count; i++)
             {
                 Projectile projectile = allProjectiles[i];
-                if (projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks)
+                bool flag = projectile && projectile.sprite && !projectile.ImmuneToBlanks && !projectile.ImmuneToSustainedBlanks;
+                if (flag)
                 {
-                    if (projectile.Owner != null)
+                    bool flag2 = projectile.Owner != null;
+                    if (flag2)
                     {
-                        if (projectile.collidesWithEnemies = false || projectile.isFakeBullet || projectile.Owner is AIActor || (projectile.Shooter != null && projectile.Shooter.aiActor != null) || projectile.ForcePlayerBlankable || projectile.IsBulletScript)
+                        bool flag3 = projectile.isFakeBullet || projectile.Owner is AIActor || (projectile.Shooter != null && projectile.Shooter.aiActor != null) || projectile.ForcePlayerBlankable;
+                        if (flag3)
                         {
                             list.Add(projectile);
                         }

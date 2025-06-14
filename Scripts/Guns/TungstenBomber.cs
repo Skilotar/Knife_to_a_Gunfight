@@ -84,12 +84,12 @@ namespace Knives
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
-
+            ID = gun.PickupObjectId;
 
         }
-
+        public static int ID;
         public static GameObject bomber;
-
+        
 
         public bool Flipper = true;
         public static SpawnBombProjMod obj;
@@ -227,7 +227,7 @@ namespace Knives
                     useDefaultExplosion = false,
                     doDamage = true,
                     forceUseThisRadius = false,
-                    damageRadius = 3.5f,
+                    damageRadius = 4f,
                     damageToPlayer = 0,
                     damage = 45f,
                     breakSecretWalls = false,

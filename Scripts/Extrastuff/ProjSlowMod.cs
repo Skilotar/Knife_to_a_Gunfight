@@ -20,7 +20,7 @@ namespace Knives
                 this.m_projectile = base.GetComponent<Projectile>();
 
                 this.m_projectile.UpdateSpeed();
-                this.speedMultiplierPerFrame = UnityEngine.Random.Range(80f, 98f) / 100f;
+                this.speedMultiplierPerFrame = UnityEngine.Random.Range(minspeedMultPerFrame, 98f) / 100f;
                 if(ignoresizescale == false)
                 {
                     this.SizeMultPerFrame = UnityEngine.Random.Range(1f, 1.3f) / 100f;
@@ -36,6 +36,7 @@ namespace Knives
                 ETGModConsole.Log(e.StackTrace);
             }
         }
+        public float minspeedMultPerFrame = 80f;
         private Projectile m_projectile;
         private float speedMultiplierPerFrame;
         private bool shouldSpeedModify;

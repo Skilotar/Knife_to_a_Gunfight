@@ -64,7 +64,7 @@ namespace Knives
 
             gun.SetBaseMaxAmmo(150);
             gun.quality = PickupObject.ItemQuality.B;
-            gun.encounterTrackable.EncounterGuid = "Here Comes the BOOOOOOM!";
+            //gun.encounterTrackable.EncounterGuid = "Here Comes the BOOOOOOM!";
 
             //swipe
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
@@ -77,7 +77,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 8f;
+            projectile.baseData.damage = 14f;
             projectile.baseData.speed = 3f;
             projectile.baseData.range = 3f;
             projectile.baseData.force = 5;
@@ -94,7 +94,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile2.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile2);
             gun.DefaultModule.projectiles[0] = projectile2;
-            projectile2.baseData.damage = 20f;
+            projectile2.baseData.damage = 25f;
             projectile2.baseData.speed = 50f;
             projectile2.baseData.range = 40f;
             projectile2.DefaultTintColor = UnityEngine.Color.gray;
@@ -110,7 +110,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile3.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile3);
             gun.DefaultModule.projectiles[0] = projectile3;
-            projectile3.baseData.damage = 50f;
+            projectile3.baseData.damage = 60f;
             projectile3.baseData.speed = 70f;
             projectile3.baseData.range = 80f;
             projectile3.AdditionalScaleMultiplier = 3f;
@@ -180,7 +180,7 @@ namespace Knives
             starttoggle = false;
             
             
-            if (projectile.GetCachedBaseDamage == 8f)
+            if (projectile.GetCachedBaseDamage == 14f)
             {
                 //slash
 
@@ -207,7 +207,7 @@ namespace Knives
                 
 
             }
-            if (projectile.GetCachedBaseDamage == 20f)
+            if (projectile.GetCachedBaseDamage == 25f)
             {
                 //shelling
                 AkSoundEngine.PostEvent("Play_gln_fire_small_001", base.gameObject);
@@ -216,7 +216,7 @@ namespace Knives
 
 
             }
-            if (projectile.GetCachedBaseDamage == 50f)
+            if (projectile.GetCachedBaseDamage == 60f)
             {
                 //wyvernstake
                 PierceProjModifier stabby = projectile.gameObject.AddComponent<PierceProjModifier>();

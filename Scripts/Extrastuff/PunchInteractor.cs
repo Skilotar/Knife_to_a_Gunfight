@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dungeonator;
 using UnityEngine;
+using ItemAPI;
 using System.Text;
 using System.Collections;
 
@@ -67,9 +68,10 @@ namespace Knives
 				{
 					dir = interactor.CurrentGun.CurrentAngle.DegreeToVector2();
 				}
-				bool flag2 = !this.isPunting && !interactor.IsDodgeRolling;
+				bool flag2 = !this.isPunting && !interactor.IsDodgeRolling && interactor.CurrentStoneGunTimer <= 0;
 				if (flag2)
 				{
+					
 					base.StartCoroutine(this.HandlePunt(interactor, dir));
 				}
 			}
@@ -80,7 +82,7 @@ namespace Knives
 			float knockbackForce = 12f;
 
 			this.currentPuntDir = dir;
-
+			float HealthMult = GameManager.Instance.GetLastLoadedLevelDefinition().enemyHealthMultiplier;
 			this.isPunting = true;
 
 			bool flag2 = base.knockbackDoer;
@@ -94,27 +96,36 @@ namespace Knives
 			}
 			if (base.healthHaver != null)
 			{
-				if (base.healthHaver.IsAlive && healthHaver.GetCurrentHealth() > 7 * punter.stats.GetStatValue(PlayerStats.StatType.Damage))
+				float ang = (Victim.CenterPosition - punter.CenterPosition).ToAngle();
+                Projectile comp = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, punter.CenterPosition, punter, ang, 0, 1, false);
+				comp.baseData.speed *= 5;
+				comp.baseData.damage = 15f * HealthMult;
+				comp.AdditionalScaleMultiplier *= .5f;
+				comp.sprite.renderer.enabled = false;
+				comp.SuppressHitEffects = true;
+				comp.hitEffects.suppressMidairDeathVfx = true;
+				comp.gameObject.GetOrAddComponent<KilledEnemiesBecomeProjectileModifier>();
+
+                if (punter.PlayerHasActiveSynergy("Hiiragi"))
                 {
-                    base.healthHaver.ApplyDamage(7, Vector2.zero, "Owow Don't punch Me!");
-                }
-                else
-                {
-
-                    Projectile comp = MiscToolMethods.SpawnProjAtPosi(MiscToolMethods.standardproj, Victim.specRigidbody.UnitCenter, punter, punter.CurrentGun, 0, 1, false);
-                    comp.AdditionalScaleMultiplier *= 1.5f;
-					comp.baseData.damage = 7f * punter.stats.GetStatValue(PlayerStats.StatType.Damage);
-
-					comp.sprite.renderer.enabled = false;
-                    comp.SuppressHitEffects = true;
-                    comp.hitEffects.suppressMidairDeathVfx = true;
-                    comp.gameObject.GetOrAddComponent<KilledEnemiesBecomeProjectileModifier>();
-                }
-
+					punter.healthHaver.TriggerInvulnerabilityPeriod(.15f);
+					Victim.behaviorSpeculator.Stun(.3f);
+					TetherProjMod rope = comp.gameObject.GetOrAddComponent<TetherProjMod>();
+					rope.tetherBackToPlayer = true;
+					rope.minorslowwalkRadius = 6;
+					rope.majorslowwalkRadius = 8;
+					rope.minorKB = 1f;
+					rope.majorKB = 2;
+					rope.StopbreakDistance = 3f;
+					rope.color = ExtendedColours.maroon;
+				}
+				
 			}
-			punter.CurrentStoneGunTimer = 1f;
+			punter.CurrentStoneGunTimer = .75f;
+			if (punter.PlayerHasActiveSynergy("Hiiragi")) punter.CurrentStoneGunTimer = .5f;
+
 			AkSoundEngine.PostEvent("Play_BOSS_Punchout_Punch_Hit_01", this.Victim.gameObject);
-			yield return new WaitForSeconds(1f);
+			yield return new WaitForSeconds(.5f);
 			this.isPunting = false;
 			yield break;
 		}
@@ -142,7 +153,7 @@ namespace Knives
 		public float GetOverrideMaxDistance()
 		{
 			float result;
-			result = 2.5f;
+			result = 3f;
 			return result;
 		}
 

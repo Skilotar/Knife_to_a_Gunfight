@@ -32,7 +32,7 @@ namespace Knives
 
             //Ammonomicon entry variables
             string shortDesc = "Kindled Love";
-            string longDesc = "Adds Health and Fire Vulnerability. A Woven wooden heart that reminds you of lost love." +
+            string longDesc = "Gain Extra Health and Fire Vulnerability. A Woven wooden heart that reminds you of lost love." +
             "\n\n\n - Knife_to_a_Gunfight";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
@@ -52,23 +52,31 @@ namespace Knives
             itemID = item.PickupObjectId;
 
             JinxItemDisplayStorageClass text = item.gameObject.GetOrAddComponent<JinxItemDisplayStorageClass>();
-            text.jinxItemDisplayText = "Gives health, Take double damage from fire.";
+            text.jinxItemDisplayText = "Gain Extra Health, Fire Vulnerability.";
         }
         public static int itemID;
+        public float knownHealth;
         public override void Pickup(PlayerController player)
         {
+            knownHealth = player.healthHaver.GetCurrentHealth();
             player.healthHaver.OnDamaged += HealthHaver_OnDamaged;
-
-
-            this.m_fireImmunity.damageMultiplier = .75f;
+            player.healthHaver.ModifyHealing += this.ModHeal;
+            this.m_fireImmunity.damageMultiplier = .5f;
             this.m_fireImmunity.damageType = CoreDamageTypes.Fire;
             player.healthHaver.damageTypeModifiers.Add(this.m_fireImmunity);
             base.Pickup(player);
         }
 
+        private void ModHeal(HealthHaver arg1, HealthHaver.ModifyHealingEventArgs arg2)
+        {
+            if (UnityEngine.Random.Range(0, 2f) < 1)
+            {
+                arg2.ModifiedHealing += .5f;
+            }
+        }
+
         private void HealthHaver_OnDamaged(float resultValue, float maxValue, CoreDamageTypes damageTypes, DamageCategory damageCategory, Vector2 damageDirection)
         {
-
             if (CoreDamageTypes.Fire == damageTypes)
             {
                 if (DamageCategory.Environment == damageCategory)
@@ -76,7 +84,6 @@ namespace Knives
                     this.Owner.healthHaver.ApplyDamage(.5f, Vector2.zero, "Burned Alive");
                 }
             }
-
         }
 
         public override DebrisObject Drop(PlayerController player)

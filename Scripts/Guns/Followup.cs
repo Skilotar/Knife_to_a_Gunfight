@@ -26,23 +26,23 @@ namespace Knives
                 "\n\n\n - Knife_to_a_Gunfight");
 
 
-            gun.SetupSprite(null, "Followup_idle_001", 8);
+            gun.SetupSprite(null, "Followup_idle_001", 4);
             // ETGMod automatically checks which animations are available.
             // The numbers next to "shootAnimation" determine the animation fps. You can also tweak the animation fps of the reload animation and idle animation using this method.
-            gun.SetAnimationFPS(gun.shootAnimation, 8);
-            gun.SetAnimationFPS(gun.reloadAnimation, 4);
+            gun.SetAnimationFPS(gun.shootAnimation, 20);
+            gun.SetAnimationFPS(gun.reloadAnimation, 7);
             // Every modded gun has base projectile it works with that is borrowed from other guns in the game. 
             // The gun names are the names from the JSON dump! While most are the same, some guns named completely different things. If you need help finding gun names, ask a modder on the Gungeon discord.
             gun.AddProjectileModuleFrom(PickupObjectDatabase.GetById(79) as Gun, true, false);
             // Here we just take the default projectile module and change its settings how we want it to be.
             gun.DefaultModule.ammoCost = 1;
-            gun.DefaultModule.angleVariance = 14f;
+            gun.DefaultModule.angleVariance = 20f;
             gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Burst;
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-            gun.DefaultModule.burstCooldownTime = .12f;
+            gun.DefaultModule.burstCooldownTime = .1f;
             gun.DefaultModule.burstShotCount = 5;
-            gun.reloadTime = 1f;
-            gun.DefaultModule.cooldownTime = .4f;
+            gun.reloadTime = .7f;
+            gun.DefaultModule.cooldownTime = .25f;
             gun.DefaultModule.numberOfShotsInClip = 15;
             gun.SetBaseMaxAmmo(500);
             gun.quality = PickupObject.ItemQuality.C;
@@ -56,9 +56,10 @@ namespace Knives
             projectile.SetProjectileSpriteRight("pointer", 16, 13, false, tk2dBaseSprite.Anchor.LowerCenter, 16, 13);
             projectile.AdditionalScaleMultiplier = .5f;
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 9;
+            projectile.baseData.damage = 6;
             projectile.baseData.force = 0;
             projectile.baseData.speed *= .6f;
+            gun.barrelOffset.transform.localPosition = new Vector3(23/16f, 12/16f, 0f);
             projectile.transform.parent = gun.barrelOffset;
             gun.gunClass = GunClass.PISTOL;
             ETGMod.Databases.Items.Add(gun, null, "ANY");

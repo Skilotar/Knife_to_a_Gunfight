@@ -10,7 +10,7 @@ using MultiplayerBasicExample;
 namespace Knives
 {
 
-	class ten_gallon : PassiveItem
+	class ten_gallon : BannerPassive
 	{
 		public static void Register()
 		{
@@ -44,17 +44,41 @@ namespace Knives
 			ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Damage, .15f, StatModifier.ModifyMethod.ADDITIVE);
 			ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.RateOfFire, .05f, StatModifier.ModifyMethod.ADDITIVE);
 			ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.MovementSpeed, -1.5f, StatModifier.ModifyMethod.ADDITIVE);
-			
 
+			item.SetSpriteNames("10_center", "10_down", "10_left", "10_right", "10_up_left", "10_up_right");
+
+			item.SetupBannerSprites("HylianShield",
+				"Knives/Resources/hat/10_center",
+				"Knives/Resources/hat/10_down",
+				"Knives/Resources/hat/10_left",
+				"Knives/Resources/hat/10_right",
+				"Knives/Resources/hat/10_up_left",
+				"Knives/Resources/hat/10_up_right"
+				);
+
+			item.downOffset = new Vector2(3 / 16f, 21 / 16f);
+
+			item.leftOffset = new Vector2(3 / 16f, 21 / 16f);
+			item.rightOffset = new Vector2(3 / 16f, 21 / 16f);
+
+			item.uprightOffset = new Vector2(3 / 16f, 21 / 16f);
+			item.upLeftOffset = new Vector2(3 / 16f, 21 / 16f);
+
+			item.upOffset = new Vector2(3 / 16f, 21 / 16f);
+			item.visibleDuringRoll = true;
 
 
 			item.quality = PickupObject.ItemQuality.C;
-			
-			ten_gallon.BuildPrefab();
 
+			//ten_gallon.BuildPrefab();
 			//You should probably fix this to not be really stupid at some point. Just saying...
+
+			// I did I did
+
+			ID = item.PickupObjectId;
+
 		}
-		
+		public static int ID;
 		public override void Pickup(PlayerController player)
 		{
 			base.Pickup(player);
@@ -68,6 +92,7 @@ namespace Knives
 			//hunger and eating system w/ special cases for robot
 			if(this.Owner != null)
             {
+				/*
 				bool flag = base.Owner && !this.HatObject && base.Owner.CurrentGun.sprite;
 				if (flag)
 				{
@@ -81,7 +106,7 @@ namespace Knives
 				{
 					UnityEngine.Object.Destroy(this.HatObject);
 					UnityEngine.Object.Destroy(this.HatObject);
-				}
+				}*/
 			}
 			
 			
@@ -89,7 +114,7 @@ namespace Knives
 
 		}
 
-	
+		/*
 		public static void BuildPrefab()
 		{   //hatdoer
 			GameObject gameObject = SpriteBuilder.SpriteFromResource("Knives/Resources/hat/10_right", null);
@@ -176,6 +201,7 @@ namespace Knives
 
 		public static PauseMenuController manager = new PauseMenuController();
 		public static AmmonomiconController book = new AmmonomiconController();
+		*/
 	}
 
 }

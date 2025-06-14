@@ -26,7 +26,7 @@ namespace Knives
             gun.gameObject.AddComponent<NewViolin>();
             //These two lines determines the description of your gun, ".SetShortDescription" being the description that appears when you pick up the gun and ".SetLongDescription" being the description in the Ammonomicon entry. 
             gun.SetShortDescription("A Bet Well Won");
-            gun.SetLongDescription("Jams and Unjams enemies. Extra Damage when Unjamming an enemy. Reload to charm Jammed Enemies\n\n" +
+            gun.SetLongDescription("Crits and Unjams, jammed enemies. Reload to charm Jammed Enemies\n\n" +
                 "" +
                 "A Fiddle won from the lord of the jammed himself in a contest.\n\n" +
                 "This fiddle holds great holy power and will quell the hatred of the jammed."+
@@ -62,10 +62,10 @@ namespace Knives
 
             gun.DefaultModule.cooldownTime = .25f;
             gun.DefaultModule.numberOfShotsInClip = 5;
-            gun.SetBaseMaxAmmo(300);
+            gun.SetBaseMaxAmmo(100);
            
             gun.quality = PickupObject.ItemQuality.B;
-            
+            gun.AddPassiveStatModifier(PlayerStats.StatType.Curse, 3, StatModifier.ModifyMethod.ADDITIVE);
             gun.muzzleFlashEffects = null;
             gun.PreventNormalFireAudio = true;
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.chargeProjectiles[0].Projectile);
@@ -73,9 +73,10 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 10f;
+            projectile.baseData.damage = 17f;
             projectile.baseData.speed = 40f;
             projectile.baseData.range = 4000f;
+            
             gun.DefaultModule.ammoType = GameUIAmmoType.AmmoType.CUSTOM;
             projectile.SetProjectileSpriteRight("Goldtip", 19, 5, false, tk2dBaseSprite.Anchor.LowerLeft, 19,5);
             gun.DefaultModule.customAmmoType = CustomClipAmmoTypeToolbox.AddCustomAmmoType("Goldtip", "Knives/Resources/Violin_clipfull", "Knives/Resources/Violin_clipempty");
@@ -163,15 +164,15 @@ namespace Knives
                         {
                             if (!body.aiActor.IsBlackPhantom)
                             {
-                                body.aiActor.BecomeBlackPhantom();
+                                //body.aiActor.BecomeBlackPhantom();
                             }
                             else
                             {
                                 body.aiActor.UnbecomeBlackPhantom();
-                                body.aiActor.healthHaver.ApplyDamage(30, Vector2.zero, "banishment");
+                                body.aiActor.healthHaver.ApplyDamage(40, Vector2.zero, "banishment");
                                 if (body.aiActor.healthHaver.IsBoss)
                                 {
-                                    body.aiActor.healthHaver.ApplyDamage(30, Vector2.zero, "banishment");
+                                    body.aiActor.healthHaver.ApplyDamage(40, Vector2.zero, "banishment");
                                 }
                             }
                            
@@ -183,6 +184,9 @@ namespace Knives
 
         private bool HasReloaded;
         public bool toggle = true;
+        public bool risingEdgeCombatTrigger = false;
+        public bool setup = false;
+        public PlayerController lastKnownOwner;
 
         public override void  Update()
         {
@@ -198,14 +202,51 @@ namespace Knives
                     this.HasReloaded = true;
                 }
 
+                if (setup == false)
+                {
+                    (gun.CurrentOwner as PlayerController).OnEnteredCombat += this.CombatEnter;
+                    lastKnownOwner = (gun.CurrentOwner as PlayerController);
+                    setup = true;
+                }
+                
             }
 
 
-
-
+            
             base.Update();
         }
-        
+
+        private void CombatEnter()
+        {
+            if(gun.CurrentOwner.CurrentGun == this.gun)
+            {
+                EnJamEnemies((gun.CurrentOwner as PlayerController));
+            }
+            
+        }
+
+        private void EnJamEnemies(PlayerController player)
+        {
+            if(player.CurrentRoom != null)
+            {
+                List<AIActor> enemies = player.CurrentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All);
+                for (int i = enemies.Count -1; i>= 0; i--)
+                {
+                    if(UnityEngine.Random.Range(0,5f) < 1)
+                    {
+                        enemies[i].BecomeBlackPhantom();
+                    }
+                }
+            }
+        }
+
+        public override void OnDropped()
+        {
+            setup = false;
+            lastKnownOwner.OnEnteredCombat -= this.CombatEnter;
+            base.OnDropped();
+        }
+
         public override void OnReloadPressed(PlayerController player, Gun gun, bool bSOMETHING)
         {
             if (gun.IsReloading && this.HasReloaded)

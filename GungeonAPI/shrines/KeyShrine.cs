@@ -10,7 +10,7 @@ namespace GungeonAPI
     {
 
         public static void Add()
-        {
+        {/*
             ShrineFactory sf = new ShrineFactory()
             {
                 name = "Key Shrine",
@@ -29,7 +29,8 @@ namespace GungeonAPI
                 isBreachShrine = false
             };
             //register shrine
-            sf.Build();
+            //sf.Build();
+            */
         }
 
         public static bool CanUse(PlayerController player, GameObject shrine)

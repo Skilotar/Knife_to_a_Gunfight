@@ -24,8 +24,7 @@ namespace Knives
                 modID = "ski",
                 spritePath = "Knives/Resources/play/twins_idle_001.png",
                 
-                acceptText = "Uh.. Sure?",
-                declineText = "No thanks.",
+               
                 OnAccept = Accept,
                 OnDecline = null,
                 CanUse = CanUse,

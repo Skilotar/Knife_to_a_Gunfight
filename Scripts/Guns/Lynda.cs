@@ -32,7 +32,7 @@ namespace Knives
             // ETGMod automatically checks which animations are available.
             // The numbers next to "shootAnimation" determine the animation fps. You can also tweak the animation fps of the reload animation and idle animation using this method.
             gun.SetAnimationFPS(gun.shootAnimation, 13);
-            gun.SetAnimationFPS(gun.reloadAnimation, 7);
+            gun.SetAnimationFPS(gun.reloadAnimation, 8);
             // Every modded gun has base projectile it works with that is borrowed from other guns in the game. 
             // The gun names are the names from the JSON dump! While most are the same, some guns named completely different things. If you need help finding gun names, ask a modder on the Gungeon discord.
             gun.AddProjectileModuleFrom(PickupObjectDatabase.GetById(15) as Gun, true, false);
@@ -42,7 +42,7 @@ namespace Knives
             gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Automatic;
 
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-            gun.reloadTime = 1f;
+            gun.reloadTime = .8f;
             gun.DefaultModule.cooldownTime = .08f;
             gun.DefaultModule.numberOfShotsInClip = 20;
             gun.SetBaseMaxAmmo(600);
@@ -64,7 +64,7 @@ namespace Knives
             projectile.baseData.damage = 4f;
             projectile.baseData.force = 0;
             projectile.baseData.speed *= 1.2f;
-            projectile.BossDamageMultiplier *= .1f;
+            projectile.BossDamageMultiplier *= 1.1f;
             projectile.AppliesKnockbackToPlayer = true;
             projectile.PlayerKnockbackForce = 3;
             projectile.DefaultTintColor = ExtendedColours.silvedBulletsSilver;
@@ -90,14 +90,13 @@ namespace Knives
             AkSoundEngine.PostEvent("Play_CHR_female_voice_01", base.gameObject);
             AkSoundEngine.PostEvent("Play_WPN_earthwormgun_shot_01", base.gameObject);
             ExtraSpread++;
-            ExtraSpread++;
-            if (ExtraSpread >= 35) ExtraSpread = 35;
+            if (ExtraSpread >= 28) ExtraSpread = 28;
             base.PostProcessProjectile(projectile);
         }
 
         private bool HasReloaded;
         public int ExtraSpread = 0;
-        public float SpreadResetTimer = .25f;
+        public float SpreadResetTimer = .2f;
         public override void Update()
         {
             if (gun.CurrentOwner)
@@ -132,12 +131,12 @@ namespace Knives
                 }
                 if(gun.ClipShotsRemaining == 0)
                 {
-                    gun.reloadTime = 1.5f;
+                    gun.reloadTime = 1.25f;
                     special_reload = true;
                 }
                 else
                 {
-                    gun.reloadTime = 1f;
+                    gun.reloadTime = .8f;
                     special_reload = false;
                 }
                 
@@ -165,7 +164,7 @@ namespace Knives
 
         private IEnumerator RackNewRound()
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(.8f);
             gun.spriteAnimator.Play("Lynda_intro");
 
         }

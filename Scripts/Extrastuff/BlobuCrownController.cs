@@ -8,13 +8,13 @@ using Dungeonator;
 
 namespace Knives
 {
-    class BlobuCrownController :MonoBehaviour
+    class BlobuCrownController : MonoBehaviour
     {
 		public static GameObject BlobuCrown;
 		public static GameActorDecorationEffect BlobDummyEffect;
 		public static void Initialise()
 		{
-			BlobuCrown = SpriteBuilder.SpriteFromResource("Knives/Resources/lord.png", new GameObject("BlightIcon"));
+			BlobuCrown = SpriteBuilder.SpriteFromResource("Knives/Resources/lord2.png", new GameObject("BlightIcon"));
 			BlobuCrown.SetActive(false);
 			tk2dBaseSprite vfxSprite = BlobuCrown.GetComponent<tk2dBaseSprite>();
 			vfxSprite.GetCurrentSpriteDef().ConstructOffsetsFromAnchor(tk2dBaseSprite.Anchor.MiddleCenter, vfxSprite.GetCurrentSpriteDef().position3);
@@ -42,8 +42,6 @@ namespace Knives
 			player.OnEnteredCombat = (Action)Delegate.Combine(player.OnEnteredCombat, new Action(this.OnEnteredCombat));
 		}
 
-		bool Event_started = false;
-		bool setup = false;
         private void OnEnteredCombat()
         {
 			RoomHandler currentRoom = player.CurrentRoom;
@@ -54,26 +52,39 @@ namespace Knives
 					if (rng.Next(1, 20) == 1 || this.player.GetComponent<Explodia_part_holder_Controller>() != null)
 					{
 						aiactor.ApplyEffect(BlobDummyEffect);
-
-                        //aiactor.ActorName = "Skilotar_";
-                        //aiactor.OverrideDisplayName = "Skilotar_";
-						//aiactor.gameObject.name = "Skilotar_";
-						aiactor.LocalTimeScale = 1.05f;
 						aiactor.gameObject.GetOrAddComponent<SkilotarSplitBehave>();
+						skilotar_ = aiactor;
 						Event_started = true;
-						
+						GameUIBossHealthController gameUIBossHealthController = (!skilotar_.healthHaver.UsesVerticalBossBar) ? (skilotar_.healthHaver.UsesSecondaryBossBar ? GameUIRoot.Instance.bossController2 : GameUIRoot.Instance.bossController) :
+						GameUIRoot.Instance.bossControllerSide;
+						gameUIBossHealthController.RegisterBossHealthHaver(skilotar_.healthHaver, "Skilotar_");
+
 						player.OnRoomClearEvent += Player_OnRoomClearEvent;
 					}
 				}
 			}
 		}
-		
 
+		public AIActor skilotar_;
+
+        public bool Event_started { get; private set; }
         System.Random rng = new System.Random();
+		public bool rename = false;
 
 		public void Update()
 		{
-			
+			if(skilotar_ != null)
+            {
+				GameUIBossHealthController gameUIBossHealthController = (!skilotar_.healthHaver.UsesVerticalBossBar) ? (skilotar_.healthHaver.UsesSecondaryBossBar ? GameUIRoot.Instance.bossController2 : GameUIRoot.Instance.bossController) :
+				GameUIRoot.Instance.bossControllerSide;
+				if (skilotar_.isActiveAndEnabled && gameUIBossHealthController.name != "Skilotar_")
+                {
+					
+					gameUIBossHealthController.RegisterBossHealthHaver(skilotar_.healthHaver, "Skilotar_");
+					
+				}
+				
+			}
 		}
 
         private void Player_OnRoomClearEvent(PlayerController obj)

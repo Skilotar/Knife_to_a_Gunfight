@@ -16,15 +16,18 @@ namespace Knives
 		// Token: 0x06000F7B RID: 3963 RVA: 0x000CD960 File Offset: 0x000CBB60
 		private void Start()
 		{
+
 			this.m_projectile = base.GetComponent<Projectile>();
 			bool flag = this.m_projectile.Owner && this.m_projectile.Owner is PlayerController;
 			if (flag)
 			{
 				this.m_owner = (this.m_projectile.Owner as PlayerController);
 			}
-			base.Invoke("BeginBeamFire", 0.1f);
+			base.Invoke("BeginBeamFire", invokedelay);
+			
 		}
 
+		public float invokedelay = .01f;
 		// Token: 0x06000F7C RID: 3964 RVA: 0x000CD9D0 File Offset: 0x000CBBD0
 		private void BeginBeamFire()
 		{
@@ -80,13 +83,82 @@ namespace Knives
 				BeamController beamController12 = BeamToolbox.FreeFireBeamFromAnywhere(this.beamToFire, this.m_owner, this.m_projectile.gameObject, Vector2.zero, false, 180f, 1000f, true, true, -180f + vTrailAngle);
 				Projectile component12 = beamController12.GetComponent<Projectile>();
 			}
+			bool flag6 = this.firetype == BeamBulletsBehaviour.FireType.BindToGun;
+			if (flag6)
+			{
+				BeamController beamController13 = BeamToolbox.FreeFireBeamFromAnywhere(this.beamToFire, this.m_owner, this.m_projectile.gameObject, Vector2.zero, false, 0f, 1000f, true, true, 0f);
+				Projectile component13 = beamController13.GetComponent<Projectile>();
+				if (BindingGun != null)
+				{
+					if(m_projectile != null)
+                    {
+						m_projectile.transform.parent = BindingGun.barrelOffset.transform;
+						m_projectile.specRigidbody.UpdateCollidersOnRotation = true;
+						m_projectile.sprite.renderer.enabled = false;
+						BoundBeam = component13;
+					}
+					
+
+				}
+			}
 		}
 
+		
+		
 		public float vTrailAngle = 40;
 		// Token: 0x06000F7D RID: 3965 RVA: 0x000CDDC4 File Offset: 0x000CBFC4
 		private void Update()
 		{
+			
+
+			bool flag6 = this.firetype == BeamBulletsBehaviour.FireType.BindToGun;  
+			if (flag6)
+			{
+				if(BoundBeam != null)
+                {
+					if(m_projectile != null)
+                    {
+						m_projectile.transform.parent = BindingGun.barrelOffset.transform;
+						m_projectile.specRigidbody.enabled = false;
+						m_projectile.specRigidbody.Reinitialize();
+						m_projectile.SendInDirection(BindingGun.CurrentAngle.DegreeToVector2(), true, true);
+						if (GunLockForDuration) // Not advised Potential jank
+						{
+							BindingGun.CanBeDropped = false;
+							m_owner.inventory.GunLocked.SetOverride("BeamInProgress", true, null);
+						}
+						if (BoundDuration >= 0)
+						{
+							BoundDuration -= BraveTime.DeltaTime;
+						}
+						else
+						{
+							if (GunLockForDuration)
+							{
+								BindingGun.CanBeDropped = true;
+								m_owner.inventory.GunLocked.RemoveOverride("BeamInProgress");
+							}
+
+							m_projectile.DieInAir();
+						}
+
+					}
+                   
+
+
+				}
+                else
+                {
+
+                }
+			}
 		}
+
+		public bool GunLockForDuration = false;
+		public Projectile BoundBeam;
+		public Gun BindingGun;
+        public float BoundDuration;
+
 
 		// Token: 0x04000BAC RID: 2988
 		private Projectile m_projectile;
@@ -115,6 +187,8 @@ namespace Knives
 			BACKWARDS,
 			//
 			TRAIL_V,
+
+			BindToGun
 		}
 	}
 }

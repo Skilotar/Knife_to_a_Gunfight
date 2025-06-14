@@ -59,6 +59,13 @@ namespace Knives
 
             base.Pickup(player);
         }
+
+        public override DebrisObject Drop(PlayerController player)
+        {
+            player.OnReloadedGun = (Action<PlayerController, Gun>)Delegate.Remove(player.OnReloadedGun, new Action<PlayerController, Gun>(this.goFast));
+
+            return base.Drop(player);
+        }
         public int token;
         
         public int countdown;

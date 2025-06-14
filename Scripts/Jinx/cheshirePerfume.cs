@@ -79,70 +79,75 @@ namespace Knives
                     RoomHandler currentRoom = this.Owner.CurrentRoom;
                     foreach (AIActor aiactor in currentRoom.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
                     {
-                        if (aiactor.isActiveAndEnabled)
+                        if(aiactor != null)
                         {
-                            if(aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>().smelledChechPerf != true)
+                            if (aiactor.isActiveAndEnabled)
                             {
-                                
-                                if (Vector2.Distance(aiactor.sprite.WorldCenter, this.Owner.sprite.WorldCenter) <= 5)//within 4 tiles
+                                if (aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>().smelledChechPerf != true)
                                 {
-                                    aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>().smelledChechPerf = true;
-                                    if ((int)UnityEngine.Random.Range(1, 11) <= 6)
+
+                                    if (Vector2.Distance(aiactor.sprite.WorldCenter, this.Owner.sprite.WorldCenter) <= 5)//within 4 tiles
                                     {
-                                        int Debuffselect = UnityEngine.Random.Range(1, 7);
-                                        switch (Debuffselect)
+                                        aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>().smelledChechPerf = true;
+                                        if ((int)UnityEngine.Random.Range(1, 11) <= 6)
                                         {
-                                            case 1:
-                                                aiactor.ApplyEffect(StaticStatusEffects.charmingRoundsEffect);
+                                            int Debuffselect = UnityEngine.Random.Range(1, 7);
+                                            switch (Debuffselect)
+                                            {
+                                                case 1:
+                                                    aiactor.ApplyEffect(StaticStatusEffects.charmingRoundsEffect);
 
-                                                break;
+                                                    break;
 
-                                            case 2:
-                                                aiactor.ApplyEffect(StaticStatusEffects.hotLeadEffect);
-                                                break;
+                                                case 2:
+                                                    aiactor.ApplyEffect(StaticStatusEffects.hotLeadEffect);
+                                                    break;
 
-                                            case 3:
-                                                aiactor.ApplyEffect(StaticStatusEffects.tripleCrossbowSlowEffect);
-                                                break;
+                                                case 3:
+                                                    aiactor.ApplyEffect(StaticStatusEffects.tripleCrossbowSlowEffect);
+                                                    break;
 
-                                            case 4:
-                                                aiactor.ApplyEffect(StaticStatusEffects.irradiatedLeadEffect);
-                                                break;
+                                                case 4:
+                                                    aiactor.ApplyEffect(StaticStatusEffects.irradiatedLeadEffect);
+                                                    break;
 
-                                            case 5:
-                                                HexStatusEffectController hexen = aiactor.gameObject.GetOrAddComponent<HexStatusEffectController>();
-                                                hexen.statused = true;
-                                                break;
+                                                case 5:
+                                                    HexStatusEffectController hexen = aiactor.gameObject.GetOrAddComponent<HexStatusEffectController>();
+                                                    hexen.statused = true;
+                                                    break;
 
-                                            case 6:
+                                                case 6:
 
-                                                BlastBlightedStatusController boom = aiactor.gameObject.GetOrAddComponent<BlastBlightedStatusController>();
-                                                boom.statused = true;
-                                                break;
+                                                    BlastBlightedStatusController boom = aiactor.gameObject.GetOrAddComponent<BlastBlightedStatusController>();
+                                                    boom.statused = true;
+                                                    break;
 
 
+
+                                            }
+
+                                            GlobalSparksDoer.DoRadialParticleBurst(15, aiactor.sprite.WorldBottomLeft, aiactor.sprite.WorldBottomRight, 25, 3, 2, null, null, null, GlobalSparksDoer.SparksType.DARK_MAGICKS);
 
                                         }
-
-                                        GlobalSparksDoer.DoRadialParticleBurst(15, aiactor.sprite.WorldBottomLeft, aiactor.sprite.WorldBottomRight, 25, 3, 2, null, null, null, GlobalSparksDoer.SparksType.DARK_MAGICKS);
-                                        
-                                    }
-                                    else
-                                    {
-                                        if (aiactor.IsBlackPhantom == false)
+                                        else
                                         {
-                                            aiactor.BecomeBlackPhantom();
-                                            GlobalSparksDoer.DoRadialParticleBurst(15, aiactor.sprite.WorldBottomLeft, aiactor.sprite.WorldBottomRight, 25, 3, 2, null, null, null, GlobalSparksDoer.SparksType.BLACK_PHANTOM_SMOKE);
-                                            StartCoroutine(UndoTempBlackPhantom(aiactor));
-                                            
+
+                                            if (aiactor.IsBlackPhantom == false)
+                                            {
+                                                aiactor.BecomeBlackPhantom();
+                                                GlobalSparksDoer.DoRadialParticleBurst(15, aiactor.sprite.WorldBottomLeft, aiactor.sprite.WorldBottomRight, 25, 3, 2, null, null, null, GlobalSparksDoer.SparksType.BLACK_PHANTOM_SMOKE);
+                                                StartCoroutine(UndoTempBlackPhantom(aiactor));
+
+                                            }
+
                                         }
-                                      
                                     }
+
                                 }
-                                
+
                             }
-                           
                         }
+                        
                     }
                 }
 
@@ -158,7 +163,8 @@ namespace Knives
         private IEnumerator UndoTempBlackPhantom(AIActor aiactor)
         {
             yield return new WaitForSeconds(5);
-            aiactor.UnbecomeBlackPhantom();
+            if(aiactor != null) aiactor.UnbecomeBlackPhantom();
+
         }
 
 

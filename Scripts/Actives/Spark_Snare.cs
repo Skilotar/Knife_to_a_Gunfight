@@ -31,7 +31,7 @@ namespace Knives
                 "\n\n\n - Knife_to_a_Gunfight";
 
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
-            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 125);
+            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Damage, 300);
             item.consumable = false;
 
             item.objectToSpawn = BuildPrefab();
@@ -211,19 +211,23 @@ namespace Knives
 
                     foreach (AIActor aiactor in activeEnemies)
                     {
-
-                        bool flag3 = Vector2.Distance(aiactor.CenterPosition, centerPosition) < 4f && aiactor.healthHaver.GetMaxHealth() > 0f && aiactor != null && aiactor.specRigidbody != null && Owner != null;
-                        bool flag4 = flag3;
-                        aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>();
-                        if (flag4 && !aiactor.gameObject.GetComponent<AiactorSpecialStates>().Snared)
+                        if(aiactor != null)
                         {
-                            float timescale = aiactor.LocalTimeScale;
-                            aiactor.StartCoroutine(SlowDuration(aiactor,timescale));
-                            aiactor.LocalTimeScale = .25f;
-                            attach(aiactor.specRigidbody);
-                            AkSoundEngine.PostEvent("Play_Snare_hit", base.gameObject);
-                            aiactor.gameObject.GetComponent<AiactorSpecialStates>().Snared = true;
+                            bool flag3 = Vector2.Distance(aiactor.CenterPosition, centerPosition) < 4f && aiactor.healthHaver.GetMaxHealth() > 0f && aiactor != null && aiactor.specRigidbody != null && Owner != null;
+                            bool flag4 = flag3;
+                            aiactor.gameObject.GetOrAddComponent<AiactorSpecialStates>();
+
+                            if (flag4 && !aiactor.gameObject.GetComponent<AiactorSpecialStates>().Snared && !aiactor.healthHaver.IsBoss)
+                            {
+                                float timescale = aiactor.LocalTimeScale;
+                                aiactor.StartCoroutine(SlowDuration(aiactor, timescale));
+                                aiactor.LocalTimeScale = .3f;
+                                attach(aiactor.specRigidbody);
+                                AkSoundEngine.PostEvent("Play_Snare_hit", base.gameObject);
+                                aiactor.gameObject.GetComponent<AiactorSpecialStates>().Snared = true;
+                            }
                         }
+                       
                     }
 
                     if (vangaurd)
@@ -256,8 +260,12 @@ namespace Knives
         private IEnumerator SlowDuration(AIActor ai, float time)
         {
             yield return new WaitForSeconds(4f);
-            ai.LocalTimeScale = time;
-            Destroy(ai.GetComponent<ArbitraryCableDrawer>());
+            if(ai != null)
+            {
+                ai.LocalTimeScale = time;
+                Destroy(ai.GetComponent<ArbitraryCableDrawer>());
+            }
+           
         }
 
         public System.Random rng = new System.Random();
@@ -272,9 +280,11 @@ namespace Knives
                 hitpos = Vector2.zero;
                 foreach(AIActor ai in Bound)
                 {
+                    if(ai != null)
+                    {
+                        Destroy(ai.GetComponent<ArbitraryCableDrawer>());
+                    }
 
-                    Destroy(ai.GetComponent<ArbitraryCableDrawer>());
-                    
                 }
                 Bound.Clear();
             }

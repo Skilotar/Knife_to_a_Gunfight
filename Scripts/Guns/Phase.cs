@@ -210,7 +210,7 @@ namespace Knives
 
 
     
-    public static void BuildPrefabClose()
+        public static void BuildPrefabClose()
         {
             GameObject gameObject = SpriteBuilder.SpriteFromResource("Knives/Resources/Phase_portal/Portal_close_001", null);
             gameObject.SetActive(false);

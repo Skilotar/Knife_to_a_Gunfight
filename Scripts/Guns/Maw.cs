@@ -191,11 +191,13 @@ namespace Knives
             projectile.transform.parent = gun.barrelOffset;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+        public static int ID;
 
 
 
-      
+
 
         public override void OnPostFired(PlayerController player, Gun gun)
         {

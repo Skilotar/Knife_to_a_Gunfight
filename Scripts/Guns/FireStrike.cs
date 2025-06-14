@@ -62,7 +62,7 @@ namespace Knives
             gun.DefaultModule.cooldownTime = .5f;
 
 
-            gun.SetBaseMaxAmmo(80);
+            gun.SetBaseMaxAmmo(60);
             
             gun.quality = PickupObject.ItemQuality.B;
             //gun.encounterTrackable.EncounterGuid = "Bring me another";

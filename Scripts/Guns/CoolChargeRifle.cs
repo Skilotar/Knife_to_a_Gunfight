@@ -191,7 +191,6 @@ namespace Knives
                     BraveInput instanceForPlayer = BraveInput.GetInstanceForPlayer((this.gun.CurrentOwner as PlayerController).PlayerIDX);
                     if (instanceForPlayer.ActiveActions.ShootAction && Time.timeScale != 0 && gun.ClipShotsRemaining != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed && Player.IsDodgeRolling == false)
                     {
-                        
                         instanceForPlayer.ActiveActions.ShootAction.ClearInputState();
                         AkSoundEngine.PostEvent("Play_Charger_fire", base.gameObject);
                     }

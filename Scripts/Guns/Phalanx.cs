@@ -32,7 +32,7 @@ namespace Knives
             gun.SetAnimationFPS(gun.reloadAnimation, 6);
             gun.SetAnimationFPS(gun.idleAnimation, 5);
             
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 9; i++)
             {
                 gun.AddProjectileModuleFrom(PickupObjectDatabase.GetById(15) as Gun, true, false);
             }
@@ -59,7 +59,7 @@ namespace Knives
                 if (increment >= 3) speedboost = 0;
                 if (increment <= 4 && increment >= 6) speedboost = .1f;
                 if (increment <= 7 && increment >= 9) speedboost = .2f;
-                if (increment <= 10 && increment >= 12) speedboost = .3f;
+                //if (increment <= 10 && increment >= 12) speedboost = .3f;
                 projectile.baseData.speed *= .55f + speedboost;
                 projectile.shouldRotate = true;
                 mod.positionOffset = offsets[increment];
@@ -114,9 +114,9 @@ namespace Knives
             { 6,new Vector2(1f,0)},
             { 7,new Vector2(1f,0.3f)},
             { 8,new Vector2(1f,-0.3f)},
-            { 9,new Vector2(1.5f,0)},
-            { 10,new Vector2(1.5f,0.3f)},
-            { 11,new Vector2(1.5f,-0.3f)},
+            //{ 9,new Vector2(1.5f,0)},
+            //{ 10,new Vector2(1.5f,0.3f)},
+            //{ 11,new Vector2(1.5f,-0.3f)},
         };
 
         public static Dictionary<int, float> offsetAngles = new Dictionary<int, float>
@@ -130,9 +130,9 @@ namespace Knives
             { 6,0},
             { 7,2},
             { 8,-2},
-            { 9,0},
-            { 10,2},
-            { 11,-2},
+            //{ 9,0},
+            //{ 10,2},
+            //{ 11,-2},
         };
 
         

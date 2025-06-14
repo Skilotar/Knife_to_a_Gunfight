@@ -47,14 +47,19 @@ namespace Knives
 
             item.numberOfUses = 1;
             item.UsesNumberOfUsesBeforeCooldown = true;
-
+            ID = item.PickupObjectId;
         }
+        public static int ID;
 
         public bool toggle = false;
         public override void  DoEffect(PlayerController user)
         {
 
             float dura = 10f;
+            if(user.PlayerHasActiveSynergy("My Turn"))
+            {
+                dura = 15;
+            }
 
             user.GiveItem("ski:nanostone");
             user.GiveItem("ski:nanostone");
@@ -116,6 +121,7 @@ namespace Knives
             base.LastOwner.RemovePassiveItem(nanostone.ID);
             base.LastOwner.RemovePassiveItem(nanostone.ID);
 
+            
         }
 
         public override void  OnPreDrop(PlayerController user)

@@ -93,28 +93,32 @@ namespace Knives
         public override void  Update()
         {
             base.Update();
-            if (this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>())
+            if(this.Owner != null)
             {
-                if (this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>().statused && Once == false )
+                if (this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>())
                 {
+                    if (this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>().statused && Once == false)
+                    {
 
-                    
-                    RemoveStat(PlayerStats.StatType.Damage);
-                    AddStat(PlayerStats.StatType.Damage, 1); 
-                    Once = true;
 
-                    this.Owner.stats.RecalculateStats(Owner, true);
+                        RemoveStat(PlayerStats.StatType.Damage);
+                        AddStat(PlayerStats.StatType.Damage, 1);
+                        Once = true;
+
+                        this.Owner.stats.RecalculateStats(Owner, true);
+                    }
+                    if (!this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>().statused && Once == true)
+                    {
+
+
+                        RemoveStat(PlayerStats.StatType.Damage);
+                        AddStat(PlayerStats.StatType.Damage, 0f);
+                        Once = false;
+
+                        this.Owner.stats.RecalculateStats(Owner, true);
+                    }
                 }
-                if (!this.Owner.gameObject.GetOrAddComponent<HexStatusEffectController>().statused && Once == true)
-                {
 
-                   
-                    RemoveStat(PlayerStats.StatType.Damage);
-                    AddStat(PlayerStats.StatType.Damage, 0f);
-                    Once = false;
-
-                    this.Owner.stats.RecalculateStats(Owner, true);
-                }
             }
 
         }

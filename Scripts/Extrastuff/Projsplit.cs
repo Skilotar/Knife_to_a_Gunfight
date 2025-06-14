@@ -17,6 +17,7 @@ namespace Knives
 			this.sizeMultAfterSplit = 0.8f;
 			this.removeComponentAfterUse = true;
 			this.splitOnEnemy = false;
+			this.splitOnDeath = false;
 		}
 
 		// Token: 0x0600086C RID: 2156 RVA: 0x0006765B File Offset: 0x0006585B
@@ -24,7 +25,19 @@ namespace Knives
 		{
 			this.parentProjectile = base.GetComponent<Projectile>();
 			this.parentOwner = this.parentProjectile.ProjectilePlayerOwner();
+            parentProjectile.OnDestruction += ParentProjectile_OnDestruction;
 			parentProjectile.OnHitEnemy += this.Splitprocess;
+		}
+
+        private void ParentProjectile_OnDestruction(Projectile obj)
+        {
+			if (splitOnDeath)
+			{
+				if(main == null)
+                {
+					this.SplitProjectile();
+				}
+			}
 		}
 
         private void Splitprocess(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
@@ -33,8 +46,9 @@ namespace Knives
             {
                 if (arg2.aiActor)
                 {
-					this.SplitProjectile();
 					main = arg2.aiActor;
+					this.SplitProjectile();
+					
 				}
 
 			}
@@ -52,7 +66,6 @@ namespace Knives
 				if (flag2)
 				{
 					this.SplitProjectile();
-					
 				}
 			}
 		}
@@ -181,6 +194,7 @@ namespace Knives
 
 		// Token: 0x040004CC RID: 1228
 		public bool splitOnEnemy;
+		public bool splitOnDeath;
 
 		// Token: 0x040004CD RID: 1229
 		public float splitAngles;

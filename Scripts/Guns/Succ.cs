@@ -57,7 +57,7 @@ namespace Knives
             gun.usesContinuousFireAnimation = true;
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.A;
-            gun.encounterTrackable.EncounterGuid = "https://www.youtube.com/watch?v=GKRA7-ZqxSM";
+            //gun.encounterTrackable.EncounterGuid = "https://www.youtube.com/watch?v=GKRA7-ZqxSM";
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             projectile.gameObject.SetActive(false);
@@ -116,7 +116,7 @@ namespace Knives
             GameObject gameObject = SpawnManager.SpawnProjectile(projectile1.gameObject, player.CurrentGun.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle), true);
             Projectile component = gameObject.GetComponent<Projectile>();
             component.baseData.force = -9;
-            component.baseData.damage = .5f;
+            component.baseData.damage = 1f;
             component.Owner = player;
             ProjectileSlashingBehaviour slasher2 = component.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
             slasher2.SlashRange = 15f;
@@ -131,7 +131,7 @@ namespace Knives
             component2.StunApplyChance = 100f;
             component2.AppliesStun = true;
             component2.AppliedStunDuration = .5f;
-            component2.baseData.damage = 1f;
+            component2.baseData.damage = 2f;
             component2.Owner = player;
             ProjectileSlashingBehaviour slasher3 = component2.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
             slasher3.SlashRange = 2.2f;

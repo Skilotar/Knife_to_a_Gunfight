@@ -33,27 +33,31 @@ namespace Knives
 
             gun.SetupSprite(null, "trash_idle_001", 4);
             gun.SetAnimationFPS(gun.shootAnimation, 8);
+            gun.SetAnimationFPS(gun.chargeAnimation, 5);
             gun.SetAnimationFPS(gun.reloadAnimation, 24);
-            
+
+            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.chargeAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
+            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.chargeAnimation).loopStart = 12;
 
             gun.AddProjectileModuleFrom((PickupObjectDatabase.GetById(39) as Gun), true, true);
             Gun gun2 = (PickupObjectDatabase.GetById(39) as Gun);
             gun.muzzleFlashEffects = gun2.muzzleFlashEffects;
             gun.DefaultModule.ammoCost = 1;
-            gun.DefaultModule.angleVariance = 18;
+            gun.DefaultModule.angleVariance = 15;
             gun.gunClass = GunClass.EXPLOSIVE;
             gun.gunHandedness = GunHandedness.TwoHanded;
 
             gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Charged;
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.reloadTime = 0f;
-
+            gun.barrelOffset.transform.position = new Vector3(25 / 16f, 7 / 16f, 0);
             gun.DefaultModule.cooldownTime = 1f;
             gun.DefaultModule.numberOfShotsInClip = 1;
-            gun.SetBaseMaxAmmo(60);
+            gun.SetBaseMaxAmmo(75);
 
             gun.quality = PickupObject.ItemQuality.D;
-            gun.carryPixelOffset = new IntVector2(7, 0);
+
+            gun.carryPixelOffset = new IntVector2(10, 0);
 
 
 
@@ -100,14 +104,14 @@ namespace Knives
                 Projectile = projectile2,
 
                 ChargeTime = 1.5f,
-                AdditionalWwiseEvent = "Play_pwoomp_02"
+                AdditionalWwiseEvent = "Play_pwoomp_01"
             };
             ProjectileModule.ChargeProjectile item3 = new ProjectileModule.ChargeProjectile
             {
                 Projectile = projectile3,
 
                 ChargeTime = 2.25f,
-                AdditionalWwiseEvent = "Play_pwoomp_03"
+                AdditionalWwiseEvent = "Play_pwoomp_01"
             };
             
             gun.DefaultModule.chargeProjectiles = new List<ProjectileModule.ChargeProjectile>
@@ -148,10 +152,10 @@ namespace Knives
         {
             PlayerController player = this.gun.CurrentOwner as PlayerController;
             yield return new WaitForSecondsRealtime(.2f);
-            float angle = rng.Next(-20, 20);
+            float angle = rng.Next(-15, 15);
             int getclip = this.gun.ClipShotsRemaining;
             Projectile projectile1 = ((PickupObjectDatabase.GetById(39) as Gun)).DefaultModule.projectiles[0];
-            GameObject gameObject1 = SpawnManager.SpawnProjectile(projectile1.gameObject, player.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle), true);
+            GameObject gameObject1 = SpawnManager.SpawnProjectile(projectile1.gameObject, gun.barrelOffset.transform.position, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle), true);
             Projectile component1 = gameObject1.GetComponent<Projectile>();
             component1.Owner = player;
             component1.baseData.damage = 21;
@@ -166,10 +170,10 @@ namespace Knives
             PlayerController player = this.gun.CurrentOwner as PlayerController;
 
             yield return new WaitForSecondsRealtime(.2f);
-            float angle = rng.Next(-30, 30);
+            float angle = rng.Next(-20, 20);
             
             Projectile projectile1 = ((PickupObjectDatabase.GetById(39) as Gun)).DefaultModule.projectiles[0];
-            GameObject gameObject1 = SpawnManager.SpawnProjectile(projectile1.gameObject, player.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle), true);
+            GameObject gameObject1 = SpawnManager.SpawnProjectile(projectile1.gameObject, gun.barrelOffset.transform.position, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle), true);
             Projectile component1 = gameObject1.GetComponent<Projectile>();
             component1.Owner = player;
             component1.baseData.damage = 21;
@@ -178,10 +182,10 @@ namespace Knives
             this.gun.GainAmmo(-1);
             AkSoundEngine.PostEvent("Play_BOSS_tank_grenade_01", base.gameObject);
             yield return new WaitForSecondsRealtime(.2f);
-            float angle2 = rng.Next(-30, 30);
+            float angle2 = rng.Next(-20, 20);
             
             Projectile projectile2 = ((PickupObjectDatabase.GetById(39) as Gun)).DefaultModule.projectiles[0];
-            GameObject gameObject2 = SpawnManager.SpawnProjectile(projectile2.gameObject, player.sprite.WorldCenter, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle2), true);
+            GameObject gameObject2 = SpawnManager.SpawnProjectile(projectile2.gameObject, gun.barrelOffset.transform.position, Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + angle2), true);
             Projectile component2 = gameObject2.GetComponent<Projectile>();
             component2.Owner = player;
             component2.baseData.damage = 21;

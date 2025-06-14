@@ -34,7 +34,7 @@ namespace Knives
             //Ammonomicon entry variables
             string shortDesc = "You Know The Drill";
             string longDesc = "A launchable thermite grinder designed for pushing enemies out from behind cover. \n\n" +
-                "The beloved tool of Miffed Marge, A fearsom freedom fighter against the Hegemony's oppression"
+                "The beloved tool of Miffed Marge, A fearsome freedom fighter against the Hegemony's oppression"
 
                  +
                 "\n\n\n - Knife_to_a_Gunfight";

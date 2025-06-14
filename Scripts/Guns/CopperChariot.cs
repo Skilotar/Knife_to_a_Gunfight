@@ -276,36 +276,31 @@ namespace Knives
                
                 aiActor.aiShooter.IsReallyBigBoy = true;
                 
-                aiActor.aiShooter.customShootCooldownPeriod = .25f;
+                aiActor.aiShooter.customShootCooldownPeriod = .8f;
                 aiActor.Update();
-                
-                if (nut.bulletBank != null)
+
+                if (aiActor.bulletBank != null)
                 {
-                    AIBulletBank bulletBank = nut.bulletBank;
-                    bulletBank.OnProjectileCreated = (Action<Projectile>)Delegate.Combine(bulletBank.OnProjectileCreated, new Action<Projectile>(CopperChariot.OnPostProcessProjectile));
+                    aiActor.bulletBank.OnProjectileCreated += this.OnAiTriedToShoot;
                 }
-                if (nut.aiShooter != null)
+                if (aiActor.aiShooter != null)
                 {
-                    AIShooter aiShooter = nut.aiShooter;
-                    aiShooter.PostProcessProjectile = (Action<Projectile>)Delegate.Combine(aiShooter.PostProcessProjectile, new Action<Projectile>(CopperChariot.OnPostProcessProjectile));
+                    aiActor.aiShooter.PostProcessProjectile += this.OnAiTriedToShoot;
                 }
+
+
             }
             
         }
 
-        public static void OnPostProcessProjectile(Projectile proj)
+        public void OnAiTriedToShoot(Projectile proj)
         {
-            try
-            {
-                proj.baseData.damage = 3f;
-                proj.collidesWithPlayer = false;
-                proj.UpdateCollisionMask();
-            }
-            catch (Exception e)
-            {
-                Tools.Print("Copper OnPostProcessProjectile", "FFFFFF", true);
-                Tools.PrintException(e);
-            }
+            
+           
+            proj.baseData.damage = 3f;
+            proj.collidesWithPlayer = false;
+            proj.UpdateCollisionMask();
+           
         }
 
         public List<Projectile> GetbuddyBullets()

@@ -47,7 +47,7 @@ namespace Knives
 				Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(projectileModule.projectiles[0]);
 				projectile.gameObject.SetActive(false);
 				projectileModule.projectiles[0] = projectile;
-				projectile.baseData.damage = 4.5f;
+				projectile.baseData.damage = 5f;
 				projectile.AdditionalScaleMultiplier = .5f;
 				FakePrefab.MarkAsFakePrefab(projectile.gameObject);
 				UnityEngine.Object.DontDestroyOnLoad(projectile);
@@ -70,7 +70,7 @@ namespace Knives
 			gun.gunClass = GunClass.SHOTGUN;
 			///gun.encounterTrackable.EncounterGuid = "Three buckshot on a single trigger pull.";
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
-			ID = gun.PickupObjectId;
+			
 
 
 			Gun gun2 = (Gun)ETGMod.Databases.Items[15];
@@ -88,36 +88,27 @@ namespace Knives
 			projectile2.SetProjectileSpriteRight("mozam", 19, 9, false, tk2dBaseSprite.Anchor.MiddleCenter, 19, 9);
 
 			throwable = projectile2;
+
+			ID = gun.PickupObjectId;
 		}
 
-		public static Projectile throwable;
 		public static int ID;
+
+		public static Projectile throwable;
+		
 		public System.Random rand = new System.Random();
         public override void OnPostFired(PlayerController player, Gun gun)
         {
 			
 			if(player.PlayerHasActiveSynergy("Hop-up: Hammer Point Rounds"))
 			{
-				int rng = UnityEngine.Random.Range(1, 3);
-				switch (rng)
-				{
-					case 1:
-						AkSoundEngine.PostEvent("Play_Mozam_hammer_001", base.gameObject);
-						
-						break;
-					case 2:
-						AkSoundEngine.PostEvent("Play_Mozam_hammer_002", base.gameObject);
-						
-						break;
-					
-				}
+				AkSoundEngine.PostEvent("Play_Mozam_hammer_001", base.gameObject);
 
 				hammer = true;
 
 			}
             else
             {
-				
 				AkSoundEngine.PostEvent("Play_Mozam_fire_001", base.gameObject);
 				
 				hammer = false;

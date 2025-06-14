@@ -62,7 +62,7 @@ namespace Knives
             gun.barrelOffset.transform.localPosition = new Vector3(2f, .5f, 0f);
 
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
-            gun.quality = PickupObject.ItemQuality.B;
+            gun.quality = PickupObject.ItemQuality.A;
 
 
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
@@ -91,7 +91,10 @@ namespace Knives
 
 
 
+            ID = gun.PickupObjectId;
+
         }
+        public static int ID;
 
         public static GameObject bomber;
 
@@ -291,7 +294,7 @@ namespace Knives
             };
 
             var boom = bomb.AddComponent<ProximityMine>(proximityMine);
-
+            
 
             return bomb;
         }

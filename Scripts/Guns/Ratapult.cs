@@ -60,7 +60,7 @@ namespace Knives
             //gun.encounterTrackable.EncounterGuid = "Ski's Ratapult";
 
 
-            gun.SetBaseMaxAmmo(300);
+            gun.SetBaseMaxAmmo(200);
             gun.quality = PickupObject.ItemQuality.D;
             gun.barrelOffset.transform.localPosition = new Vector3(1.7f, .7f, 0f);
 
@@ -73,7 +73,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 7f;
+            projectile.baseData.damage = 14f;
             projectile.baseData.speed = 15f;
             projectile.baseData.range = 20f;
             projectile.baseData.force = 5;

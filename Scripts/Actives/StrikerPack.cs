@@ -116,27 +116,30 @@ namespace Knives
                            
                         }
 
+                        
+
+                    }
+                    
+                }
+                else
+                {
+                    if (IsOnCooldown == true)
+                    {
+
+                        if (cooldownlocked == false)
+                        {
+                            this.sprite.SetSprite(spriteIDs[2]);
+                            AkSoundEngine.PostEvent("Play_SteamDown", base.gameObject);
+                            AkSoundEngine.PostEvent("Stop_OBJ_jetpack_loop_01", base.gameObject);
+                            cooldownlocked = true;
+                        }
 
                     }
                     else
                     {
-                        if (IsOnCooldown == true)
-                        {
-                            this.sprite.SetSprite(spriteIDs[2]);
-                            if (cooldownlocked == false)
-                            {
-                                AkSoundEngine.PostEvent("Play_SteamDown", base.gameObject);
-                                AkSoundEngine.PostEvent("Stop_OBJ_jetpack_loop_01", base.gameObject);
-                                cooldownlocked = true;
-                            }
+                        this.cooldownlocked = false;
+                        this.sprite.SetSprite(spriteIDs[0]);
 
-                        }
-                        else
-                        {
-                            this.cooldownlocked = false;
-                            this.sprite.SetSprite(spriteIDs[0]);
-
-                        }
                     }
                 }
             }
@@ -182,19 +185,7 @@ namespace Knives
 
         private void DoBurner(PlayerController player)
         {
-            Projectile projectile1 = ((PickupObjectDatabase.GetById(15) as Gun)).DefaultModule.projectiles[0];
-            GameObject gameObject1 = SpawnManager.SpawnProjectile(projectile1.gameObject, player.sprite.WorldCenter - new Vector2(0,.25f), Quaternion.Euler(0f, 0f, (player.CurrentGun == null) ? 0f : player.CurrentGun.CurrentAngle + 180), true);
-            Projectile component1 = gameObject1.GetComponent<Projectile>();
-            ProjectileSlashingBehaviour slash = component1.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-            slash.SlashDimensions = 0;
-            slash.SlashRange = 0;
-            slash.playerKnockback = 0;
-            slash.SlashDamage = 0;
-            slash.SlashVFX = ((PickupObjectDatabase.GetById(17) as Gun)).muzzleFlashEffects;
-            slash.DestroyBaseAfterFirstSlash = true;
-            slash.soundToPlay = null;
-            component1.Owner = player;
-
+            ((PickupObjectDatabase.GetById(17) as Gun)).muzzleFlashEffects.SpawnAtPosition(player.CenterPosition, player.CurrentGun.CurrentAngle - 180, player.transform);
         }
 
         public static float KnownElaps = 0;
@@ -257,6 +248,11 @@ namespace Knives
                 
                 yield return null;
             }
+
+
+
+            //AkSoundEngine.PostEvent("Play_SteamDown", item.gameObject);
+            AkSoundEngine.PostEvent("Stop_OBJ_jetpack_loop_01", item.gameObject);
             SetPrivateType<PlayerItem>(item, "m_isCurrentlyActive", false);
             item.OnActivationStatusChanged?.Invoke(item);
             OnFinish?.Invoke(user);

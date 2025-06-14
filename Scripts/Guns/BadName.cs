@@ -90,20 +90,49 @@ namespace Knives
 		{
 			if(arg2.aiActor != null)
             {
-                if (arg3)
-                {
-                    if (arg2.aiActor.CanTargetEnemies && !arg2.aiActor.CanTargetPlayers)
-                    {
-						if(arg2.aiActor.healthHaver && !arg2.aiActor.healthHaver.IsBoss && arg2.aiActor.GetComponent<CompanionController>() == null)
-                        {
+				if (arg3)
+				{
+					if (arg2.aiActor.CanTargetEnemies && !arg2.aiActor.CanTargetPlayers)
+					{
+						if (arg2.aiActor.healthHaver && !arg2.aiActor.healthHaver.IsBoss && arg2.aiActor.GetComponent<CompanionController>() == null)
+						{
 							boost_number++;
 							boost_number++;
 							AkSoundEngine.SetRTPCValue("PIT_SFX", boost_number);
 							AkSoundEngine.PostEvent("Play_Stat_Up", base.gameObject);
+						}
+					}
+				}
+				else
+				{
+					if ((this.gun.CurrentOwner as PlayerController).PlayerHasActiveSynergy("Toxic Romance"))
+                    {
+                        if (CheckIfCharmed(arg2))
+                        {
+							arg2.aiActor.ApplyEffect(StaticStatusEffects.irradiatedLeadEffect);
                         }
                     }
-                }
+				}
             }
+		}
+		private bool CheckIfCharmed(SpeculativeRigidbody arg2)
+		{
+			AIActor boi = arg2.aiActor;
+
+			GameActorEffect effect = boi.GetEffect(StaticStatusEffects.charmingRoundsEffect.effectIdentifier); // uses effect Identifier    // Hey Future me. DONT use the resistnaceType on the get effect method. it don't work fam.
+			if (effect != null)
+			{
+				//ETGModConsole.Log(effect.effectIdentifier.ToString());
+				return true;
+			}
+			else
+			{
+				//ETGModConsole.Log("Null effect");
+				return false;
+			}
+
+
+
 		}
 
 		public override void OnReload(PlayerController player, Gun gun)

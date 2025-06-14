@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using ItemAPI;
 using UnityEngine;
 using SaveAPI;
@@ -20,15 +21,100 @@ namespace Knives
 		{
 			attachedGun = base.GetComponent<Gun>();
 			player = attachedGun.GunPlayerOwner();
+			attachedGun.OnDropped += SetForReengage;
 			InitIcons();
 			Attach();
 		}
 
-		bool notify = false;
+        private void SetForReengage()
+        {
+			//ETGModConsole.Log("SetupForRedo");
+			droppedNeedsRedo = true;
+			UnUpgrade();
+		}
+
+		private void UnUpgrade()
+		{
+			if (type == CharmType.Shroom) attachedGun.PostProcessProjectile -= this.postprocessShroom;
+            if (type == CharmType.Coffee)
+            {
+				attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MovementSpeed, -1f, StatModifier.ModifyMethod.ADDITIVE);
+				attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.RateOfFire, -.3f, StatModifier.ModifyMethod.ADDITIVE);
+				player.stats.RecalculateStats(player);
+			}
+			if (type == CharmType.Piggy)
+			{
+				attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MoneyMultiplierFromEnemies, -.5f, StatModifier.ModifyMethod.ADDITIVE);
+				player.stats.RecalculateStats(player);
+			}
+			if (type == CharmType.Dango)
+			{
+				player.inventory.GunLocked.SetOverride("Upgrading", true, null);
+				for (int x = m_rolledbuffs.Count; x >= 1; x--)
+				{
+					switch (m_rolledbuffs[(x - 1)])
+					{
+						case 0: // damage up
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.Damage, -.2f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 1: // accuracy up
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.Accuracy, .2f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 2: // movespeed up
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MovementSpeed, -.6f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 3: // clipsize up
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.AdditionalClipCapacityMultiplier, -.4f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 4: // firerate up
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.RateOfFire, -.2f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 5: // reload speed
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.ReloadSpeed, .2f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 6:  // knock
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.KnockbackMultiplier, -.5f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+						case 7: // Money
+							attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MoneyMultiplierFromEnemies, -.25f, StatModifier.ModifyMethod.ADDITIVE);
+							break;
+					}
+					player.stats.RecalculateStats(player);
+				}
+				player.inventory.GunLocked.SetOverride("Upgrading", false, null);
+			}
+			if(type == CharmType.Oroboros)
+            {
+				attachedGun.InfiniteAmmo = false;
+            }
+			if (type == CharmType.Boxing)
+			{
+				attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.KnockbackMultiplier, -1f, StatModifier.ModifyMethod.ADDITIVE);
+				player.stats.RecalculateStats(player);
+				upgraded = true;
+			}
+			if (type == CharmType.Dawn)
+			{
+				attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.DamageToBosses, -.5f, StatModifier.ModifyMethod.ADDITIVE);
+				player.stats.RecalculateStats(player);
+				upgraded = true;
+			}
+		}
+
+
+
+        bool droppedNeedsRedo = false;
+       
         private void Update()
         {
 			if(attachedGun != null)
             {
+				if (droppedNeedsRedo)
+				{
+					upgraded = false;
+					Redo(type);
+					droppedNeedsRedo = false;	
+				}
 				extantCharm.GetComponent<tk2dSprite>().renderer.enabled = attachedGun.sprite.renderer.enabled;
             }
 			if(attachedGun == null)
@@ -37,58 +123,38 @@ namespace Knives
                 {
 					UnityEngine.GameObject.Destroy(extantCharm);
 				}
-				
             }
         }
-
-
-		int originalPrice;
-		private void Attach()
-		{
-			if (extantCharm == null)
+		public bool SetUpOnce = false;
+        private void Redo(CharmType type)
+        {
+			switch ((int)type)
 			{
-				if (baseitem != null)
-				{
-					if (baseitem.sprite)
-					{
-						GameObject gameObject = SpriteBuilder.SpriteFromResource(resource, null);
-						gameObject.SetActive(false);
-						ItemAPI.FakePrefab.MarkAsFakePrefab(gameObject);
-						UnityEngine.Object.DontDestroyOnLoad(gameObject);
-						if (attachedGun.sprite.FlipY != true)
-						{
-							attachedGun.HandleAimRotation(player.transform.TransformPoint(40, 0, 0));
-						}
-						else
-						{
-							attachedGun.HandleAimRotation(player.transform.TransformPoint(-40, 0, 0));
-						}
-
-						GameObject charmObject = UnityEngine.Object.Instantiate<GameObject>(gameObject, player.transform.position, Quaternion.identity);
-						charmObject.GetComponent<tk2dBaseSprite>().PlaceAtLocalPositionByAnchor(attachedGun.PrimaryHandAttachPoint.transform.position, tk2dBaseSprite.Anchor.UpperCenter);
-						charmObject.transform.parent = attachedGun.PrimaryHandAttachPoint;
+				case 5: // Shroom
+					attachedGun.PostProcessProjectile += this.postprocessShroom;
+					break;
 
 
-
-						extantCharm = charmObject;
-					}
-				}
+				default: break;
 			}
+		}
 
+        public void Upgrade()
+        {
+			
 			if (upgraded == false)
 			{
-
 				if (type == CharmType.Gnome) //
 				{
-					if(attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam)) // I hate beams 
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam)) // I hate beams 
 					{
 						DoBeamConsolationPrize(.15f); // Post Process doesn't work.
 					}
-                    else
-                    {
+					else
+					{
 						attachedGun.PostProcessProjectile += postprocessGnome;
 					}
-					
+
 					upgraded = true;
 				}
 				if (type == CharmType.Knife) // 
@@ -104,7 +170,7 @@ namespace Knives
 					{
 						attachedGun.PostProcessProjectile += this.postProcessKnife;
 					}
-					
+
 					upgraded = true;
 				}
 				if (type == CharmType.Poma) // 
@@ -150,7 +216,7 @@ namespace Knives
 					{
 						attachedGun.PostProcessProjectile += this.postprocessPepper;
 					}
-					
+
 					upgraded = true;
 				}
 				if (type == CharmType.Ice) //
@@ -168,7 +234,7 @@ namespace Knives
 					}
 					upgraded = true;
 				}
-				if (type == CharmType.Shroom) //
+				if (type == CharmType.Shroom)  // Needs reset code? why
 				{
 					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
 					{
@@ -218,6 +284,7 @@ namespace Knives
 				{
 					
 					StartCoroutine(RandomBuff(3));
+					SetUpOnce = true;
 					
 				}
 				if (type == CharmType.Clock) //
@@ -272,20 +339,25 @@ namespace Knives
 				}
 				if (type == CharmType.Piggy)
 				{
+					
 					attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MoneyMultiplierFromEnemies, .5f, StatModifier.ModifyMethod.ADDITIVE);
 					player.stats.RecalculateStats(player);
+					
 					upgraded = true;
 				}
 				if (type == CharmType.Coffee)
 				{
+					
 					attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.MovementSpeed, 1f, StatModifier.ModifyMethod.ADDITIVE);
 					attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.RateOfFire, .3f, StatModifier.ModifyMethod.ADDITIVE);
 					player.stats.RecalculateStats(player);
+					
+					
 					upgraded = true;
 				}
-				if (type == CharmType.Metronome) 
+				if (type == CharmType.Metronome)
 				{
-					OneGunMetronomeModifier combo = attachedGun.gameObject.GetOrAddComponent<OneGunMetronomeModifier>(); // fix me
+					OneGunMetronomeModifier combo = attachedGun.gameObject.GetOrAddComponent<OneGunMetronomeModifier>(); 
 					upgraded = true;
 				}
 				if (type == CharmType.Feather)
@@ -323,9 +395,9 @@ namespace Knives
 					}
 					upgraded = true;
 				}
-				if (type == CharmType.Radioactive) 
+				if (type == CharmType.Radioactive)
 				{
-					
+
 					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
 					{
 						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
@@ -340,19 +412,356 @@ namespace Knives
 					}
 
 					upgraded = true;
+					SetUpOnce = true;
+				}
+				if (type == CharmType.Oroboros)
+				{
+
+					attachedGun.InfiniteAmmo = true;
+
+					upgraded = true;
+					SetUpOnce = true;
+				}
+				if (type == CharmType.Bomb)
+				{
+
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
+					{
+						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
+						CharmBeamJankComp agonyEven = pain.gameObject.GetOrAddComponent<CharmBeamJankComp>();
+						agonyEven.type = CharmBeamJankComp.CharmType.Bomb;
+						agonyEven.player = player;
+					}
+					else
+					{
+						
+						attachedGun.PostProcessProjectile += PostProcessBomb;
+					}
+					upgraded = true;
+					SetUpOnce = true;
+				}
+				if (type == CharmType.Sushi)
+				{
+
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
+					{
+						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
+						CharmBeamJankComp agonyEven = pain.gameObject.GetOrAddComponent<CharmBeamJankComp>();
+						agonyEven.type = CharmBeamJankComp.CharmType.Sushi;
+						agonyEven.player = player;
+					}
+					else
+					{
+
+						attachedGun.PostProcessProjectile += PostProcessSushi;
+					}
+					upgraded = true;
+					SetUpOnce = true;
+				}
+				if (type == CharmType.Boxing)
+				{
+
+					attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.KnockbackMultiplier, 1f, StatModifier.ModifyMethod.ADDITIVE);
+					
+					player.stats.RecalculateStats(player);
+
+
+					upgraded = true;
+				}
+				if (type == CharmType.Chicken)
+				{
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
+					{
+						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
+						CharmBeamJankComp agonyEven = pain.gameObject.GetOrAddComponent<CharmBeamJankComp>();
+						agonyEven.type = CharmBeamJankComp.CharmType.Chicken;
+						agonyEven.player = player;
+					}
+					else
+					{
+
+						attachedGun.PostProcessProjectile += ChickenProcess;
+					}
+
+					upgraded = true;
+				}
+				if (type == CharmType.Dawn)
+				{
+
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
+					{
+						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
+						CharmBeamJankComp agonyEven = pain.gameObject.GetOrAddComponent<CharmBeamJankComp>();
+						agonyEven.type = CharmBeamJankComp.CharmType.Dawn;
+						agonyEven.player = player;
+					}
+					else
+					{
+
+						attachedGun.PostProcessProjectile += DawnProcess;
+					}
+					attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.DamageToBosses, .5f, StatModifier.ModifyMethod.ADDITIVE);
+					player.stats.RecalculateStats(player);
+
+					upgraded = true;
+				}
+				if (type == CharmType.Vampire)
+				{
+					OneGunBloodBroochMod vampire = attachedGun.gameObject.GetOrAddComponent<OneGunBloodBroochMod>();
+					upgraded = true;
+				}
+				if (type == CharmType.Chaos)
+				{
+					if (attachedGun.HasShootStyle(ProjectileModule.ShootStyle.Beam))
+					{
+						Projectile pain = attachedGun.DefaultModule.projectiles[0].projectile;
+						CharmBeamJankComp agonyEven = pain.gameObject.GetOrAddComponent<CharmBeamJankComp>();
+						agonyEven.type = CharmBeamJankComp.CharmType.Chaos;
+						agonyEven.player = player;
+						
+					}
+					else
+					{
+
+						attachedGun.PostProcessProjectile += ChaosProcess;
+					}
+
+					upgraded = true;
+				}
+
+			}
+		}
+
+
+		private void Attach()
+		{
+			if (extantCharm == null)
+			{
+				if (baseitem != null)
+				{
+					if (baseitem.sprite)
+					{
+						GameObject gameObject = SpriteBuilder.SpriteFromResource(resource, null);
+						gameObject.SetActive(false);
+						ItemAPI.FakePrefab.MarkAsFakePrefab(gameObject);
+						UnityEngine.Object.DontDestroyOnLoad(gameObject);
+						if (attachedGun.sprite.FlipY != true)
+						{
+							attachedGun.HandleAimRotation(player.transform.TransformPoint(40, 0, 0));
+						}
+						else
+						{
+							attachedGun.HandleAimRotation(player.transform.TransformPoint(-40, 0, 0));
+						}
+
+						GameObject charmObject = UnityEngine.Object.Instantiate<GameObject>(gameObject, player.transform.position, Quaternion.identity);
+						charmObject.GetComponent<tk2dBaseSprite>().PlaceAtLocalPositionByAnchor(attachedGun.PrimaryHandAttachPoint.transform.position, tk2dBaseSprite.Anchor.UpperCenter);
+						charmObject.transform.parent = attachedGun.PrimaryHandAttachPoint;
+
+
+
+						extantCharm = charmObject;
+					}
+				}
+			}
+			Upgrade();
+		}
+
+		private void ChaosProcess(Projectile obj)
+		{
+			if(obj != null)
+            {
+				if(UnityEngine.Random.Range(0,5) <= 1)
+                {
+					int RNG = (int)UnityEngine.Random.Range(0, 14);
+					switch (RNG)
+					{
+						case 0: // Fire
+							obj.AppliesFire = true;
+							obj.FireApplyChance = 100;
+							obj.fireEffect = StaticStatusEffects.hotLeadEffect;
+							obj.DefaultTintColor = UnityEngine.Color.red;
+							obj.HasDefaultTint = true;
+							break;
+						case 1:// Shroom
+							obj.AppliesPoison = true;
+							obj.PoisonApplyChance = 100;
+							obj.DefaultTintColor = UnityEngine.Color.green;
+							obj.HasDefaultTint = true;
+							break;
+						case 2:// Down
+							obj.AppliesFreeze = true;
+							obj.FreezeApplyChance = 100;
+							obj.freezeEffect = StaticStatusEffects.frostBulletsEffect;
+							obj.DefaultTintColor = ExtendedColours.freezeBlue;
+							obj.HasDefaultTint = true;
+							break;
+						case 3: // Slime
+							obj.baseData.speed *= .8f;
+							GoopModifier goopy = obj.gameObject.GetOrAddComponent<GoopModifier>();
+							goopy.goopDefinition = EasyGoopDefinitions.BlobulonGoopDef;
+							goopy.InFlightSpawnRadius = 1f;
+							goopy.CollisionSpawnRadius = 3f;
+							goopy.SpawnGoopOnCollision = true;
+							goopy.SpawnGoopInFlight = true;
+							obj.statusEffectsToApply.Add(StaticStatusEffects.tripleCrossbowSlowEffect);
+							obj.DefaultTintColor = ExtendedColours.maroon;
+							obj.HasDefaultTint = true;
+							break;
+						case 4: // Ducky
+							obj.DefaultTintColor = ExtendedColours.honeyYellow;
+							obj.HasDefaultTint = true;
+							postprocessDucky(obj);
+							break;
+						case 5: // Chicken
+							obj.DefaultTintColor = ExtendedColours.AmbientLightNoir;
+							obj.HasDefaultTint = true;
+							obj.baseData.damage *= 1.5f;
+							ChickenProcess(obj);
+							break;
+						case 6: // Sushi
+							obj.DefaultTintColor = ExtendedColours.orange;
+							obj.HasDefaultTint = true;
+							MiscToolMethods.SpawnProjAtPosi(((Gun)PickupObjectDatabase.GetById(7)).DefaultModule.projectiles[0], attachedGun.barrelOffset.transform.position, player, attachedGun, 0, 1, false);
+							break;
+						case 7:
+							postprocessClock(obj);
+							break;
+						case 8:
+							obj.DefaultTintColor = ExtendedColours.brown;
+							obj.HasDefaultTint = true;
+							obj.baseData.damage *= 1.5f;
+							postprocessMouse(obj);
+							break;
+						case 9:
+							obj.DefaultTintColor = ExtendedColours.cursedBulletsPurple;
+							obj.HasDefaultTint = true;
+							postprocessGnome(obj);
+							break;
+						case 10:
+							obj.DefaultTintColor = ExtendedColours.lime;
+							obj.HasDefaultTint = true;
+							Projectile yari = ((Gun)PickupObjectDatabase.GetById(16)).DefaultModule.projectiles[0].projectile;
+							Projectile whammy = MiscToolMethods.SpawnProjAtPosi(yari, attachedGun.barrelOffset.transform.position, player, attachedGun, 40);
+							whammy.baseData.damage = 1f;
+							whammy.AdditionalScaleMultiplier *= .8f;
+							whammy.DefaultTintColor = ExtendedColours.lime;
+							whammy.HasDefaultTint = true;
+							ExplosiveModifier boom = whammy.gameObject.GetOrAddComponent<ExplosiveModifier>();
+							boom.explosionData.damage = 5f;
+							break;
+						case 11:
+							ProjectileSplitController split = obj.gameObject.GetOrAddComponent<ProjectileSplitController>();
+							split.splitOnEnemy = true;
+							split.distanceBasedSplit = false;
+							split.numberofsplits = 1;
+							split.amtToSplitTo = 6;
+							split.dmgMultAfterSplit = .13f;
+							split.sizeMultAfterSplit = .9f;
+							split.splitAngles = 360f;
+							split.removeComponentAfterUse = true;
+							obj.HasDefaultTint = true;
+							obj.DefaultTintColor = ExtendedColours.vibrantOrange;
+							break;
+						case 12:
+
+							obj.OnHitEnemy += this.OnhitEnemyKnife;
+							obj.DefaultTintColor = ExtendedColours.silvedBulletsSilver;
+							obj.HasDefaultTint = true;
+							break;
+
+						case 13:
+							HomingModifier home = obj.gameObject.GetOrAddComponent<HomingModifier>();
+							home.AngularVelocity = 70;
+							home.HomingRadius = 20;
+							obj.OnHitEnemy = (Action<Projectile, SpeculativeRigidbody, bool>)Delegate.Combine(obj.OnHitEnemy, new Action<Projectile, SpeculativeRigidbody, bool>(OnHitEnemyTarget));
+							obj.DefaultTintColor = ExtendedColours.carrionRed;
+							obj.HasDefaultTint = true;
+							break;
+					}
+					
+				}
+            }
+		}
+
+		private void DawnProcess(Projectile obj)
+		{
+			obj.OnHitEnemy += Clean;
+		}
+
+		private void Clean(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+		{
+			if (arg2.aiActor != null)
+			{
+				if (!arg3)
+				{
+					arg2.aiActor.UnbecomeBlackPhantom();
 				}
 			}
 		}
 
-    
+		private void ChickenProcess(Projectile obj)
+		{
+			obj.OnHitEnemy = (Action<Projectile, SpeculativeRigidbody, bool>)Delegate.Combine(obj.OnHitEnemy, new Action<Projectile, SpeculativeRigidbody, bool>(OnHitEnemyChicken));
+
+		}
+
+		private void OnHitEnemyChicken(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+		{
+			if (arg3 == true)
+			{
+				if (arg2.aiActor != null)
+				{
+					for (int i = 0; i <= 2; i++)
+					{
+						GameObject MicroCuccoPrefab = EnemyDatabase.GetOrLoadByGuid(PickupObjectDatabase.GetById(572).GetComponent<CompanionItem>().CompanionGuid).GetComponent<CuccoController>().MicroCuccoPrefab;
+						Vector2 vector = GameManager.Instance.MainCameraController.transform.position.XY() + UnityEngine.Random.insideUnitCircle.normalized * GameManager.Instance.MainCameraController.Camera.orthographicSize * 2f;
+						GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(MicroCuccoPrefab, vector, Quaternion.identity);
+						MicroCuccoController birdup = gameObject.GetComponent<MicroCuccoController>();
+						birdup.Initialize(player);
+						birdup.Speed *= 1.5f;
+						birdup.Damage = 6;
+					}
+				}
+			}
+		}
+
 
 		private void DoBeamConsolationPrize(float percent)
         {
 			
 			attachedGun.AddCurrentGunStatModifier(PlayerStats.StatType.Damage, percent, StatModifier.ModifyMethod.ADDITIVE);
 			player.stats.RecalculateStats(player);
-			Notify("Charm Non-Functional On Beam weapons", "Adding" + percent + "% damage increase");
+			Notify("Charm Non-Functional On Beams", "Adding" + percent + "% damage increase");
 
+		}
+
+		private void PostProcessSushi(Projectile obj)
+		{
+			if (UnityEngine.Random.Range(1, 15) <= 1)
+			{
+				Projectile proj = MiscToolMethods.SpawnProjAtPosi(((Gun)PickupObjectDatabase.GetById(7)).DefaultModule.projectiles[0], attachedGun.barrelOffset.transform.position, player, attachedGun, 0, 1, false);
+			}
+		}
+
+		private void PostProcessBomb(Projectile obj)
+		{
+			obj.OnHitEnemy += Bomba;
+		}
+
+		private void Bomba(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
+		{
+			if (arg2.aiActor)
+			{
+				if (UnityEngine.Random.Range(1, 20) <= 1)
+				{
+					arg1.HasDefaultTint = true;
+					arg1.DefaultTintColor = new Color(.70f, .40f, .24f);
+					arg1.CurseSparks = true;
+					BlastBlightedStatusController boom = arg2.aiActor.gameObject.GetOrAddComponent<BlastBlightedStatusController>();
+					boom.statused = true;
+				}
+			}
 		}
 
         private void postprocessNuke(Projectile obj)
@@ -372,7 +781,7 @@ namespace Knives
 
                 if (arg3)
                 {
-					if (UnityEngine.Random.Range(1, 18) <= 1 || arg2.aiActor.GetComponent<ExplodeOnDeath>() != null)
+					if (UnityEngine.Random.Range(1, 10) <= 1 || arg2.aiActor.GetComponent<ExplodeOnDeath>() != null)
 					{
 						DoSafeExplosion(arg2.UnitCenter);
 						AssetBundle assetBundle = ResourceManager.LoadAssetBundle("shared_auto_001");
@@ -432,15 +841,8 @@ namespace Knives
 			goopy.CollisionSpawnRadius = 3f;
 			goopy.SpawnGoopOnCollision = true;
 			goopy.SpawnGoopInFlight = true;
-			obj.OnHitEnemy += onSlimeEnemy;
-        }
-
-        private void onSlimeEnemy(Projectile arg1, SpeculativeRigidbody arg2, bool arg3)
-        {
-            if (arg2.aiActor)
-            {
-				arg2.aiActor.ApplyEffect(StaticStatusEffects.tripleCrossbowSlowEffect);
-            }
+			obj.statusEffectsToApply.Add(StaticStatusEffects.tripleCrossbowSlowEffect);
+			
         }
 
         private void postprocessHunter(Projectile obj)
@@ -454,7 +856,7 @@ namespace Knives
             {
 				if (arg3)// fatal
 				{
-					if (UnityEngine.Random.Range(1, 10) <= 1)
+					if (UnityEngine.Random.Range(1, 7) <= 1)
 					{
 						LootEngine.SpawnItem(PickupObjectDatabase.GetById(MeatPickup.ID).gameObject, arg2.aiActor.sprite.WorldCenter, Vector2.zero, 1, true, true);
 					}
@@ -481,14 +883,17 @@ namespace Knives
         {
 			if (UnityEngine.Random.Range(1, 5) <= 1)
 			{
-
-				MiscToolMethods.SpawnProjAtPosi(RubberCharm.ducky, arg2.specRigidbody.UnitCenter, player, UnityEngine.Random.Range(0, 360));
+				MiscToolMethods.SpawnProjAtPosi(RubberCharm.ducky, arg2.specRigidbody.UnitCenter, player, UnityEngine.Random.Range(0, 360), 0, 1, false) ;
 			}
 		}
 
 		private void onBounce(BounceProjModifier arg1, SpeculativeRigidbody arg2)
         {
-			AkSoundEngine.PostEvent("Play_Ducky", base.gameObject);
+			if(base.gameObject != null)
+            {
+				AkSoundEngine.PostEvent("Play_Ducky", base.gameObject);
+			}
+			
 		}
 
        
@@ -602,8 +1007,10 @@ namespace Knives
 			regroup = SplitUpGang[0] + ", " + SplitUpGang[1] + ", & " + SplitUpGang[2] ;
 			Notify("Dango Buffs Selected:", regroup);
 			player.stats.RecalculateStats(player);
+			m_rolledbuffs = rolledbuffs;
 			upgraded = true;
 		}
+		public List<int> m_rolledbuffs = new List<int>();
 		public string regroup;
 		public bool upgraded = false;
 
@@ -613,10 +1020,12 @@ namespace Knives
 			{
 				Projectile yari = ((Gun)PickupObjectDatabase.GetById(16)).DefaultModule.projectiles[0].projectile;
 				Projectile whammy = MiscToolMethods.SpawnProjAtPosi(yari, attachedGun.barrelOffset.transform.position, player, attachedGun, 40);
-				whammy.baseData.damage *= .5f;
+				whammy.baseData.damage = 1f;
 				whammy.AdditionalScaleMultiplier *= .8f;
 				whammy.DefaultTintColor = ExtendedColours.lime;
 				whammy.HasDefaultTint = true;
+				ExplosiveModifier boom = whammy.gameObject.GetOrAddComponent<ExplosiveModifier>();
+				boom.explosionData.damage = 5f;
 			}
 		}
 
@@ -624,7 +1033,7 @@ namespace Knives
         {
 			
 			HomingModifier home = obj.gameObject.GetOrAddComponent<HomingModifier>();
-			home.AngularVelocity = 75;
+			home.AngularVelocity = 70;
 			home.HomingRadius = 20;
 			if (UnityEngine.Random.Range(1, 10) == 1)
 			{
@@ -648,6 +1057,7 @@ namespace Knives
 
         private void postprocessShroom(Projectile obj)
         {
+			
 			if (UnityEngine.Random.Range(1, 3) == 1)
 			{
 				obj.AppliesPoison = true;
@@ -660,7 +1070,7 @@ namespace Knives
 
         private void postprocessIce(Projectile obj)
         {
-			if (UnityEngine.Random.Range(1, 5) == 1)
+			if (UnityEngine.Random.Range(1, 4) == 1)
 			{
 				obj.AppliesFreeze = true;
 				obj.FreezeApplyChance = 100;
@@ -694,6 +1104,7 @@ namespace Knives
 			{
 				if (arg2.aiActor != null)
 				{
+
 					RatCrown.SpawnRat(this.player, arg2.aiActor.sprite.WorldCenter);
 					
 				}
@@ -707,7 +1118,7 @@ namespace Knives
 			split.distanceBasedSplit = true;
 			split.numberofsplits = 1;
 			split.amtToSplitTo = 2;
-			split.dmgMultAfterSplit = .5f;
+			split.dmgMultAfterSplit = .45f;
 			split.splitAngles = 16f;
 			
 		}
@@ -726,12 +1137,11 @@ namespace Knives
 				split.numberofsplits = 1;
 				split.amtToSplitTo = 6;
 				split.dmgMultAfterSplit = .13f;
-				split.sizeMultAfterSplit = .8f;
+				split.sizeMultAfterSplit = .9f;
 				split.splitAngles = 360f;
 				split.removeComponentAfterUse = true;
 				obj.HasDefaultTint = true;
 				obj.DefaultTintColor = ExtendedColours.vibrantOrange;
-				
 			}
 		}
 
@@ -812,6 +1222,14 @@ namespace Knives
             Meat,
             Slime,
             Radioactive,
+			Oroboros,
+			Bomb,
+			Sushi,
+			Boxing,
+			Chicken,
+			Dawn,
+			Vampire,
+			Chaos,
         }
 
 		List<int> BuffList = new List<int>

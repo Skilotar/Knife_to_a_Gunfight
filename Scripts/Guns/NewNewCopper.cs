@@ -21,11 +21,11 @@ namespace Knives
 				Game.Items.Rename("outdated_gun_mods:copper_chariot", "ski:copper_chariot");
 				gun.gameObject.AddComponent<NewNewCopperChariot>();
 				GunExt.SetShortDescription(gun, "Blinding Speed!");
-				GunExt.SetLongDescription(gun, "The ghost of a gun nut guards the wielder of this blade. While the blade itself is too weak to be used your new astral companion will be happy to provide assistance." +
+				GunExt.SetLongDescription(gun, "The ghost of a gun nut guards the wielder of this blade. The blade itself is softer than most and must be struck with precision." +
 					"\n\n\n - Knife_to_a_Gunfight");
 				GunExt.SetupSprite(gun, null, "chariot_idle_001", 8);
-				GunExt.SetAnimationFPS(gun, gun.shootAnimation, 8);
-				GunExt.SetAnimationFPS(gun, gun.reloadAnimation, 8);
+				GunExt.SetAnimationFPS(gun, gun.shootAnimation, 6);
+				GunExt.SetAnimationFPS(gun, gun.reloadAnimation, 6);
 				GunExt.AddProjectileModuleFrom(gun, "AK-47", true, true);
 				gun.DefaultModule.ammoCost = 1;
 				gun.DefaultModule.angleVariance = 0f;
@@ -33,24 +33,35 @@ namespace Knives
 				gun.reloadTime = 0.5f;
 				gun.DefaultModule.shootStyle = 0;
 				gun.DefaultModule.sequenceStyle = 0;
-				gun.DefaultModule.cooldownTime = 1.5f;
-				gun.DefaultModule.numberOfShotsInClip = 20;
-				gun.AddPassiveStatModifier(PlayerStats.StatType.Curse, 1, StatModifier.ModifyMethod.ADDITIVE);
-				gun.SetBaseMaxAmmo(1500);
-				gun.CurrentAmmo = 1500;
+				gun.DefaultModule.cooldownTime = .75f;
+				gun.DefaultModule.numberOfShotsInClip = 200;
+				gun.PreventNormalFireAudio = true;
+				gun.AddPassiveStatModifier(PlayerStats.StatType.Curse, 2, StatModifier.ModifyMethod.ADDITIVE);
+				gun.InfiniteAmmo = true;
+				
 				gun.quality = (PickupObject.ItemQuality.A);
-				gun.encounterTrackable.EncounterGuid = "hora hora hora hora!";
+				//gun.encounterTrackable.EncounterGuid = "hora hora hora hora!";
 				Projectile projectile = Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
 				projectile.gameObject.SetActive(false);
 				ItemAPI.FakePrefab.MarkAsFakePrefab(projectile.gameObject);
 				Object.DontDestroyOnLoad(projectile);
 				gun.DefaultModule.projectiles[0] = projectile;
-				projectile.baseData.damage = 1f;
+				gun.barrelOffset.transform.localPosition = new Vector3(13/16f, 6/16f, 0f);
+				projectile.baseData.damage = 10f;
 				projectile.baseData.speed *= 1f;
 				projectile.baseData.range = 0.001f;
 				projectile.baseData.force = 0f;
 				projectile.pierceMinorBreakables = true;
 				projectile.transform.parent = gun.barrelOffset;
+				ProjectileSlashingBehaviour stabby = projectile.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
+				stabby.SlashDamageUsesBaseProjectileDamage = true;
+				stabby.SlashDimensions = 40;
+				stabby.SlashRange = 4.5f;
+				stabby.InteractMode = SlashDoer.ProjInteractMode.IGNORE;
+				stabby.SlashVFX.type = VFXPoolType.None;
+				gun.muzzleFlashEffects.type = VFXPoolType.None;
+				gun.OverrideNormalFireAudioEvent = "";
+
 				ETGMod.Databases.Items.Add(gun, null, "ANY");
 
 				ID = gun.PickupObjectId;
@@ -154,7 +165,7 @@ namespace Knives
 		{
 			try
 			{	
-				gun.PreventNormalFireAudio = false;
+				gun.PreventNormalFireAudio = true;
 				bool flag = this.combat == 1 && this.canSpawn == 0;
 				if (flag)
 				{
@@ -200,13 +211,18 @@ namespace Knives
 		{
 			try
 			{
+
 				bool flag = this.gun.CurrentOwner;
 				if (flag)
 				{
-					
+					if (!gun.PreventNormalFireAudio)
+					{
+						this.gun.PreventNormalFireAudio = true;
+					}
 					bool flag3 = !this.gun.IsReloading && !this.HasReloaded;
 					if (flag3)
 					{
+						
 						this.HasReloaded = true;
 					}
 					this.CombatChecker();
@@ -327,8 +343,6 @@ namespace Knives
 					CompanionController component = aiactor.gameObject.GetComponent<CompanionController>();
 					component.Initialize(owner);
 					*/
-					
-
 					this.nut = aiactor;
 					MindControlEffect orAddComponent = GameObjectExtensions.GetOrAddComponent<MindControlEffect>(aiactor.gameObject);
 					orAddComponent.owner = (this.gun.CurrentOwner as PlayerController);
@@ -346,7 +360,7 @@ namespace Knives
 						AIShooter aiShooter = aiactor.aiShooter;
 						aiShooter.PostProcessProjectile = (Action<Projectile>)Delegate.Combine(aiShooter.PostProcessProjectile, new Action<Projectile>(this.OnPostProcessProjectile));
 					}
-					aiactor.LocalTimeScale = 3;
+					aiactor.LocalTimeScale = 2;
 				}
 			}
 			catch (Exception e)
@@ -367,15 +381,19 @@ namespace Knives
 				//proj.AdjustPlayerProjectileTint(Color.grey, 0);
 
 				proj.Owner = this.gun.CurrentOwner; //to allow the projectile damage modif, otherwise it stays at 10 for some reasons
-				
-				proj.baseData.damage = 1;
+				SpawnManager.PoolManager.Remove(proj.transform);
+				proj.RemoveBulletScriptControl();
+				proj.AdjustPlayerProjectileTint(ExtendedColours.honeyYellow, 1);
+				proj.BulletScriptSettings.preventPooling = true;
+
+				proj.baseData.damage = 3;
 				if (this.gun.CurrentOwner is PlayerController)
 				{
-					proj.baseData.damage *= (this.gun.CurrentOwner as PlayerController).stats.GetStatValue(PlayerStats.StatType.Damage) + .5f;
+					proj.baseData.damage *= (this.gun.CurrentOwner as PlayerController).stats.GetStatValue(PlayerStats.StatType.Damage);
 				}
 				if (proj.IsBlackBullet)
 				{
-					proj.baseData.damage *= 2.5f;
+					proj.baseData.damage *= (this.gun.CurrentOwner as PlayerController).stats.GetStatValue(PlayerStats.StatType.Damage) + 1f;
 				}
 				proj.collidesWithPlayer = false;
 				proj.collidesWithEnemies = true;

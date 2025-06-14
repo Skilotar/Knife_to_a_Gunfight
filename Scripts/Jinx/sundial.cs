@@ -59,14 +59,14 @@ namespace Knives
 
 
         }
-        float dusktimer = 180;
+        float dusktimer = 240;
         bool half_toggle = false;
         public void OnLoadedFloor(PlayerController player)
         {
 
             if (half_toggle)
             {
-                dusktimer = 180;
+                dusktimer = 240;
                 PlayedSSS = false;
                 PlayedHowl = false;
                 half_toggle = false;
@@ -84,12 +84,12 @@ namespace Knives
         {
             if (this.Owner)
             {
-                if(dusktimer >= -180)
+                if(dusktimer >= -120)
                 {
-                    dusktimer -= Time.deltaTime; // 3 mins until debuffing
+                    dusktimer -= Time.deltaTime; // 4 mins until debuffing
                 }
                 RemoveStat(PlayerStats.StatType.RateOfFire);
-                AddStat(PlayerStats.StatType.RateOfFire, dusktimer * .00333333333f); // 60% initial boost and - 60% total negative
+                AddStat(PlayerStats.StatType.RateOfFire, dusktimer * .00333333333f); 
                 RemoveStat(PlayerStats.StatType.Damage);
                 AddStat(PlayerStats.StatType.Damage, dusktimer * .00333333333f);
                 this.Owner.stats.RecalculateStats(Owner, true);

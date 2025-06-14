@@ -22,36 +22,43 @@ namespace Knives
 
 		private void Update()
 		{
-			if (player.CurrentGun != null && this.gun != null)
-			{
-
-				if (CanClear())
+			if(player != null)
+            {
+				if (player.CurrentGun != null && this.gun != null)
 				{
-					if (delay > 0)
+
+					if (CanClear())
 					{
-						delay -= Time.deltaTime;
+						if (delay > 0 && delay < 50)
+						{
+							delay -= Time.deltaTime;
+						}
+						else
+						{
+
+							AkSoundEngine.PostEvent("Stop_Timekeep_HighNoon", this.gun.gameObject);
+							PlayerController player = this.gun.CurrentOwner as PlayerController;
+							PlayerSepiaHandler sep = player.GetComponent<PlayerSepiaHandler>();
+							sep.sepiaLevel = 0;
+							this.gun.RemoveStatFromGun(PlayerStats.StatType.MovementSpeed);
+							player.stats.RecalculateStats(player);
+							delay = 99999;
+							if (TimeKeeper.m_tumble != null) TimeKeeper.m_tumble.TriggerDestruction();
+							//ETGModConsole.Log("CleanUpReset");
+						}
+
 					}
 					else
 					{
-						AkSoundEngine.PostEvent("Stop_Timekeep_HighNoon", base.gameObject);
-						PlayerController player = this.gun.CurrentOwner as PlayerController;
-						Pixelator.Instance.SetFreezeFramePower(0, false);
-						this.gun.RemoveStatFromGun(PlayerStats.StatType.MovementSpeed);
-						player.stats.RecalculateStats(player);
-						
+						delay = .01f;
 					}
 
+					if (player.CurrentGun == this.gun)
+					{
+						delay = .01f;
+					}
 				}
-				else
-				{
-					
-					delay = .2f;
-				}
-
-
 			}
-
-
 		}
 
 		private bool CanClear()
@@ -59,6 +66,7 @@ namespace Knives
 			return player.CurrentGun.PickupObjectId != gun.PickupObjectId;
 		}
 
+		public bool reset = false;
 		public PlayerController player;
 		public Gun gun;
 		private GameObject Dude;

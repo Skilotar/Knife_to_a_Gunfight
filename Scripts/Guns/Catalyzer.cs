@@ -20,7 +20,7 @@ namespace Knives
         {
             // Get yourself a new gun "base" first.
             // Let's just call it "Basic Gun", and use "jpxfrd" for all sprites and as "codename" All sprites must begin with the same word as the codename. For example, your firing sprite would be named "jpxfrd_fire_001".
-            Gun gun = ETGMod.Databases.Items.NewGun("Catalyzer", "Cat");
+            Gun gun = ETGMod.Databases.Items.NewGun("Catalyzer", "cata");
             // "kp:basic_gun determines how you spawn in your gun through the console. You can change this command to whatever you want, as long as it follows the "name:itemname" template.
             Game.Items.Rename("outdated_gun_mods:catalyzer", "ski:catalyzer");
             gun.gameObject.AddComponent<Catalyzer>();
@@ -34,12 +34,12 @@ namespace Knives
             // SetupSprite sets up the default gun sprite for the ammonomicon and the "gun get" popup.
             // WARNING: Add a copy of your default sprite to Ammonomicon Encounter Icon Collection!
             // That means, "sprites/Ammonomicon Encounter Icon Collection/defaultsprite.png" in your mod .zip. You can see an example of this with inside the mod folder.
-            gun.SetupSprite(null, "Cat_idle_001", 8);
+            gun.SetupSprite(null, "cata_idle_001", 8);
             
             // ETGMod automatically checks which animations are available.
             // The numbers next to "shootAnimation" determine the animation fps. You can also tweak the animation fps of the reload animation and idle animation using this method.
-            gun.SetAnimationFPS(gun.shootAnimation, 48);
-            gun.SetAnimationFPS(gun.reloadAnimation, 14);
+            gun.SetAnimationFPS(gun.shootAnimation, 16);
+            gun.SetAnimationFPS(gun.reloadAnimation, 10);
             gun.SetAnimationFPS(gun.chargeAnimation, 12);
             
             // Every modded gun has base projectile it works with that is borrowed from other guns in the game. 
@@ -63,7 +63,7 @@ namespace Knives
             gun.SetBaseMaxAmmo(400);
             gun.barrelOffset.transform.localPosition = new Vector3(1f, .5f, 0f);
             gun.quality = PickupObject.ItemQuality.A;
-            gun.encounterTrackable.EncounterGuid = "One Herring Twitch! And Kableewy!";
+            //gun.encounterTrackable.EncounterGuid = "One Herring Twitch! And Kableewy!";
             gun.muzzleFlashEffects = null;
             gun.PreventNormalFireAudio = true;
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
@@ -74,8 +74,8 @@ namespace Knives
             projectile.baseData.damage = 1f;
             projectile.baseData.speed = 10f;
             projectile.baseData.range = 4000f;
-            projectile.SetProjectileSpriteRight("cation", 30,30, false, tk2dBaseSprite.Anchor.MiddleCenter, 30, 30);
-            projectile.AdditionalScaleMultiplier = .35f;
+            projectile.SetProjectileSpriteRight("cation", 11,11, false, tk2dBaseSprite.Anchor.MiddleCenter, 11, 11);
+            //projectile.AdditionalScaleMultiplier = .35f;
             projectile.angularVelocity = 500;
             projectile.transform.parent = gun.barrelOffset;
             PierceProjModifier stab = projectile.gameObject.GetOrAddComponent<PierceProjModifier>();
@@ -86,12 +86,12 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile2.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile2);
             gun.DefaultModule.projectiles[0] = projectile2;
-            projectile2.baseData.damage = 20f;
+            projectile2.baseData.damage = 25f;
             projectile2.baseData.speed = 13f;
             projectile2.baseData.range = 25f;
-            projectile2.SetProjectileSpriteRight("plasma", 42, 42, false, tk2dBaseSprite.Anchor.MiddleCenter, 40, 40);
+            projectile2.SetProjectileSpriteRight("plasma", 21, 21, false, tk2dBaseSprite.Anchor.MiddleCenter, 21, 21);
             projectile2.angularVelocity = 500;
-            projectile2.AdditionalScaleMultiplier = .7f;
+            //projectile2.AdditionalScaleMultiplier = .7f;
             
             projectile2.transform.parent = gun.barrelOffset;
 
@@ -117,7 +117,8 @@ namespace Knives
                 item,
                 item2
             };
-            
+
+            MiscToolMethods.TrimAllGunSprites(gun);
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
@@ -278,7 +279,7 @@ namespace Knives
             damageRadius = 3f,
             damageToPlayer = 0f,
             doDamage = true,
-            damage = 18f,
+            damage = 17f,
             doDestroyProjectiles = true,
             doForce = false,
             debrisForce = 12f,
@@ -324,6 +325,10 @@ namespace Knives
                 }
 
 
+            }
+            else
+            {
+                //gun.spriteAnimator.Play("cata_charge");
             }
 
 

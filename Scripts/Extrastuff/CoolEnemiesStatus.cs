@@ -71,10 +71,11 @@ namespace Knives
 			AiactorSpecialStates state = aIActor.gameObject.GetOrAddComponent<AiactorSpecialStates>();
 
 			float cappedCoolness = state.EnemyCoolnessLevel;
+			cappedCoolness += 5;
 			if (state.EnemyCoolnessLevel > 20) cappedCoolness = 20;
 			if (aIActor.healthHaver.IsBoss && state.EnemyCoolnessLevel >= 15) cappedCoolness = 15;
 			
-			if (UnityEngine.Random.Range(0, 120) < cappedCoolness) // Max 1/6 chance on kill
+			if (UnityEngine.Random.Range(0, 100) < cappedCoolness) // Max 1/6 chance on kill
 			{
 				int itemget = GetItem();
 				if (itemget == 0000000)

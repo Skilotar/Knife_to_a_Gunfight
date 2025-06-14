@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-using ItemAPI;
+using Alexandria.ItemAPI;
 using Dungeonator;
 using System.Reflection;
 using Random = System.Random;
@@ -17,7 +17,7 @@ using MonoMod.RuntimeDetour;
 
 namespace Knives
 {   
-    public class Stopda : IounStoneOrbitalItem
+    public class Stopda : AdvancedPlayerOrbitalItem
     {
         public static void Register()
         {
@@ -37,9 +37,6 @@ namespace Knives
             Stopda.BuildPrefab();
 
             rock.OrbitalPrefab = Stopda.orbitalPrefab;
-            
-            rock.Identifier = IounStoneOrbitalItem.IounStoneIdentifier.GENERIC;
-
             ID = rock.PickupObjectId;
         }
 
@@ -75,47 +72,88 @@ namespace Knives
 
         public override void Pickup(PlayerController player)
         {
-
+            KnownLastOwner = player;
             player.OnEnteredCombat += this.OnEnteredCombat;
-            if (this.m_extantOrbital != null)
-            {
-                SpeculativeRigidbody specRigidbody = this.m_extantOrbital.GetComponent<PlayerOrbital>().specRigidbody;
-                specRigidbody.OnPreRigidbodyCollision = (SpeculativeRigidbody.OnPreRigidbodyCollisionDelegate)Delegate.Combine(specRigidbody.OnPreRigidbodyCollision, new SpeculativeRigidbody.OnPreRigidbodyCollisionDelegate(this.OnPreCollison));
-            }
+            
             base.Pickup(player);
 
         }
+        public PlayerController KnownLastOwner;
 
+        public GameObject rememberme;
         private void OnEnteredCombat()
         {
-            PlayerOrbital wee = this.m_extantOrbital.GetComponent<PlayerOrbital>();
-            wee.orbitDegreesPerSecond = 50 + (rockpoints * 2);
-
+            PlayerOrbital wee = rememberme.GetComponent<PlayerOrbital>();
+            wee.orbitDegreesPerSecond = 50 + (rockpoints / 2);
+            //AcquireTargetNOW(wee);
         }
 
         
-        
+
         private void OnPreCollison(SpeculativeRigidbody myRigidbody, PixelCollider myCollider, SpeculativeRigidbody other, PixelCollider otherCollider)
         {
-
-           
             rockpoints++;
            
-            //other.projectile.DieInAir();
-            //PhysicsEngine.SkipCollision = true;
-       
+            if (KnownLastOwner != null)
+            {
+                
+                if (KnownLastOwner.PlayerHasActiveSynergy("Rolling Stones"))
+                {
+                    
+                    MiscToolMethods.SpawnProjAtPosi(Callahan.rocks, myRigidbody.transform.position, this.Owner, UnityEngine.Random.Range(-180, 180));
+                    MiscToolMethods.SpawnProjAtPosi(Callahan.rocks, myRigidbody.transform.position, this.Owner, UnityEngine.Random.Range(-180, 180));
+                    MiscToolMethods.SpawnProjAtPosi(Callahan.rocks, myRigidbody.transform.position, this.Owner, UnityEngine.Random.Range(-180, 180));
+                    
+                }
+                if (KnownLastOwner.PlayerHasActiveSynergy("Apollo 440"))
+                {
+                    
+                    PhysicsEngine.SkipCollision = true;
+                    
+                    if(other.GetComponent<Projectile>() != null)
+                    {
+                        Projectile projectile = other.GetComponent<Projectile>();
+                        SpawnManager.PoolManager.Remove(projectile.transform);
+                        PassiveReflectItem.ReflectBullet(projectile, true, this.Owner, 2f, 1f, 4f, 0f);
+                        projectile.RemoveBulletScriptControl();
+                        projectile.BulletScriptSettings.preventPooling = true;
+                        projectile.RemoveBulletScriptControl();
+                        projectile.AdjustPlayerProjectileTint(ExtendedColours.honeyYellow, 1);
+
+                        projectile.baseData.speed *= 0f;
+
+                        projectile.baseData.damage *= 0.5f;
+                        projectile.UpdateSpeed();
+
+
+                        ChildProjCleanup cleanup = projectile.gameObject.GetOrAddComponent<ChildProjCleanup>();
+                        cleanup.delay = 7f;
+                        cleanup.parentProjectile = null;
+                        cleanup.doColor = false;
+                    }
+                    
+                }
+            }
         }
     
         public override void  Update()
         {
-
-           
-
-
+            
             base.Update();
         }
 
-   
+
+        public override void OnOrbitalCreated(GameObject orbital)
+        {
+            if (orbital.GetComponent<SpeculativeRigidbody>())
+            {
+                SpeculativeRigidbody specRigidbody = orbital.GetComponent<SpeculativeRigidbody>();
+                specRigidbody.OnPreRigidbodyCollision += this.OnPreCollison;
+                rememberme = orbital;
+            }
+            base.OnOrbitalCreated(orbital);
+        }
+
 
 
         float rockpoints;

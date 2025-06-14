@@ -35,7 +35,7 @@ namespace Knives
                 acceptText = "Yes <15 casings>",
                 declineText = "No thanks.",
                 room = Alexandria.DungeonAPI.RoomFactory.BuildFromResource("Knives/Resources/Charm/Shrine/CharmRoom.room").room,
-                RoomWeight = 1f, 
+                RoomWeight = .4f, 
 
                 OnAccept = Accept,
                 OnDecline = null,
@@ -128,13 +128,14 @@ namespace Knives
             LootEngine.SpawnItem(PickupObjectDatabase.GetById(CharmBauble.ID).gameObject, npc.transform.position - new Vector3(-1, 1), Vector2.zero, 1, true, true);
             animator.Play(idleanim);
         }
-
+        
+        /*
         private static int GetRandomCharmID()
         {
             int rng = UnityEngine.Random.Range(0, GlobalCharmList.Charmslist.Count);
             return GlobalCharmList.Charmslist[rng];
         }
-
+        */
         
     }
 }

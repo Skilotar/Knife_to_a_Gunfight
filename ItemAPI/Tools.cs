@@ -124,6 +124,19 @@ namespace ItemAPI
             Vector3 localPosition = new Vector3((float)hitbox.Offset.x + (float)hitbox.Dimensions.x * 0.5f, (float)hitbox.Offset.y + (float)hitbox.Dimensions.y * 0.5f, -16f) / 16f;
             hitboxDisplay.transform.localPosition = localPosition;
         }
+        public static void ShowGroundCollider(this SpeculativeRigidbody body)
+        {
+            PixelCollider hitbox = body.GroundPixelCollider;
+            GameObject hitboxDisplay = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            hitboxDisplay.name = "HitboxDisplay";
+            hitboxDisplay.transform.SetParent(body.transform);
+
+            Tools.Print($"{body.name}");
+            Tools.Print($"    Offset: {hitbox.Offset}, Dimesions: {hitbox.Dimensions}");
+            hitboxDisplay.transform.localScale = new Vector3((float)hitbox.Dimensions.x / 16f, (float)hitbox.Dimensions.y / 16f, 1f);
+            Vector3 localPosition = new Vector3((float)hitbox.Offset.x + (float)hitbox.Dimensions.x * 0.5f, (float)hitbox.Offset.y + (float)hitbox.Dimensions.y * 0.5f, -16f) / 16f;
+            hitboxDisplay.transform.localPosition = localPosition;
+        }
 
         public static void HideHitBox(this SpeculativeRigidbody body)
         {
@@ -198,5 +211,6 @@ namespace ItemAPI
                 }
             }).ToArray<StatModifier>();
         }
+
     }
 }

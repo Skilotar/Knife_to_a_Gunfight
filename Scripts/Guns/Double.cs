@@ -33,7 +33,7 @@ namespace Knives
 			gun.SetAnimationFPS(gun.reloadAnimation, 5);
 			
 
-			for (int i = 0; i < 10; i++)
+			for (int i = 0; i < 9; i++)
 			{
 				gun.AddProjectileModuleFrom(PickupObjectDatabase.GetById(157) as Gun, true, false);
 				
@@ -51,7 +51,7 @@ namespace Knives
 				Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(projectileModule.projectiles[0]);
 				projectile.gameObject.SetActive(false);
 				projectileModule.projectiles[0] = projectile;
-				projectile.baseData.damage = 4f;
+				projectile.baseData.damage = 3.6f;
 				projectile.baseData.range = 10 * (1 + UnityEngine.Random.Range(-.2f, .2f));
 				projectile.baseData.speed = 20 * (1 + UnityEngine.Random.Range(-.3f, .3f));
 				projectileModule.angleVariance = 8f;
@@ -76,7 +76,7 @@ namespace Knives
 			gun.muzzleFlashEffects = (PickupObjectDatabase.GetById(157) as Gun).muzzleFlashEffects;
 			gun.quality = PickupObject.ItemQuality.B;
 			gun.shellsToLaunchOnReload = 2;
-			gun.barrelOffset.transform.localPosition = new Vector3(1.25f, .8f, 0f);
+			gun.barrelOffset.transform.localPosition = new Vector3(1f, .9f, 0f);
 			gun.shellsToLaunchOnFire = 0;
 			Gun gun2 = PickupObjectDatabase.GetById(51) as Gun;
 			gun.shellCasing = gun2.shellCasing;
@@ -121,8 +121,9 @@ namespace Knives
 
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
 
-
+			ID = gun.PickupObjectId;
 		}
+		public static int ID;
 
 		public System.Random rand = new System.Random();
 
@@ -153,35 +154,39 @@ namespace Knives
 		
 		public override void  Update()
 		{
-			base.Update();
+			
 			if (this.Owner != null)
 			{
 
 				BraveInput instanceForPlayer = BraveInput.GetInstanceForPlayer((this.gun.CurrentOwner as PlayerController).PlayerIDX);
-				if (instanceForPlayer.ActiveActions.ShootAction.IsPressed && Time.timeScale != 0 && gun.ClipShotsRemaining != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed)
-				{
-					holding = true;
-					gun.reloadTime = .75f;
+				if(instanceForPlayer != null)
+                {
+					if (instanceForPlayer.ActiveActions.ShootAction.IsPressed && Time.timeScale != 0 && gun.ClipShotsRemaining != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed)
+					{
+						holding = true;
+						gun.reloadTime = .75f;
 
-				}
-				if (!instanceForPlayer.ActiveActions.ShootAction.IsPressed && holding && Time.timeScale != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed)
-				{
-					gun.reloadTime = 1.5f;
-					if(gun.ClipShotsRemaining > 0)
-                    {
-						gun.ClearCooldowns();
-						gun.Attack();
 					}
-                    else
-                    {
-						AkSoundEngine.PostEvent("Play_WPN_magnum_empty_01", base.gameObject);
-                    }
+					if (!instanceForPlayer.ActiveActions.ShootAction.IsPressed && holding && Time.timeScale != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed)
+					{
+						gun.reloadTime = 1.5f;
+						if (gun.ClipShotsRemaining > 0)
+						{
+							gun.ClearCooldowns();
+							gun.Attack();
+						}
+						else
+						{
+							AkSoundEngine.PostEvent("Play_WPN_magnum_empty_01", base.gameObject);
+						}
 
-					holding = false;
+						holding = false;
+					}
+
 				}
 
 			}
-
+			base.Update();
 		}
 
 

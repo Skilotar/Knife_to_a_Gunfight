@@ -41,10 +41,10 @@ namespace Knives
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
             ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.AdditionalItemCapacity, 1);
-
+            ItemBuilder.SetCooldownType(item, ItemBuilder.CooldownType.Timed, 2f);
             item.UsesCustomCost = true;
             item.CustomCost = 20;
-            item.quality = PickupObject.ItemQuality.D;
+            item.quality = PickupObject.ItemQuality.C;
             item.numberOfUses = 1;
             item.consumable = true;
 
@@ -67,7 +67,7 @@ namespace Knives
 
 
             ID = item.PickupObjectId;
-            GlobalCharmList.Charmslist.Add(ID);
+            GlobalCharmList.CommonCharmslist.Add(ID);
         }
 
         public static Projectile ducky;

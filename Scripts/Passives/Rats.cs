@@ -61,9 +61,25 @@ namespace Knives
         public void OnKilledEnemy(PlayerController arg1, HealthHaver arg2)
         {
             //ETGModConsole.Log("tryRatting");
-            SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter);
-            if (arg1.PlayerHasActiveSynergy("LabRats")) { SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter); }
-
+            if(arg2.aiActor != null)
+            {
+                if(arg2.IsBoss != true)
+                {
+                    SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter); // min 1
+                    float max = arg2.GetMaxHealth();
+                    max -= 20;
+                    for (int i = 0; i <= max; max -= 20) // one extra for each set of 20 health 
+                    {
+                        SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter);
+                    }
+                    if (arg1.PlayerHasActiveSynergy("LabRats"))
+                    {
+                        SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter);
+                        SpawnRat(arg1, arg2.aiActor.sprite.WorldCenter);
+                    }
+                }
+            }
+           
         }
 
         public static void SpawnRat(PlayerController arg1,Vector2 posi)
@@ -252,7 +268,7 @@ namespace Knives
                     if (component != null)
                     {
                         
-                        component.baseData.damage = 5;
+                        component.baseData.damage = 8f;
                         component.Owner = Owner;
                         component.Shooter = Owner.specRigidbody;
                         component.collidesWithPlayer = false;

@@ -32,9 +32,8 @@ namespace Knives
             // ETGMod automatically checks which animations are available.
             // The numbers next to "shootAnimation" determine the animation fps. You can also tweak the animation fps of the reload animation and idle animation using this method.
             gun.SetAnimationFPS(gun.shootAnimation, 10);
-            gun.SetAnimationFPS(gun.reloadAnimation, 2);
-            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).wrapMode = tk2dSpriteAnimationClip.WrapMode.LoopSection;
-            gun.GetComponent<tk2dSpriteAnimator>().GetClipByName(gun.reloadAnimation).loopStart = 1;
+            gun.SetAnimationFPS(gun.reloadAnimation, 5);
+            
 
             // Every modded gun has base projectile it works with that is borrowed from other guns in the game. 
             // The gun names are the names from the JSON dump! While most are the same, some guns named completely different things. If you need help finding gun names, ask a modder on the Gungeon discord.
@@ -42,13 +41,14 @@ namespace Knives
             // Here we just take the default projectile module and change its settings how we want it to be.
             gun.DefaultModule.ammoCost = 1;
             gun.DefaultModule.angleVariance = 5f;
-            gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.SemiAutomatic;
+            gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Burst;
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-            
+            gun.DefaultModule.burstShotCount = 3;
+            gun.DefaultModule.burstCooldownTime = .09f;
             gun.reloadTime = 2.6f;
             gun.DefaultModule.cooldownTime = .5f;
-            gun.DefaultModule.numberOfShotsInClip = 12;
-            gun.SetBaseMaxAmmo(300);
+            gun.DefaultModule.numberOfShotsInClip = 18;
+            gun.SetBaseMaxAmmo(800);
             gun.quality = PickupObject.ItemQuality.C;
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             gun.muzzleFlashEffects = (PickupObjectDatabase.GetById(182) as Gun).muzzleFlashEffects;
@@ -59,13 +59,14 @@ namespace Knives
             UnityEngine.Object.DontDestroyOnLoad(projectile);
            
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 8;
+            projectile.baseData.damage = 6;
             projectile.baseData.force = 0;
             projectile.baseData.speed *= 1f;
             projectile.transform.parent = gun.barrelOffset;
+            gun.barrelOffset.transform.position = new Vector3(30 / 16f, 11 / 16f, 0);
             gun.shellsToLaunchOnReload = 0;
 
-            gun.shellsToLaunchOnFire = 3;
+            gun.shellsToLaunchOnFire = 1;
             Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;
             gun.shellCasing = gun2.shellCasing;
 
@@ -91,24 +92,27 @@ namespace Knives
             {
                 case 1:
                     AkSoundEngine.PostEvent("Play_Cav_shoot_001", base.gameObject);
-                    StartCoroutine(Firebullets());
+                    //gun.spriteAnimator.Play("cav_fire");
+                    //StartCoroutine(Firebullets());
                     soundInc++;
                     break;
                 case 2:
                     AkSoundEngine.PostEvent("Play_Cav_shoot_002", base.gameObject);
-                    StartCoroutine(Firebullets());
+                    //gun.spriteAnimator.Play("cav_fire");
+                    //StartCoroutine(Firebullets());
                     soundInc++;
                     break;
                 case 3:
                     AkSoundEngine.PostEvent("Play_Cav_shoot_003", base.gameObject);
-                    StartCoroutine(Firebullets());
+                    //gun.spriteAnimator.Play("cav_fire");
+                    //StartCoroutine(Firebullets());
                     soundInc = 1;
                     break;
             }
 
             base.PostProcessProjectile(projectile);
         }
-
+        /*
         public IEnumerator Firebullets()
         {
             yield return new WaitForSeconds(.1f);
@@ -121,7 +125,7 @@ namespace Knives
             {
                 component.Owner = this.gun.CurrentOwner;
                 component.Shooter = this.gun.CurrentOwner.specRigidbody;
-                component.baseData.damage = 8 * player.stats.GetStatValue(PlayerStats.StatType.Damage);
+                component.baseData.damage = 7 * player.stats.GetStatValue(PlayerStats.StatType.Damage);
                 
                 
             }
@@ -136,11 +140,12 @@ namespace Knives
             {
                 component2.Owner = this.gun.CurrentOwner;
                 component2.Shooter = this.gun.CurrentOwner.specRigidbody;
-                component2.baseData.damage = 8 * player.stats.GetStatValue(PlayerStats.StatType.Damage);
+                component2.baseData.damage = 7 * player.stats.GetStatValue(PlayerStats.StatType.Damage);
 
 
             }
         }
+        */
         private bool HasReloaded;
         public bool HasParried;
         public bool leftOffset = false;
@@ -282,7 +287,7 @@ namespace Knives
 
         private IEnumerator slightparydelay()
         {
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.15f);
             reloadDelay = true;
         }
 

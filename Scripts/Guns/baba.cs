@@ -21,7 +21,7 @@ namespace Knives
             gun.gameObject.AddComponent<Baba>();
             //These two lines determines the description of your gun, ".SetShortDescription" being the description that appears when you pick up the gun and ".SetLongDescription" being the description in the Ammonomicon entry. 
             gun.SetShortDescription("You Know My Name");
-            gun.SetLongDescription("A pocket pistol bloodied by years of contract killing. When it's owner quit the trade, this gun was lost to the gungeon. When reloading, hitting an enemy will steal ammo from them. Luckily, the ammo is universal. Bosses will have full ammo cases stolen from them." +
+            gun.SetLongDescription("A pocket pistol bloodied by years of contract killing. When its owner quit the trade, this gun was lost to the gungeon. When reloading, hitting an enemy will steal ammo from them. Luckily, the ammo is universal. Bosses will have full ammo cases stolen from them." +
                 "\n\n\n - Knife_to_a_Gunfight");
             // This is required, unless you want to use the sprites of the base gun.
             // That, by default, is the pea shooter.
@@ -44,10 +44,10 @@ namespace Knives
             gun.reloadTime = .75f;
             gun.DefaultModule.cooldownTime = .15f;
             gun.DefaultModule.numberOfShotsInClip = 9;
-            gun.SetBaseMaxAmmo(36);
+            gun.SetBaseMaxAmmo(54);
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.C;
-            gun.encounterTrackable.EncounterGuid = "I guess I'm back";
+            //gun.encounterTrackable.EncounterGuid = "I guess I'm back";
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             projectile.gameObject.SetActive(false);
@@ -59,7 +59,7 @@ namespace Knives
             //Setting static values for a custom gun's projectile stats prevents them from scaling with player stats and bullet modifiers (damage, shotspeed, knockback)
             //You have to multiply the value of the original projectile you're using instead so they scale accordingly. For example if the projectile you're using as a base has 10 damage and you want it to be 6 you use this
             //In our case, our projectile has a base damage of 5.5, so we multiply it by 1.1 so it does 10% more damage from the ak-47.
-            projectile.baseData.damage = 7f;
+            projectile.baseData.damage = 10f;
             projectile.baseData.speed *= 1f;
             projectile.transform.parent = gun.barrelOffset;
             gun.shellsToLaunchOnFire = 1;
@@ -69,7 +69,10 @@ namespace Knives
             gun.gunClass = GunClass.PISTOL;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
+            ID = gun.PickupObjectId;
         }
+
+        public static int ID;
 
 
         public override void OnPostFired(PlayerController player, Gun gun)

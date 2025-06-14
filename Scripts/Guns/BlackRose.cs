@@ -68,14 +68,19 @@ namespace Knives
             Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;
             gun.shellCasing = gun2.shellCasing;
 
-
+            gun.barrelOffset.transform.localPosition = new Vector3(27 / 16f, 14 / 16f, 0f);
             projectile.transform.parent = gun.barrelOffset;
             gun.gunClass = GunClass.PISTOL;
             ETGMod.Databases.Items.Add(gun, null, "ANY");
             MiscToolMethods.TrimAllGunSprites(gun);
+
+
+            ID = gun.PickupObjectId;
         }
 
-       
+        public static int ID;
+
+
 
         // Token: 0x06000392 RID: 914 RVA: 0x000261A4 File Offset: 0x000243A4
         public void OnGunChanged(Gun oldGun, Gun newGun, bool arg3)
@@ -110,7 +115,15 @@ namespace Knives
                 
             }
 
+            if((this.Owner as PlayerController).PlayerHasActiveSynergy("I am the spy!"))
+            {
+                projectile.gameObject.GetOrAddComponent<BackStabBullets>();
+            }
 
+            if (play.PlayerHasActiveSynergy("Mentlegen"))
+            {
+                MiscToolMethods.SpawnProjAtPosi(Cigaretta.ciggy, gun.barrelOffset.transform.position, this.gun.CurrentOwner as PlayerController, gun);
+            }
             base.PostProcessProjectile(projectile);
         }
 
@@ -135,6 +148,40 @@ namespace Knives
                 if (!gun.IsReloading && !HasReloaded)
                 {
                     this.HasReloaded = true;
+
+                }
+
+                if (play.PlayerHasActiveSynergy("Mentlegen"))
+                {
+                    if(play.CurrentItem.PickupObjectId == 203) // Use Cigs
+                    {
+                        if (play.CurrentItem.IsOnCooldown != true)
+                        {
+                            if (KeyDown(GungeonActions.GungeonActionType.UseItem))
+                            {
+                                if(play.IsStealthed != true)
+                                {
+                                    StartRoseStealth(play);
+                                }
+                            }
+                        }
+                    }
+
+                    if (play.HasPickupID(SmokeAmmolet.ID))
+                    {
+                        if(play.Blanks > 0)
+                        {
+                            if (KeyDown(GungeonActions.GungeonActionType.Blank))
+                            {
+                                StartRoseStealth(play);
+                            }
+                        }
+                    }
+                    if(RemoteStart == true)
+                    {
+                        RemoteStart = false;
+                        StartRoseStealth(play);
+                    }
 
                 }
 
@@ -171,6 +218,23 @@ namespace Knives
             }
 
         }
+
+        public static bool RemoteStart = false;
+        public void StartRoseStealth(PlayerController play)
+        {
+            if (play.IsStealthed != true)
+            {
+                play.SetIsStealthed(true, "Blackrose");
+                doingstealthtimer = true;
+                play.OnDidUnstealthyAction += Player_OnDidUnstealthyAction;
+                play.SetCapableOfStealing(true, "Blackrose", null);
+                play.ChangeSpecialShaderFlag(1, 1f);
+                AkSoundEngine.PostEvent("Play_ENM_wizardred_vanish_01", base.gameObject);
+                play.GunChanged += this.OnGunChanged;
+                play.PlayEffectOnActor(EasyVFXDatabase.BloodiedScarfPoofVFX, Vector3.zero);
+            }
+        }
+
         public float stealthtimer = 5;
         private IEnumerator sligthstealthdelay()
         {
@@ -184,15 +248,9 @@ namespace Knives
         {
             if(gun.ClipCapacity == gun.ClipShotsRemaining && player.IsStealthed == false)
             {
-                player.SetIsStealthed(true, "Blackrose");
-                player.OnDidUnstealthyAction += Player_OnDidUnstealthyAction;
-                player.SetCapableOfStealing(true, "Blackrose", null);
-                player.ChangeSpecialShaderFlag(1, 1f);
-                gun.LoseAmmo(5); 
-                AkSoundEngine.PostEvent("Play_ENM_wizardred_vanish_01", base.gameObject);
-                player.GunChanged += this.OnGunChanged;
-                player.PlayEffectOnActor(EasyVFXDatabase.BloodiedScarfPoofVFX, Vector3.zero);
+                StartRoseStealth(player);
 
+                gun.LoseAmmo(5);
             }
 
             if (gun.IsReloading && this.HasReloaded)
@@ -233,6 +291,19 @@ namespace Knives
 
 
             base.OnDropped();
+        }
+
+        public bool KeyDown(GungeonActions.GungeonActionType action)
+        {
+            if (!GameManager.Instance.IsLoadingLevel && (this.gun.CurrentOwner as PlayerController) != null)
+            {
+                return BraveInput.GetInstanceForPlayer((this.gun.CurrentOwner as PlayerController).PlayerIDX).ActiveActions.GetActionFromType(action).WasPressed;
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 }

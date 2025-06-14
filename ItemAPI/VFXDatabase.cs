@@ -60,6 +60,12 @@ namespace Knives
         public static GameObject Evil;
         public static GameObject Shield;
         public static GameObject Lightning;
+        public static GameObject CowboySnap;
+        public static GameObject Sparkle;
+        public static GameObject CowboyPlayerShot;
+        public static GameObject CowboyPlayerMiss;
+        public static GameObject CowboyNPCShot;
+        public static GameObject LunaPointerOBJ;
         public static void Init()
         {
             //Spirat Teleportation VFX
@@ -71,6 +77,7 @@ namespace Knives
                 TeleportProjModifier tp = proj.GetComponent<TeleportProjModifier>();
                 if (tp != null)
                 {
+                    
                     SpiratTeleportVFXPool = tp.teleportVfx;
                     SpiratTeleportVFX = tp.teleportVfx.effects[0].effects[0].effect;
                 }
@@ -85,7 +92,12 @@ namespace Knives
             SoulSetup();
             ShieldSetup();
             LightningSetup();
+            CowboySetup();
             //PropSettup(); 
+            SparkleSetup();
+            CowboyNPCShots();
+            LunaPointer();
+
         }
 
         public static void HEXSetup()
@@ -564,6 +576,199 @@ namespace Knives
 
 
             Lightning = Block;
+
+        }
+
+        public static void CowboySetup()
+        {
+
+            GameObject Block = ItemBuilder.AddSpriteToObject("DuelSnap_VFX", "Knives/Resources/Deadeye/snap/Snap_001", null);
+            FakePrefab.MarkAsFakePrefab(Block);
+            UnityEngine.Object.DontDestroyOnLoad(Block);
+            tk2dSpriteAnimator animator = Block.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation = Block.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection = SpriteBuilder.ConstructCollection(Block, ("DuelSnap_Collection"));
+
+            tk2dSpriteAnimationClip idleClip = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 1 };
+            List<tk2dSpriteAnimationFrame> frames = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 1; i++)
+            {
+                tk2dSpriteCollectionData collection = Blockcollection;
+                int frameSpriteId = SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Deadeye/snap/Snap_00{i}", collection);
+                tk2dSpriteDefinition frameDef = collection.spriteDefinitions[frameSpriteId];
+                frames.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId, spriteCollection = collection });
+            }
+            idleClip.frames = frames.ToArray();
+            idleClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.Library = animation;
+            animator.Library.clips = new tk2dSpriteAnimationClip[] { idleClip };
+            animator.DefaultClipId = animator.GetClipIdByName("start");
+            animator.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.playAutomatically = true;
+
+
+
+            CowboySnap = Block;
+
+        }
+
+        public static void SparkleSetup()
+        {
+
+            GameObject Block = ItemBuilder.AddSpriteToObject("Sparkle_VFX", "Knives/Resources/Sparkle/Sparkle_001", null);
+            FakePrefab.MarkAsFakePrefab(Block);
+            UnityEngine.Object.DontDestroyOnLoad(Block);
+            tk2dSpriteAnimator animator = Block.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation = Block.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection = SpriteBuilder.ConstructCollection(Block, ("Sparkle_Collection"));
+
+            tk2dSpriteAnimationClip idleClip = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 8 };
+            List<tk2dSpriteAnimationFrame> frames = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 4; i++)
+            {
+                tk2dSpriteCollectionData collection = Blockcollection;
+                int frameSpriteId = SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Sparkle/Sparkle_00{i}", collection);
+                tk2dSpriteDefinition frameDef = collection.spriteDefinitions[frameSpriteId];
+                frames.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId, spriteCollection = collection });
+            }
+            idleClip.frames = frames.ToArray();
+            idleClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.Library = animation;
+            animator.Library.clips = new tk2dSpriteAnimationClip[] { idleClip };
+            animator.DefaultClipId = animator.GetClipIdByName("start");
+            animator.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.playAutomatically = true;
+
+
+
+            Sparkle = Block;
+
+        }
+
+        public static void CowboyNPCShots()
+        {
+
+            GameObject Block = ItemBuilder.AddSpriteToObject("DuelShot01_VFX", "Knives/Resources/Deadeye/DuelShots/Player/player_duel_shot_001.png", null);
+            FakePrefab.MarkAsFakePrefab(Block);
+            UnityEngine.Object.DontDestroyOnLoad(Block);
+            tk2dSpriteAnimator animator = Block.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation = Block.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection = SpriteBuilder.ConstructCollection(Block, ("DuelShot01_Collection"));
+
+            tk2dSpriteAnimationClip idleClip = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 12 };
+            List<tk2dSpriteAnimationFrame> frames = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 7; i++)
+            {
+                tk2dSpriteCollectionData collection = Blockcollection;
+                int frameSpriteId = SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Deadeye/DuelShots/Player/player_duel_shot_00{i}", collection);
+                tk2dSpriteDefinition frameDef = collection.spriteDefinitions[frameSpriteId];
+                frames.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId, spriteCollection = collection });
+            }
+            idleClip.frames = frames.ToArray();
+            idleClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.Library = animation;
+            animator.Library.clips = new tk2dSpriteAnimationClip[] { idleClip };
+            animator.DefaultClipId = animator.GetClipIdByName("start");
+            animator.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.playAutomatically = true;
+
+            CowboyPlayerShot = Block;
+
+            GameObject Block2 = ItemBuilder.AddSpriteToObject("DuelShot02_VFX", "Knives/Resources/Deadeye/DuelShots/Slinger/slinger_duel_shot_001.png", null);
+            FakePrefab.MarkAsFakePrefab(Block2);
+            UnityEngine.Object.DontDestroyOnLoad(Block2);
+            tk2dSpriteAnimator animator2 = Block2.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation2 = Block2.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection2 = SpriteBuilder.ConstructCollection(Block2, ("DuelShot02_Collection"));
+
+            tk2dSpriteAnimationClip idleClip2 = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 10 };
+            List<tk2dSpriteAnimationFrame> frames2 = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 4; i++)
+            {
+                tk2dSpriteCollectionData collection2 = Blockcollection2;
+                int frameSpriteId2= SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Deadeye/DuelShots/Slinger/slinger_duel_shot_00{i}", collection2);
+                tk2dSpriteDefinition frameDef2 = collection2.spriteDefinitions[frameSpriteId2];
+                frames2.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId2, spriteCollection = collection2 });
+            }
+            idleClip2.frames = frames2.ToArray();
+            idleClip2.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator2.Library = animation2;
+            animator2.Library.clips = new tk2dSpriteAnimationClip[] { idleClip2 };
+            animator2.DefaultClipId = animator2.GetClipIdByName("start");
+            animator2.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator2.playAutomatically = true;
+
+            CowboyNPCShot = Block2;
+
+
+
+            GameObject Block3 = ItemBuilder.AddSpriteToObject("DuelShot03_VFX", "Knives/Resources/Deadeye/DuelShots/Player/player_duel_shot_001.png", null);
+            FakePrefab.MarkAsFakePrefab(Block3);
+            UnityEngine.Object.DontDestroyOnLoad(Block3);
+            tk2dSpriteAnimator animator3 = Block3.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation3 = Block3.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection3 = SpriteBuilder.ConstructCollection(Block3, ("DuelShot03_Collection"));
+
+            tk2dSpriteAnimationClip idleClip3 = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 10 };
+            List<tk2dSpriteAnimationFrame> frames3 = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 3; i++)
+            {
+                tk2dSpriteCollectionData collection3 = Blockcollection3;
+                int frameSpriteId3 = SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Deadeye/DuelShots/Player/player_duel_shot_00{i}", collection3);
+                tk2dSpriteDefinition frameDef3 = collection3.spriteDefinitions[frameSpriteId3];
+                frames3.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId3, spriteCollection = collection3 });
+            }
+            idleClip3.frames = frames3.ToArray();
+            idleClip3.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator3.Library = animation3;
+            animator3.Library.clips = new tk2dSpriteAnimationClip[] { idleClip3 };
+            animator3.DefaultClipId = animator3.GetClipIdByName("start");
+            animator3.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator3.playAutomatically = true;
+
+            CowboyPlayerMiss = Block3;
+
+        }
+
+        public static void LunaPointer()
+        {
+
+            GameObject Block = ItemBuilder.AddSpriteToObject("LunaPointer_VFX", "Knives/Resources/Muzzleflashes/Luna/SatalitePointer", null);
+            FakePrefab.MarkAsFakePrefab(Block);
+            UnityEngine.Object.DontDestroyOnLoad(Block);
+            tk2dSpriteAnimator animator = Block.GetOrAddComponent<tk2dSpriteAnimator>();
+            tk2dSpriteAnimation animation = Block.AddComponent<tk2dSpriteAnimation>();
+
+            tk2dSpriteCollectionData Blockcollection = SpriteBuilder.ConstructCollection(Block, ("Sparkle_Collection"));
+
+            tk2dSpriteAnimationClip idleClip = new tk2dSpriteAnimationClip() { name = "start", frames = new tk2dSpriteAnimationFrame[0], fps = 8 };
+            List<tk2dSpriteAnimationFrame> frames = new List<tk2dSpriteAnimationFrame>();
+
+            for (int i = 1; i <= 1; i++)
+            {
+                tk2dSpriteCollectionData collection = Blockcollection;
+                int frameSpriteId = SpriteBuilder.AddSpriteToCollection($"Knives/Resources/Muzzleflashes/Luna/SatalitePointer", collection);
+                tk2dSpriteDefinition frameDef = collection.spriteDefinitions[frameSpriteId];
+                frames.Add(new tk2dSpriteAnimationFrame { spriteId = frameSpriteId, spriteCollection = collection });
+            }
+            idleClip.frames = frames.ToArray();
+            idleClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.Library = animation;
+            animator.Library.clips = new tk2dSpriteAnimationClip[] { idleClip };
+            animator.DefaultClipId = animator.GetClipIdByName("start");
+            animator.DefaultClip.wrapMode = tk2dSpriteAnimationClip.WrapMode.Once;
+            animator.playAutomatically = true;
+            LunaPointerOBJ = Block;
 
         }
     }

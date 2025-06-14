@@ -71,6 +71,7 @@ namespace Knives
                     foreach (RoomHandler conroom3 in conroom2.connectedRooms)
                     {
                         Minimap.Instance.RevealMinimapRoom(conroom3, true, true, room == GameManager.Instance.PrimaryPlayer.CurrentRoom);
+                        
                     }
                 }
             }
@@ -101,12 +102,6 @@ namespace Knives
             player.OnUsedBlank -= this.OnUsedBlank;
             return base.Drop(player);
         }
-        public override void  OnDestroy()
-        {
-            Owner.OnUsedBlank -= this.OnUsedBlank;
-            base.OnDestroy();
-        }
-
         public static GameObject healthBarPrefab;
     }
 }

@@ -24,7 +24,8 @@ namespace Knives
                 "They can't use these items, but the gungeon doesn't know that.." +
                 "" +
                 "A novelty cigarette launcher of earth circa 1923. The cardboard frame has seen better days, but it still works like a charm." +
-                "\n\n\n - Knife_to_a_Gunfight");
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprites by Lynceus");
 
             gun.SetupSprite(null, "cigaretter_idle_001", 8);
             gun.gunSwitchGroup = (PickupObjectDatabase.GetById(335) as Gun).gunSwitchGroup;
@@ -59,6 +60,9 @@ namespace Knives
                 projectile.shouldRotate = true;
                 projectile.shouldFlipVertically = true;
                 projectile.objectImpactEventName = "";
+                ParticleSpewer blarg = projectile.gameObject.GetOrAddComponent<ParticleSpewer>();
+                blarg.particlesPerSecond = 5;
+                blarg.particleType = GlobalSparksDoer.SparksType.BLACK_PHANTOM_SMOKE;
                 projectile.SetProjectileSpriteRight("Ciggy", 7, 4, false, tk2dBaseSprite.Anchor.MiddleCenter, 7, 4);
                 projectile.gameObject.GetOrAddComponent<EnemyCoolnessStatusApply>();
 
@@ -70,6 +74,7 @@ namespace Knives
                     mod.angleFromAim = -2;
                 }
                 projectile.transform.parent = gun.barrelOffset;
+                ciggy = projectile;
             }
 
             gun.reloadTime = 1f;
@@ -113,8 +118,10 @@ namespace Knives
             bnc.numberOfBounces = 1;
 
             smonk = projectile2;
+            
             ID = gun.PickupObjectId;
         }
+        public static Projectile ciggy;
         public static Projectile smonk;
         public override void PostProcessProjectile(Projectile projectile)
         {
@@ -202,6 +209,11 @@ namespace Knives
                         hit.healthHaver.ApplyDamage(20, Vector2.zero, "Maximum Lung Cancer", CoreDamageTypes.Poison, DamageCategory.Unstoppable, true);
 
                         GlobalSparksDoer.DoRadialParticleBurst((int)(state.EnemyCoolnessLevel), hit.specRigidbody.UnitBottomLeft, hit.specRigidbody.UnitTopRight, 360, 10, 0, null, null, UnityEngine.Color.grey, GlobalSparksDoer.SparksType.BLACK_PHANTOM_SMOKE);
+
+                        if ((arg1.Owner as PlayerController).PlayerHasActiveSynergy("Mentlegen"))
+                        {
+                            BlackRose.RemoteStart = true;
+                        }
                     }
                 }
             }

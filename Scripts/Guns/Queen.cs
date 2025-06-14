@@ -42,9 +42,9 @@ namespace Knives
             gun.SetupSprite(null, "queen_idle_001", 8);
             // ETGMod automatically checks which animations are available.
             // The numbers next to "shootAnimation" determine the animation fps. You can also tweak the animation fps of the reload animation and idle animation using this method.
-            gun.SetAnimationFPS(gun.shootAnimation, 24);
-            gun.SetAnimationFPS(gun.reloadAnimation, 8);
-            gun.SetAnimationFPS(gun.idleAnimation, 8);
+            gun.SetAnimationFPS(gun.shootAnimation, 12);
+            gun.SetAnimationFPS(gun.reloadAnimation, 5);
+            gun.SetAnimationFPS(gun.idleAnimation, 2);
             // Every modded gun has base projectile it works with that is borrowed from other guns in the game. 
             // The gun names are the names from the JSON dump! While most are the same, some guns named completely different things. If you need help finding gun names, ask a modder on the Gungeon discord.
             gun.AddProjectileModuleFrom("dl45", true, true);
@@ -66,13 +66,15 @@ namespace Knives
             gun.DefaultModule.customAmmoType = CustomClipAmmoTypeToolbox.AddCustomAmmoType("Tiny nytra", "Knives/Resources/queen_clipfull", "Knives/Resources/queen_clipempty");
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.B;
-            gun.encounterTrackable.EncounterGuid = "Killah queen bite za dusto!";
+            //gun.encounterTrackable.EncounterGuid = "Killah queen bite za dusto!";
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             projectile.gameObject.SetActive(false);
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
+            gun.barrelOffset.transform.localPosition = new Vector3(35 / 16f, 15 / 16f, 0f);
+            gun.carryPixelOffset = new IntVector2(5, 0);
             //projectile.baseData allows you to modify the base properties of your projectile module.
             //In our case, our gun uses modified projectiles from the ak-47.
             //Setting static values for a custom gun's projectile stats prevents them from scaling with player stats and bullet modifiers (damage, shotspeed, knockback)
@@ -84,8 +86,8 @@ namespace Knives
             projectile.transform.parent = gun.barrelOffset;
             projectile.PenetratesInternalWalls = true;
             projectile.projectileHitHealth = 100;
-            
-
+            projectile.pierceMinorBreakables = true;
+           
             ETGMod.Databases.Items.Add(gun, null, "ANY");
             ID = gun.PickupObjectId;
         }

@@ -42,7 +42,7 @@ namespace Knives
             
             
 
-            item.quality = PickupObject.ItemQuality.B;
+            item.quality = PickupObject.ItemQuality.A;
         }
 
         public override void Pickup(PlayerController player)

@@ -34,7 +34,7 @@ namespace Knives
             //Ammonomicon entry variables
             string shortDesc = "Funky Radio";
             string longDesc = "Gain a small stacking speed boost for every hit or projectile rolled over. This effect is lost on taking damage.\n\n" +
-                "A walkman style radio playing nothing but funky jams. Get into the zone and let the beats f" +
+                "A walkman style radio playing nothing but funky jams. Get into the zone and let the beats flow." +
                 "" +
                 "\n\n\n - Knife_to_a_Gunfight";
 

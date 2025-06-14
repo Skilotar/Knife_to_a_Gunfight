@@ -23,6 +23,7 @@ namespace Knives
 
         //Charms
         public static GameActorCharmEffect charmingRoundsEffect = PickupObjectDatabase.GetById(527).GetComponent<BulletStatusEffectItem>().CharmModifierEffect;
+        public static GameActorCharmEffect YellowChamberCharm = PickupObjectDatabase.GetById(570).GetComponent<YellowChamberItem>().CharmEffect;
         public static GameActorillnessEffect ill;
         //Cheeses
 
@@ -35,6 +36,7 @@ namespace Knives
 
         //Plague Effects
         public static GameActorillnessEffect StandardillnessEffect;
+        
         public static void InitCustomEffects()
         {
             FriendlyWebGoopSpeedMod = new GameActorSpeedEffect
@@ -73,6 +75,7 @@ namespace Knives
 
                 stackMode = GameActorEffect.EffectStackingMode.Stack
             };
+
         }   
     }
 }

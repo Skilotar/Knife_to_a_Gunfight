@@ -48,7 +48,7 @@ namespace Knives
             Gun casey = (Gun)PickupObjectDatabase.GetById(541);
             gun.gunSwitchGroup = casey.gunSwitchGroup;
             gun.reloadTime = 0f;
-            gun.DefaultModule.cooldownTime = 1f;
+            gun.DefaultModule.cooldownTime = 1.3f;
             gun.DefaultModule.numberOfShotsInClip = 1;
             gun.InfiniteAmmo = true;
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
@@ -143,6 +143,7 @@ namespace Knives
 
 
             yield return new WaitForSeconds(.15f);
+
             Projectile projectile1 = ((Gun)ETGMod.Databases.Items[15]).DefaultModule.projectiles[0];
             GameObject gameObject = SpawnManager.SpawnProjectile(projectile1.gameObject, this.gun.CurrentOwner.transform.position + new Vector3(.5f,.5f,.0f), Quaternion.Euler(0f, 0f, (this.gun.CurrentOwner.CurrentGun == null) ? 0f : this.gun.CurrentAngle), true);
             Projectile component = gameObject.GetComponent<Projectile>();
@@ -150,21 +151,29 @@ namespace Knives
             component.Owner = this.gun.CurrentOwner;
             component.baseData.damage = 35;
             ProjectileSlashingBehaviour slashy = component.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-            slashy.SlashRange = 4.7f;
+            slashy.SlashRange = 4.2f;
             slashy.DoSound = false;
             slashy.SlashDimensions = 50;
             slashy.InteractMode = SlashDoer.ProjInteractMode.STOP;
             slashy.SlashVFX.type = VFXPoolType.None;
             slashy.OnSlashHitEnemy += Slashy_OnSlashHitEnemy;
+
+
+            Vector3 pointInSpace = this.gun.barrelOffset.transform.TransformPoint(3.5f, 0, 0);
+            GameObject Snap = SpawnManager.SpawnVFX(EasyVFXDatabase.Sparkle, (pointInSpace), Quaternion.identity);
+            tk2dBaseSprite bang = Snap.GetComponent<tk2dBaseSprite>();
             
-            
-           
+            Snap.GetComponent<tk2dBaseSprite>().PlaceAtPositionByAnchor((pointInSpace), tk2dBaseSprite.Anchor.MiddleCenter);
+            Snap.GetComponent<tk2dSpriteAnimator>().PlayAndDestroyObject("start");
+            bang.HeightOffGround = 1f;
+            bang.UpdateZDepth();
+
         }
 
         private void Slashy_OnSlashHitEnemy(PlayerController player, AIActor hitEnemy, Vector2 forceDirection)
         {
-            float dist = Vector2.Distance(player.CenterPosition, hitEnemy.CenterPosition);
-            if (dist > 4)
+            float dist = Vector2.Distance(this.gun.barrelOffset.transform.position, hitEnemy.CenterPosition);
+            if (dist > 3.6f)
             {
                 GameActorSpeedEffect speed = new GameActorSpeedEffect();
                 speed.duration = 6;

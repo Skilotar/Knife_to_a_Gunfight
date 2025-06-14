@@ -20,6 +20,7 @@ namespace SaveAPI
         SKATER_HOVER,
         SKATER_TAGGAR,
         SKATER_SLAP,
-        SKATER_JETSET
+        SKATER_JETSET,
+        SKIPSKATERPARRYPAUSE,
     }
 }

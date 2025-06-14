@@ -61,7 +61,7 @@ namespace Knives
         {
             player.OnPreDodgeRoll -= Player_OnPreDodgeRoll;
             RemoveStat(PlayerStats.StatType.Accuracy);
-            this.Owner.stats.RecalculateStats(Owner, true);
+            player.stats.RecalculateStats(Owner, true);
             doing = false;
 
             return base.Drop(player);

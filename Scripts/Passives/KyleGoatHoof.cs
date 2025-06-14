@@ -41,9 +41,21 @@ namespace Knives
             base.Pickup(player);
         }
 
+        public override DebrisObject Drop(PlayerController player)
+        {
+            RemoveStat(PlayerStats.StatType.MovementSpeed);
+            player.stats.RecalculateStats(player, true);
+            player.healthHaver.OnHealthChanged -= HealthHaver_OnHealthChanged;
+            return base.Drop(player);
+        }
+
         private void HealthHaver_OnHealthChanged(float resultValue, float maxValue)
         {
-            DoStatChange(this.Owner);
+            if(this.Owner != null)
+            {
+                DoStatChange(this.Owner);
+            }
+            
         }
 
         public void DoStatChange(PlayerController player)
@@ -51,7 +63,20 @@ namespace Knives
 
             GetHealthAsNumberOfHits(player);
             RemoveStat(PlayerStats.StatType.MovementSpeed);
-            AddStat(PlayerStats.StatType.MovementSpeed, HealthAsHits * .2f);
+            float modstat = 0;
+            if (HealthAsHits < 5)
+            {
+                modstat = HealthAsHits * .2f;
+            }
+            if (HealthAsHits >= 5 && HealthAsHits < 10)
+            {
+                modstat = (HealthAsHits - 5) * .1f + 5 * .2f;
+            }
+            if (HealthAsHits >= 10)
+            {
+                modstat = ((HealthAsHits - 5) * .1f) + (5 * .1f) + (5 + .2f);
+            }
+            AddStat(PlayerStats.StatType.MovementSpeed, modstat);
 
             player.stats.RecalculateStats(player, true);
 

@@ -73,25 +73,31 @@ namespace Knives
         {
             Current_Select = 3;
             shown = false;
-
-            if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>() != null)
+            if (KnownLastOwner != null)
             {
-                if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container != null)
+                if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>() != null)
                 {
-                    SGUIRoot.Main.Children.Remove(KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container);
-                }
+                    if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container != null)
+                    {
+                        SGUIRoot.Main.Children.Remove(KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container);
+                    }
 
+                }
             }
             base.OnPreDrop(user);
         }
 
         public override void OnDestroy()
         {
-            if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>() != null)
+            if(KnownLastOwner != null)
             {
-                if(KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container != null)
+                if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>() != null)
                 {
-                    SGUIRoot.Main.Children.Remove(KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container);
+                    if (KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container != null)
+                    {
+                        SGUIRoot.Main.Children.Remove(KnownLastOwner.gameObject.GetOrAddComponent<KoolnessUIComponent>().container);
+                    }
+
                 }
 
             }
@@ -126,35 +132,44 @@ namespace Knives
 
         public List<int> jackpotItemRepo = new List<int>()
         {
-            433, //stuffed_star B
-            493, //briefcase_of_cash A
-            451, //pig A
-            431, //liquid_valkyrie A
-            495, //unity B
-            572, //chicken_flute
-            110, //magic_sweet A
+            433, // stuffed_star B
+            451, // pig A
+            495, // unity B
+            572, // chicken_flute 
+            110, // magic_sweet A  Coolness Freebe
+            821, // Scouter 
 
-            134, //ammo_belt
-            290, //sunglasses
-            118, //eyepatch
-            435, //mustache
-            426, //shotga_cola
-            645, //turtle_problem
-            321, //gold_ammolet
-            425, //heart_purse
+            448, // boomer
+            134, // ammo_belt
+            290, // sunglasses    Coolness Freebe
+            118, // eyepatch
+            435, // mustache
+            426, // shotga_cola
+            645, // turtle_problem
+            321, // gold_ammolet
+            322, // lodestone ammolet
+            343, // copper ammolet
+            440, // rubby bracer
+            //425, // heart_purse
+            Long_roll_boots.ID,
+            Broken_controller.ID,
 
+            CharmBauble.ID,
+            CharmBauble.ID,
             CharmBauble.ID,
             CharmBauble.ID,
 
             566, // RAD GUN!!!
-            514, // D-pad
             149, // FaceMelter
+            GoYo.ID,
+            Joker.ID,
+            RetroBoy.ID,
+            27, // Zapper 
 
             HeavyImpact.ID,
             HoverBoard.ID,
             JetSetterRadio.ID,
-
-            TaggAr.ID,
+            TaggAr.ID
         };
 
         private int SelectItem()
@@ -162,14 +177,20 @@ namespace Knives
             int ID = 425; // heart purse in a real run this failsafe should not be possible to trigger since it takes over 150 coolness to buy out the shop, But Like Modded gungeon is wacky so I've gotta prep
             if (jackpotItemRepo.Count != 0)
             {
-                
                 int rng = UnityEngine.Random.Range(0, jackpotItemRepo.Count - 1);
                 ID = jackpotItemRepo[rng];
                 CheckUnlockID(ID);
+                if(ID == 0) // Fix it and reroll
+                {
+                    jackpotItemRepo.RemoveAt(rng);
+                    int rng2 = UnityEngine.Random.Range(0, jackpotItemRepo.Count - 1);
+                    ID = jackpotItemRepo[rng2];
+                    rng = rng2;
+                }
                 jackpotItemRepo.RemoveAt(rng);
             }
-
-
+            if(ID == 0) ID = 425; // If it still somehow rolls 0 set to default
+           
             return ID;
         }
 
@@ -232,9 +253,9 @@ namespace Knives
 
                     break;
                 case 1: // Jackpot
-                    if (user.stats.GetStatValue(PlayerStats.StatType.Coolness) >= (2 + JackPotPriceRamp))
+                    if (user.stats.GetStatValue(PlayerStats.StatType.Coolness) >= 2)
                     {
-                        user.ownerlessStatModifiers.Add(StatModifier.Create(PlayerStats.StatType.Coolness, StatModifier.ModifyMethod.ADDITIVE, -2 - JackPotPriceRamp));
+                        user.ownerlessStatModifiers.Add(StatModifier.Create(PlayerStats.StatType.Coolness, StatModifier.ModifyMethod.ADDITIVE, -2));
                         user.stats.RecalculateStats(user, true);
                         int itemID = SelectItem();
                        
@@ -250,37 +271,24 @@ namespace Knives
 
 
                     break;
-                case 2: // consume
+                case 2: // heal me
                     if (user.stats.GetStatValue(PlayerStats.StatType.Coolness) >= 1f)
                     {
                         user.ownerlessStatModifiers.Add(StatModifier.Create(PlayerStats.StatType.Coolness, StatModifier.ModifyMethod.ADDITIVE, -1));
                         user.stats.RecalculateStats(user, true);
                         bool FullHealth = false;
                         if (user.healthHaver.GetMaxHealth() == user.healthHaver.GetCurrentHealth()) FullHealth = true;
-                        int rng = UnityEngine.Random.Range(1, 4);
-                        if (rng == 1)// .5heart
+                        if (FullHealth)
                         {
-                            if (FullHealth)
-                            {
-                                user.healthHaver.Armor++;
-                                AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", gameObject);
+                            user.healthHaver.Armor++;
+                            AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", gameObject);
 
-                            }
-                            else 
-                            {
-                                AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", gameObject);
+                        }
+                        else
+                        {
+                            AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", gameObject);
 
-                                user.healthHaver.ApplyHealing(.5f);
-                            }
-                           
-                        }
-                        if (rng == 2) // key 
-                        {
-                            LootEngine.SpawnItem(PickupObjectDatabase.GetById(67).gameObject, user.specRigidbody.UnitCenter, Vector2.zero, 0f, false, false, false);
-                        }
-                        if (rng >= 3) // blank
-                        {
-                            LootEngine.SpawnItem(PickupObjectDatabase.GetById(224).gameObject, user.specRigidbody.UnitCenter, Vector2.zero, 0f, false, false, false);
+                            user.healthHaver.ApplyHealing(.5f);
                         }
                         StartCoroutine(DoHappy(user));
                     }
@@ -350,7 +358,7 @@ namespace Knives
                     if (player.CurrentGun.CurrentAngle > 45 && player.CurrentGun.CurrentAngle <= 135)// up
                     {
                         Current_Select = 1;
-                        showncost = 2 + JackPotPriceRamp;
+                        showncost = 2;
                         readoutOffset = new Vector3(.45f, 2.2f,0);
                     }
                     if (player.CurrentGun.CurrentAngle > 135 || player.CurrentGun.CurrentAngle <= -135)// left

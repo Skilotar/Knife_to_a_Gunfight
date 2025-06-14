@@ -36,7 +36,8 @@ namespace Knives
                 "Its the hardest working liver in the galaxy. " +
                 "This liver belonged to a crippling alcholoic lizard. " +
                 "Instead of failing this particular liver mutated to be able to handle stronger and stronger poisons until the owners blood became saturated with venom." +
-            "\n\n\n - Knife_to_a_Gunfight";
+                "\n\n\n - Knife_to_a_Gunfight" +
+                "\n Sprite in collab with Lynceusd";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -102,7 +103,8 @@ namespace Knives
         public override DebrisObject Drop(PlayerController player)
         {
 
-            
+            player.healthHaver.ModifyDamage -= this.ModDam;
+
             return base.Drop(player);
         }
 

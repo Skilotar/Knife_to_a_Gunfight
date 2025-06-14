@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using ItemAPI;
+using System.Reflection;
 
 namespace Knives
 {
@@ -30,7 +31,8 @@ namespace Knives
             string shortDesc = "Bottomless?";
             string longDesc =
 
-                "Clips fill at the bottom. Bullets that are fired when the clip is empty cost double ammo. Does not work with infinite ammo guns \n\n" +
+                "Pressing -shoot- while reloading instantly reloads at the cost of extra ammo. Does not work with infinite ammo guns \n\n" +
+
                 "An abyssal clip offered as a gift from an entity that knows only hunger." +
                 "\n\n\n - Knife_to_a_Gunfight";
 
@@ -50,10 +52,62 @@ namespace Knives
             ID = item.PickupObjectId;
             Remove_from_lootpool.RemovePickupFromLootTables(item);
             JinxItemDisplayStorageClass text = item.gameObject.GetOrAddComponent<JinxItemDisplayStorageClass>();
-            text.jinxItemDisplayText = "Clips Fill at the bottom, Overdrawn shots take double";
+            text.jinxItemDisplayText = "Attack while reloading to instantly reload at the cost of extra ammo.";
         }
 
         public static int ID;
+
+        public override void Pickup(PlayerController player)
+        {
+            base.Pickup(player);
+        }
+        public override DebrisObject Drop(PlayerController player)
+        {
+            return base.Drop(player);
+        }
+
+        public override void Update()
+        {
+            if(this.Owner != null)
+            {
+                if (this.Owner.CurrentGun.IsReloading && this.Owner.CurrentGun.InfiniteAmmo == false && (this.Owner.CurrentGun.GetComponent<GunGradualReload>() == null))
+                {
+                    BraveInput instanceForPlayer = BraveInput.GetInstanceForPlayer((this.Owner as PlayerController).PlayerIDX);
+                    Elapsed += BraveTime.DeltaTime;
+                    bool cando = (Elapsed <= this.Owner.CurrentGun.AdjustedReloadTime - .10f) && (Elapsed >= .10f);
+
+                    if (instanceForPlayer.ActiveActions.ShootAction && Time.timeScale != 0 && !instanceForPlayer.ActiveActions.MapAction.IsPressed && cando)
+                    {
+                        
+                        
+                        int AmtToLose = 20;
+
+                        if((this.Owner.CurrentGun.ClipCapacity - this.Owner.CurrentGun.ClipShotsRemaining) <= 20)
+                        {
+                            AmtToLose = this.Owner.CurrentGun.ClipCapacity - this.Owner.CurrentGun.ClipShotsRemaining;
+                            
+                        }
+                        this.Owner.CurrentGun.LoseAmmo(AmtToLose);
+
+                        this.Owner.CurrentGun.ForceImmediateReload();
+                        GameUIRoot.Instance.ForceClearReload(this.Owner.PlayerIDX);
+
+                        this.Owner.BloopItemAboveHead(base.sprite, "Knives/Resources/Greedy_clip");
+                        AkSoundEngine.PostEvent("Play_OBJ_ammo_pickup_01", base.gameObject);
+                    }
+                }
+                else
+                {
+                    Elapsed = 0;
+                }
+            }
+
+            base.Update();
+        }
+        float Elapsed;
+
+
+        /*
         public override void Pickup(PlayerController player)
         {
             player.CurrentGun.OnPostFired += this.Onpostfired;
@@ -121,11 +175,11 @@ namespace Knives
            
         }
        
-          
+        */
 
-        
 
-      
+
+
     }
 }
 

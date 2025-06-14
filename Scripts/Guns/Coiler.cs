@@ -60,7 +60,7 @@ namespace Knives
 			UnityEngine.Object.DontDestroyOnLoad(projectile);
 			gun.DefaultModule.projectiles[0] = projectile;
 
-			projectile.baseData.damage = 5f;
+			projectile.baseData.damage = 2f;
 			projectile.baseData.speed *= 1;
 			projectile.baseData.range = 20f;
 			projectile.AdditionalScaleMultiplier *= .5f;
@@ -92,7 +92,9 @@ namespace Knives
 			ETGMod.Databases.Items.Add(gun, null, "ANY");
 
 
+			ID = gun.PickupObjectId;
 		}
+		public static int ID;
 
 		public System.Random rng = new System.Random();
 		public override void PostProcessProjectile(Projectile projectile)
@@ -135,10 +137,28 @@ namespace Knives
 						stabby.penetration = 1;
 						component.Owner = player;
 						component.Shooter = player.specRigidbody;
-						component.baseData.damage = 9f;
+						component.baseData.damage = 5f;
 						component.DefaultTintColor = UnityEngine.Color.yellow;
 						component.HasDefaultTint = true;
 
+						List<string> BeamAnimPaths = new List<string>()
+						{
+
+						"Knives/Resources/BeamSprites/Sp4rk_001",
+						"Knives/Resources/BeamSprites/Sp4rk_002",
+						"Knives/Resources/BeamSprites/Sp4rk_003",
+						};
+						component.AddTrailToProjectile(
+							 "Knives/Resources/BeamSprites/Sp4rk_001",
+							new Vector2(3, 2),
+							new Vector2(1, 1),
+							BeamAnimPaths, 20,
+							BeamAnimPaths, 20,
+							-1,
+							0.0001f,
+							5,
+							true
+							);
 					}
 				}
 

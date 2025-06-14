@@ -51,10 +51,10 @@ namespace Knives
                 return;
             
             m_hasBeenPickedUp = true;
-            int ammo_to_give = player.CurrentGun.ClipCapacity + 9;
-            if (ammo_to_give >= 20)
+            int ammo_to_give = player.CurrentGun.ClipCapacity + 10;
+            if (ammo_to_give >= 25)
             {
-                player.CurrentGun.GainAmmo(20);
+                player.CurrentGun.GainAmmo(25);
                 player.CurrentGun.MoveBulletsIntoClip(player.CurrentGun.ClipCapacity - player.CurrentGun.ClipShotsRemaining);
                 AkSoundEngine.PostEvent("Play_OBJ_ammo_pickup_01", base.gameObject);
                 //player.RemovePassiveItem(PickupObjectDatabase.GetByName("Tiny Ammo Pack").PickupObjectId);

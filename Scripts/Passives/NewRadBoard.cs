@@ -5,6 +5,8 @@ using System.Text;
 using System.Collections;
 using UnityEngine;
 using ItemAPI;
+using HarmonyLib;
+using SaveAPI;
 
 namespace Knives
 {
@@ -43,14 +45,17 @@ namespace Knives
             item.quality = PickupObject.ItemQuality.SPECIAL;
 
         }
-        
+        public static PlayerController KnownOwner;
         public override void Pickup(PlayerController player)
         {
             player.OnDodgedProjectile += this.OnDodgedProjectile;
             player.OnPreDodgeRoll += Player_OnPreDodgeRoll;
+            HasRatSack = false;
+            KnownOwner = player;
             player.OnEnteredCombat = (Action)Delegate.Combine(player.OnEnteredCombat, new Action(this.OnEnteredCombat));
-            GameManager.Instance.RewardManager.SinglePlayerPickupIncrementModifier = 1.6f; // Sets Skater's default Roomdrop chance to be closer to co-op values to Offset her naturally high coolness stat.
+            GameManager.Instance.RewardManager.SinglePlayerPickupIncrementModifier = 2.1f; // Sets Skater's default Roomdrop chance to be closer to co-op values to Offset her naturally high coolness stat.
             base.Pickup(player);
+            
         }
 
 
@@ -67,7 +72,6 @@ namespace Knives
         private void Player_OnPreDodgeRoll(PlayerController obj)
         {
             obj.stats.RecalculateStats(obj, true);
-
             CurrentlyRolling = true;
             Onebullet = false;
         }
@@ -109,25 +113,28 @@ namespace Knives
                             AkSoundEngine.PostEvent("Play_WPN_devolver_morph_01", base.gameObject);
                         }
                     }
-                }
-                
+                }  
             }
-
         }
 
         private IEnumerator DoBamp(Projectile proj)
         {
-
             Vector2 vector = this.Owner.transform.position;
             GameObject Parry = SpawnManager.SpawnVFX(EasyVFXDatabase.SkaterP, vector, Quaternion.identity);
             Parry.GetComponent<tk2dBaseSprite>().scale *= 1.2f;
             Parry.GetComponent<tk2dBaseSprite>().PlaceAtPositionByAnchor(this.Owner.transform.position + new Vector3(-1.5f, -.7f), tk2dBaseSprite.Anchor.LowerLeft);
             Parry.GetComponent<tk2dSpriteAnimator>().PlayAndDestroyObject("start");
+            if (AdvancedGameStatsManager.Instance.GetFlag(CustomDungeonFlags.SKIPSKATERPARRYPAUSE) == false)
+            {
+                StartCoroutine(HitPause());
+            }
+            yield return null;
+        }
+        private IEnumerator HitPause()
+        {
             BraveTime.SetTimeScaleMultiplier(0, base.gameObject);
-            yield return new WaitForSecondsRealtime(.25f);
+            yield return new WaitForSecondsRealtime(.2f);
             BraveTime.SetTimeScaleMultiplier(1, base.gameObject);
-
-
         }
 
         public override DebrisObject Drop(PlayerController player)
@@ -148,15 +155,44 @@ namespace Knives
                 {
                     if(this.Owner.IsDodgeRolling != true)//roll ended
                     {
-                        
                         DoProcessGains(Owner);
                         CurrentlyRolling = false;
                         Onebullet = false;
                     }
                 }
 
+                if(this.Owner.HasActiveItem(663)) //RatPack
+                {
+                    HasRatSack = true;
+                }
+                else
+                {
+                    HasRatSack = false;
+                }
+
+                if(TriggerCollect != null)
+                {
+                    OnDodgedProjectile(TriggerCollect);
+                    TriggerCollect = null;
+                }
             }
             base.Update();
+        }
+        public static bool HasRatSack = false;
+        public static Projectile TriggerCollect = null;
+        
+
+        [HarmonyPatch(typeof(RatPackItem), nameof(RatPackItem.EatBullet))]
+        public class RatPatch
+        {
+            [HarmonyPrefix]
+            public static void Prefix(Projectile p) //ProjEatten
+            {
+                if (HasRatSack)
+                {
+                    TriggerCollect = p;
+                }
+            }
         }
 
         private void DoProcessGains(PlayerController user)
@@ -170,6 +206,12 @@ namespace Knives
                 RemoveStat(PlayerStats.StatType.Coolness);
                 AddStat(PlayerStats.StatType.Coolness, coolpoints);
                 user.stats.RecalculateStats(user, true);
+            }
+            if(coolpoints > 12)
+            {
+                coolpoints = 12;
+                RemoveStat(PlayerStats.StatType.Coolness);
+                AddStat(PlayerStats.StatType.Coolness, coolpoints);
             }
            
         }

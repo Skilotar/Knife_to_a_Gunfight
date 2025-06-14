@@ -160,12 +160,19 @@ namespace Knives
 								{
 									bool flag10 = projectile.LastReflectedSlashId != slashId;
 									if (flag10)
-									{	
+									{
 										// Hey future ski. I know youre coming back to try to fix the color thing
 										// Don't try it
 										// Seriously youre wasting your time again...
-										PassiveReflectItem.ReflectBullet(projectile, true, owner, 2f, 1f, 4f, 0f);
-										projectile.RemoveBulletScriptControl();
+
+
+										// Its working now! No thanks to you past me :P
+										// I'm you but stronger!!!
+										SpawnManager.PoolManager.Remove(projectile.transform);
+										PassiveReflectItem.ReflectBullet(projectile, true, owner, 2f, 1f, 1f, 0f);
+                                        projectile.RemoveBulletScriptControl();
+										projectile.AdjustPlayerProjectileTint(ExtendedColours.honeyYellow, 1);
+
 										projectile.BulletScriptSettings.preventPooling = true;
 										projectile.baseData.speed *= 0f;
 										
@@ -187,7 +194,15 @@ namespace Knives
 									bool flag12 = projectile.LastReflectedSlashId != slashId;
 									if (flag12)
 									{
+
+										SpawnManager.PoolManager.Remove(projectile.transform);
 										
+										projectile.RemoveBulletScriptControl();
+										projectile.AdjustPlayerProjectileTint(ExtendedColours.honeyYellow, 1);
+
+										projectile.BulletScriptSettings.preventPooling = true;
+										
+
 										PassiveReflectItem.ReflectBullet(projectile, true, owner, 2f, 1f, 4f, 0f);
 										projectile.Direction = owner.CenterPosition - projectile.specRigidbody.UnitCenter;
 										ProjectileSplitController split = projectile.gameObject.GetOrAddComponent<ProjectileSplitController>();

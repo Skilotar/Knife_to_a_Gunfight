@@ -21,7 +21,7 @@ namespace Knives
         public static void SetupSkater()
         {
             var Skater = Loader.BuildCharacter("Knives/Scripts/Characters/Skater",
-                   "ski:Skater",
+                   "skilotar.etg.knifetoagunfight",
                     new Vector3(24.5f, 16.5f, 27.1f),
                      false,
                      new Vector3(15.3f, 19f, 25.3f),
@@ -59,7 +59,7 @@ namespace Knives
             GlowMatDoer glow = new GlowMatDoer(new Color32(225, 225, 225, 225), 0, 50,.2f);
 
             var Rollin = Loader.BuildCharacter("Knives/Scripts/Characters/Rollin",
-                   "ski:Rollin",
+                   "skilotar.etg.knifetoagunfight",
                     new Vector3(26.5f, 17, 27.1f),
                      false,
                      new Vector3(17.3f, 19f, 25.3f),

@@ -143,7 +143,7 @@ namespace Knives
         private bool CheckCharmList(PickupObject pick)
         {
             bool Bigif = false;
-            foreach (int Id in GlobalCharmList.Charmslist)
+            foreach (int Id in GlobalCharmList.TotalCharmslist)
             {
                 if(Id == pick.PickupObjectId)
                 {

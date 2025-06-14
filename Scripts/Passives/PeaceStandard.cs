@@ -31,9 +31,9 @@ namespace Knives
 
             //Ammonomicon entry variables
             string shortDesc = "Give Peace A Chance";
-            string longDesc = "Reminder to spread 'Love' an 'Peace' as long as the person agrees with you and isnt 'Oppressing' your rights Duuuuuuuuuuuuuuuuude. " +
+            string longDesc = "Reminder to spread Love an Peace as long as the person agrees with you and isnt Oppressing your rights Duuuuuuuuuuuuuuuuude. " +
                 "_______________________________________________________________________________\n" +
-                "Deals more damage the longer the player does not kill for in combat.\n\n\n - Knife_to_a_Gunfight";
+                "Deals more damage the longer the player does not deal damage for in combat.\n\n\n - Knife_to_a_Gunfight";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
@@ -45,21 +45,37 @@ namespace Knives
 
 
             item.quality = PickupObject.ItemQuality.C;
-            item.CanBeDropped = false;
+            
             ID = item.PickupObjectId;
         }
 
         public static int ID;
-        public int counter = 0;
-        public int synergyCounter = 0;
+        public float counter = 0;
+        public float synergyCounter = 0;
+        public bool Maxed = false;
+        
         public int token = 0;
         public override void Pickup(PlayerController player)
         {
             base.Pickup(player);
 
-            player.OnKilledEnemy += this.OnKilledEnemy;
+            player.OnDealtDamage += this.dealtDamage;
+            counter = 0;
+            Maxed = false;
 
+        }
 
+        private void dealtDamage(PlayerController arg1, float arg2)
+        {
+            counter = 0;
+            Maxed = false;
+        }
+
+        public override DebrisObject Drop(PlayerController player)
+        {
+            player.OnDealtDamage -= this.dealtDamage;
+
+            return base.Drop(player);
         }
         public override void  Update()
         {
@@ -74,86 +90,64 @@ namespace Knives
                     }
                     else
                     {
-                        counter++;
-                        if (this.Owner.HasPickupID(529))
+
+                        if (counter <= 4) // accrew Stat over 4 seconds
                         {
-                            synergyCounter++;
+                            Maxed = false;
+                            counter += Time.deltaTime / 4;
+                            float buff = Mathf.Lerp(0, 1, counter / 4);
+                            RemoveStat(PlayerStats.StatType.Damage);
+                            AddStat(PlayerStats.StatType.Damage, buff);
+                            this.Owner.stats.RecalculateStats(Owner, true);
                         }
+                        if(counter >= 4)
+                        {
+                            if (Maxed == false)
+                            {
+                                AkSoundEngine.PostEvent("Play_OBJ_power_up_01", base.gameObject);
+                                Maxed = true;
+                            }
+                        }
+
+                        if(this.Owner.PlayerHasActiveSynergy("Double Standards"))
+                        {
+                            if (synergyCounter <= .5f)
+                            {
+                                synergyCounter += Time.deltaTime;
+                            }
+                            else
+                            {
+                                synergyCounter = 0;
+                                foreach (AIActor friend in this.Owner.companions)
+                                {
+                                    if (friend.healthHaver.IsAlive && friend.healthHaver.GetCurrentHealth() != friend.healthHaver.GetMaxHealth())
+                                    {
+                                        friend.healthHaver.ApplyHealing(5f);
+                                        AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", base.gameObject);
+                                        synergyCounter = 0;
+                                    }
+                                }
+
+                            }
+                        }
+                        
                     }
 
 
                 }
-
-
-                if (counter == 450)
+                else
                 {
-                    if(token <= 2)
-                    {
-                        token++;
-                    }
+                    
                     RemoveStat(PlayerStats.StatType.Damage);
-                    AddStat(PlayerStats.StatType.Damage, token / 2);
                     this.Owner.stats.RecalculateStats(Owner, true);
                     counter = 0;
-                }
-
-                base.Update();
-
-                if (synergyCounter == 2000)
-                {
-                    foreach (AIActor friend in this.Owner.companions)
-                    {
-                        if (friend.healthHaver.GetCurrentHealth() > 0f)
-                        {
-                            friend.healthHaver.ApplyHealing(10f);
-
-                           
-                            StartVFX(friend);
-                            synergyCounter = 0;
-                        }
-                    }
-                    AkSoundEngine.PostEvent("Play_OBJ_heart_heal_01", base.gameObject);
-                }
-                if (synergyCounter == 50)
-                {
-                    foreach (AIActor friend in this.Owner.companions)
-                    {
-                        if (friend.healthHaver.GetCurrentHealth() > 0f)
-                        {
-
-                            StopVFX(friend);
-
-                        }
-                    }
+                    
                 }
 
             }
 
         }
 
-        private void StartVFX(AIActor user)
-        {
-            Material outline = SpriteOutlineManager.GetOutlineMaterial(user.sprite);
-            outline.SetColor("_OverrideColor", new Color(63f, 236f, 165f));
-        }
-
-
-        private void StopVFX(AIActor user)
-        {
-            Material outline = SpriteOutlineManager.GetOutlineMaterial(user.sprite);
-            outline.SetColor("_OverrideColor", new Color(0f, 0f, 0f));
-        }
-
-        public void OnKilledEnemy(PlayerController user)
-        {
-            if(token > 0)
-            {
-                token --;
-                token --;
-                counter = 0;
-            }
-
-        }
 
         private void AddStat(PlayerStats.StatType statType, float amount, StatModifier.ModifyMethod method = StatModifier.ModifyMethod.ADDITIVE)
         {

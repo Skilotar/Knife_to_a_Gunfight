@@ -43,15 +43,14 @@ namespace Knives
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
             gun.gunClass = GunClass.PISTOL;
             gun.DefaultModule.burstShotCount = 3;
-            gun.GainsRateOfFireAsContinueAttack = true;
-            gun.RateOfFireMultiplierAdditionPerSecond = 10f;
-            gun.reloadTime = 1.7f;
-            gun.DefaultModule.cooldownTime = 3f;
+            gun.DefaultModule.burstCooldownTime = .1f;
+            gun.reloadTime = 1.4f;
+            gun.DefaultModule.cooldownTime = .8f;
             gun.DefaultModule.numberOfShotsInClip = 6;
-            gun.SetBaseMaxAmmo(375);
+            gun.SetBaseMaxAmmo(275);
             // Here we just set the quality of the gun and the "EncounterGuid", which is used by Gungeon to identify the gun.
             gun.quality = PickupObject.ItemQuality.B;
-            gun.encounterTrackable.EncounterGuid = "THREE! YOU GET THREE WISHES";
+            //gun.encounterTrackable.EncounterGuid = "THREE! YOU GET THREE WISHES";
             //This block of code helps clone our projectile. Basically it makes it so things like Shadow Clone and Hip Holster keep the stats/sprite of your custom gun's projectiles.
             Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
             projectile.gameObject.SetActive(false);
@@ -60,9 +59,10 @@ namespace Knives
             gun.DefaultModule.projectiles[0] = projectile;
             
             projectile.baseData.damage *= .10f;
-            projectile.baseData.speed *= 1f;
+            projectile.baseData.speed *= 1.2f;
+            projectile.AdditionalScaleMultiplier *= .8f;
             projectile.transform.parent = gun.barrelOffset;
-            projectile.PenetratesInternalWalls = true;
+            //projectile.PenetratesInternalWalls = true;
             projectile.DefaultTintColor = UnityEngine.Color.cyan;
             projectile.HasDefaultTint = true;
             

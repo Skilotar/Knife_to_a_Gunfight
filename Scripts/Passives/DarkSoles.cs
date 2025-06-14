@@ -42,9 +42,10 @@ namespace Knives
             //Adds the actual passive effect to the item
 
             item.quality = PickupObject.ItemQuality.C;
-
+            ID = item.PickupObjectId;
 
         }
+        public static int ID;
         private ImprovedAfterImage zoomy;
         public override void Pickup(PlayerController player)
         {

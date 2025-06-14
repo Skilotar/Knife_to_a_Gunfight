@@ -56,8 +56,9 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 8f;
+            projectile.baseData.damage = 14f;
             projectile.baseData.speed *= .6f;
+            projectile.baseData.range = 10;
             projectile.PenetratesInternalWalls = true;
             
             PierceProjModifier stabby = projectile.gameObject.GetOrAddComponent<PierceProjModifier>();
@@ -88,13 +89,13 @@ namespace Knives
             if (projectile.gameObject.GetOrAddComponent<projectileStates>().isPickStarter == true) 
             {
                 PlayerController player = this.gun.CurrentOwner as PlayerController;
-
+                projectile.baseData.damage *= DepthMult;
                 float angle = projectile.transform.eulerAngles.magnitude;
 
 
                 // ETGModConsole.Log(angle);
                 int vary = -16;
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 9; i++) // pick
                 {
                     
                     Projectile projectile2 = ((Gun)ETGMod.Databases.Items[550]).DefaultModule.projectiles[0];
@@ -106,14 +107,14 @@ namespace Knives
 
                         component.Owner = this.gun.CurrentOwner;
                         component.Shooter = this.gun.CurrentOwner.specRigidbody;
-                        component.baseData.damage = 1.2f * DepthMult ;
+                        component.baseData.damage = 4f * DepthMult;
                         component.baseData.range = 10f;
                         component.baseData.speed *= (float)(.6 - .004 * Math.Abs(vary));
                         component.PenetratesInternalWalls = true;
                         PierceProjModifier stabby = component.gameObject.GetOrAddComponent<PierceProjModifier>();
                         stabby.penetration = 20;
                         
-                        if(UnityEngine.Random.Range(1,11) == 1)
+                        if(UnityEngine.Random.Range(1,5f) == 1)
                         {
                             player.DoPostProcessProjectile(component);
                         }
@@ -124,7 +125,7 @@ namespace Knives
                     vary++;
                     vary++;
                 }
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++) // handle
                 {
                     
                     Projectile projectile2 = ((Gun)ETGMod.Databases.Items[15]).DefaultModule.projectiles[0];
@@ -136,7 +137,7 @@ namespace Knives
 
                         component.Owner = this.gun.CurrentOwner;
                         component.Shooter = this.gun.CurrentOwner.specRigidbody;
-                        component.baseData.damage = 1.2f * DepthMult;
+                        component.baseData.damage = 2f * DepthMult;
                         component.baseData.range = 10f;
                         component.baseData.speed *= (float)(.6 - .06 * i);
                         component.PenetratesInternalWalls = true;
@@ -144,7 +145,7 @@ namespace Knives
                         stabby.penetration = 20;
                         component.HasDefaultTint = true;
 
-                        if (UnityEngine.Random.Range(1, 11) == 1)
+                        if (UnityEngine.Random.Range(1, 5f) == 1)
                         {
                             player.DoPostProcessProjectile(component);
                         }
@@ -190,7 +191,7 @@ namespace Knives
                 AkSoundEngine.PostEvent("Stop_WPN_All", base.gameObject);
 
                 TalkDoerLite talk = player.gameObject.GetOrAddComponent<TalkDoerLite>();
-                int DoCritDrink = UnityEngine.Random.Range(1, 31);
+                int DoCritDrink = UnityEngine.Random.Range(1, 28);
 
                 if (player.IsInCombat == false)
                 {
@@ -331,52 +332,52 @@ namespace Knives
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.SEWERGEON || GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.JUNGLEGEON)//.5
             {
-                DepthMult = 1.1f;
+                DepthMult = 1.2f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.GUNGEON)//1
             {
-                DepthMult = 1.1f;
+                DepthMult = 1.3f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.CATHEDRALGEON || GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.BELLYGEON)//1.5
             {
-                DepthMult = 1.2f;
+                DepthMult = 1.4f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.MINEGEON)//2
             {
-                DepthMult = 1.2f;
+                DepthMult = 1.5f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.RATGEON)//2.5
             {
-                DepthMult = 1.3f;
+                DepthMult = 1.6f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.CATACOMBGEON)//3
             {
-                DepthMult = 1.3f;
+                DepthMult = 1.7f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.OFFICEGEON || GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.WESTGEON)//3.5
             {
-                DepthMult = 1.4f;
+                DepthMult = 1.8f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.FORGEGEON)//4
             {
-                DepthMult = 1.5f;
+                DepthMult = 2f;
                 hit = true;
             }
             if (GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.FINALGEON || GameManager.Instance.Dungeon.tileIndices.tilesetId == GlobalDungeonData.ValidTilesets.HELLGEON)//past
             {
-                DepthMult = 1.5f;
+                DepthMult = 2f;
                 hit = true;
             }
             if (hit == false) // floor not found Default to 1.2 X
             {
-                DepthMult = 1.2f;
+                DepthMult = 1.4f;
             }
 
         }

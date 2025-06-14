@@ -32,15 +32,14 @@ namespace Knives
 
             //Ammonomicon entry variables
             string shortDesc = "No Pain, No Gain!";
-            string longDesc = "Increase power for each missing health, But gain size.\n\n" +
+            string longDesc = "Increase power for each full heart, But gain size.\n\n" +
             "A patchwork mess of multiple stuffed animal parts. The tag on the back reads \'return to X\'." +
             "\n\n\n - Knife_to_a_Gunfight";
 
             //Adds the item to the gungeon item list, the ammonomicon, the loot table, etc.
             //Do this after ItemBuilder.AddSpriteToObject!
             ItemBuilder.SetupItem(item, shortDesc, longDesc, "ski");
-            ItemBuilder.AddPassiveStatModifier(item, PlayerStats.StatType.Health, 1);
-
+            
             //Set the rarity of the item
             item.CanBeDropped = false;
             item.quality = PickupObject.ItemQuality.C;
@@ -49,16 +48,17 @@ namespace Knives
             itemID = item.PickupObjectId;
 
             JinxItemDisplayStorageClass text = item.gameObject.GetOrAddComponent<JinxItemDisplayStorageClass>();
-            text.jinxItemDisplayText = "Gain health and scaling damage, But gain size.";
+            text.jinxItemDisplayText = "Increase damage for each full heart, But gain size.";
         }
 
         public static int itemID;
         public float gainsXmain = 0;
         public float gainsYmain = 0;
-        public static float Scaler = 1.25f;
+        public static float Scaler = 1.20f;
+        public float knownHealth = -1; 
         public override void Pickup(PlayerController player)
         {
-            player.healthHaver.OnHealthChanged += HealthHaver_OnHealthChanged;
+           
             if (gainsXmain == 0 && gainsYmain == 0)
             {
                 float gX = (1 * Scaler);
@@ -70,20 +70,33 @@ namespace Knives
             player.transform.localScale = new Vector3(gainsYmain, gainsYmain, player.transform.localScale.z);
             player.specRigidbody.UpdateCollidersOnScale = true;
             player.specRigidbody.UpdateColliderPositions();
-           
+
             base.Pickup(player);
         }
 
-        private void HealthHaver_OnHealthChanged(float resultValue, float maxValue)
-        {
-            RemoveStat(PlayerStats.StatType.Damage);
-            AddStat(PlayerStats.StatType.Damage, .15f * (maxValue - resultValue)); // .075 damage per missing heart
-            this.Owner.stats.RecalculateStats(Owner, true);
+        public override void Update()
+        {   
+            if(this.Owner != null)
+            {
+                if(knownHealth != this.Owner.healthHaver.GetCurrentHealth())
+                {
+                    knownHealth = this.Owner.healthHaver.GetCurrentHealth();
+                    ChangeStats(this.Owner.healthHaver.GetCurrentHealth());
+                }
+            }
+
+            base.Update();
         }
 
+        public void ChangeStats(float resultValue)
+        {
+            RemoveStat(PlayerStats.StatType.Damage);
+            AddStat(PlayerStats.StatType.Damage, .05f * resultValue);
+            this.Owner.stats.RecalculateStats(Owner, true);
+        }
         public override DebrisObject Drop(PlayerController player)
         {
-            player.healthHaver.OnHealthChanged -= HealthHaver_OnHealthChanged;
+            
             player.transform.localScale = new Vector3(1, 1, player.transform.localScale.z);
             player.specRigidbody.UpdateColliderPositions();
 

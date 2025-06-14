@@ -43,26 +43,30 @@ namespace Knives
 								RoomHandler room = parentOwner.CurrentRoom;
 								if (room != null)
 								{
-									foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
+									if (room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All) != null)
 									{
-										if (enemy.aiActor != null)
+										foreach (var enemy in room.GetActiveEnemies(RoomHandler.ActiveEnemyType.All))
 										{
-											if (Vector2.Distance(enemy.Position, this.Projectile.LastPosition) < 5)
+											if (enemy.aiActor != null)
 											{
-                                                if (enemy.healthHaver.IsAlive)
-                                                {
-													enemy.ApplyEffect(PickupObjectDatabase.GetById(295).GetComponent<BulletStatusEffectItem>().FireModifierEffect);
-												}
-												
-											}
-										}
+												if (Vector2.Distance(enemy.Position, this.Projectile.LastPosition) < 5)
+												{
+													if (enemy.healthHaver.IsAlive)
+													{
+														enemy.ApplyEffect(PickupObjectDatabase.GetById(295).GetComponent<BulletStatusEffectItem>().FireModifierEffect);
+													}
 
+												}
+											}
+
+										}
 									}
 								}
 
 							}
 						}
 					}
+					
 				}
 			}
 			
@@ -72,9 +76,13 @@ namespace Knives
 		public void HereComesTheBOOM()
         {
             
-				this.DoSafeExplosion(this.Projectile.LastPosition);
-			
-				this.Projectile.DieInAir();
+			this.DoSafeExplosion(this.Projectile.LastPosition);
+			if (Vector2.Distance(Projectile.LastPosition, parentOwner.CenterPosition) < 4)
+			{
+				Vector2 dir = parentOwner.CenterPosition - (Vector2)Projectile.LastPosition;
+				parentOwner.knockbackDoer.ApplyKnockback(dir, 25);
+			}
+			this.Projectile.DieInAir();
 			
         }
 		public void DoSafeExplosion(Vector3 position)

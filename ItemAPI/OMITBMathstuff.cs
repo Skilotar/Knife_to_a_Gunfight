@@ -49,12 +49,13 @@ namespace Knives
             }
             return key;
         }
-        public static Vector2 GetPositionOfNearestEnemy(this Vector2 startPosition, bool canTargetNonRoomClear, bool targetSprite = false, List<AIActor> excludedActors = null)
+        public static Vector2 GetPositionOfNearestEnemy(this Vector2 startPosition, bool canTargetNonRoomClear, bool targetSprite = false, List<AIActor> excludedActors = null, bool worksOnBosses = true)
         {
 
             List<AIActor> exclude = new List<AIActor>();
             if (excludedActors != null && excludedActors.Count > 0) exclude.AddRange(excludedActors);
             Func<AIActor, bool> isValid = (AIActor a) => a && a.HasBeenEngaged && a.healthHaver && a.healthHaver.IsVulnerable && a.healthHaver.IsAlive && !a.IsGone && !exclude.Contains(a) && a.CompanionOwner == null && a.gameObject.GetComponent<CompanionController>() == null;
+            if(worksOnBosses == false) isValid = (AIActor a) => a && a.HasBeenEngaged && a.healthHaver && a.healthHaver.IsVulnerable && a.healthHaver.IsAlive && !a.IsGone && !exclude.Contains(a) && !a.healthHaver.IsBoss && a.CompanionOwner == null && a.gameObject.GetComponent<CompanionController>() == null;
             IntVector2 intVectorStartPos = startPosition.ToIntVector2();
             RoomHandler.ActiveEnemyType enemyType = RoomHandler.ActiveEnemyType.RoomClear;
             if (canTargetNonRoomClear) enemyType = RoomHandler.ActiveEnemyType.All;

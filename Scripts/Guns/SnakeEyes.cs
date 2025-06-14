@@ -70,10 +70,11 @@ namespace Knives
 
             ETGMod.Databases.Items.Add(gun, null, "ANY");
 
-
+            main = projectile;
 
 
         }
+        public static Projectile main;
 
         public override void OnPickedUpByPlayer(PlayerController player)
         {
@@ -86,7 +87,7 @@ namespace Knives
             if(mainproj.gameObject.GetOrAddComponent<projectileStates>().isDiceStarter == true)
             {
                 int globalroll = UnityEngine.Random.Range(1, 7);
-                Projectile projectile = ((Gun)ETGMod.Databases.Items[15]).DefaultModule.projectiles[0];
+                Projectile projectile = mainproj;
                 switch (globalroll)
                 {
                     case (1):
@@ -95,7 +96,7 @@ namespace Knives
                         {
                             gun.GainAmmo(8);
                             gun.MoveBulletsIntoClip(9);
-                            AkSoundEngine.PostEvent("Play_Stat_Up", base.gameObject);
+                            AkSoundEngine.PostEvent("Play_OBJ_ammo_pickup_01", base.gameObject);
                             lastKnownRoll = 0;
                         }
 
@@ -167,7 +168,7 @@ namespace Knives
                 component.Owner = this.gun.CurrentOwner;
                 component.Shooter = this.gun.CurrentOwner.specRigidbody;
 
-                (this.gun.CurrentOwner as PlayerController).DoPostProcessProjectile(proj);
+                (this.gun.CurrentOwner as PlayerController).DoPostProcessProjectile(component);
                 //component.PostprocessPlayerBullet();
             }
 

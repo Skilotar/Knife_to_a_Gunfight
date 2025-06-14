@@ -329,7 +329,7 @@ namespace Knives
             }
             float chargeupdelay;
             PlayerController player = this.gun.CurrentOwner as PlayerController;
-            chargeupdelay = .4f / player.stats.GetStatModifier(PlayerStats.StatType.RateOfFire);
+            chargeupdelay = .35f / player.stats.GetStatModifier(PlayerStats.StatType.RateOfFire);
 
             yield return new WaitForSeconds(chargeupdelay);
             doingChargeUp = false;

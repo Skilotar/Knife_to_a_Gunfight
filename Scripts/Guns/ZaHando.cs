@@ -94,7 +94,7 @@ namespace Knives
 
             gun.gunClass = GunClass.SILLY;
             gun.gunHandedness = GunHandedness.HiddenOneHanded;
-            gun.reloadTime = 1f;
+            gun.reloadTime = 1.15f;
             gun.DefaultModule.cooldownTime = .01f;
             gun.DefaultModule.numberOfShotsInClip = 1;
             gun.SetBaseMaxAmmo(100);
@@ -105,6 +105,7 @@ namespace Knives
             
             
             ETGMod.Databases.Items.Add(gun, null, "ANY");
+            MiscToolMethods.TrimAllGunSprites(gun);
             ID = gun.PickupObjectId;
         }
 
@@ -352,8 +353,7 @@ namespace Knives
             player.CurrentRoom.ApplyActionToNearbyEnemies(player.CenterPosition, 4f, new Action<AIActor, float>(this.ProcessEnemy));
             yield return new WaitForSeconds(.25f);
             player.CurrentRoom.ApplyActionToNearbyEnemies(player.CenterPosition, 4f, new Action<AIActor, float>(this.ProcessEnemy));
-            yield return new WaitForSeconds(.25f);
-            player.CurrentRoom.ApplyActionToNearbyEnemies(player.CenterPosition, 4f, new Action<AIActor, float>(this.ProcessEnemy));
+           
         }
 
         public IEnumerator indicatoroff()
@@ -380,9 +380,6 @@ namespace Knives
             //ETGModConsole.Log("WasTrue " + wastrue);
             if (wastrue != true && health_check)
             {
-
-                player.GiveItem("casing");
-                player.GiveItem("casing");
 
                 
                 GameManager.Instance.Dungeon.StartCoroutine(this.HandleEnemySuck(target));
@@ -425,7 +422,7 @@ namespace Knives
             bool flag3 = this.gun;
             if (flag3)
             {
-                this.gun.GainAmmo(5);
+                this.gun.GainAmmo(1);
             }
             //ETGModConsole.Log("EndSuck");
             yield break;

@@ -44,10 +44,10 @@ namespace Knives
             gun.gunHandedness = GunHandedness.TwoHanded;
             gun.DefaultModule.shootStyle = ProjectileModule.ShootStyle.Charged;
             gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-            gun.reloadTime = 1f;
-            gun.DefaultModule.numberOfShotsInClip = 77;
-            gun.DefaultModule.cooldownTime = .45f;
-            gun.SetBaseMaxAmmo(77);
+            gun.reloadTime = .8f;
+            gun.DefaultModule.numberOfShotsInClip = 40;
+            gun.DefaultModule.cooldownTime = .30f;
+            gun.SetBaseMaxAmmo(75);
             gun.CanReloadNoMatterAmmo = true;
             gun.quality = PickupObject.ItemQuality.B;
             gun.carryPixelOffset = new IntVector2(5, 0);
@@ -84,11 +84,12 @@ namespace Knives
             UnityEngine.Object.DontDestroyOnLoad(projectile2);
             gun.DefaultModule.projectiles[0] = projectile2;
             
-            projectile2.baseData.damage = 0f;
+            projectile2.baseData.damage = 5f;
             projectile2.baseData.speed = 50f;
             projectile2.baseData.range = 40f;
             projectile2.gameObject.GetOrAddComponent<projectileStates>().OnionCharged = true;
-            
+            projectile2.gameObject.GetOrAddComponent<PikiProjMod>();
+
             ProjectileModule.ChargeProjectile item = new ProjectileModule.ChargeProjectile
             {
                 Projectile = projectile,
@@ -279,8 +280,6 @@ namespace Knives
                 target.EraseFromExistence(true);
 
             }
-
-
         }
 
         private IEnumerator HandleEnemySuck(AIActor target)
@@ -344,6 +343,7 @@ namespace Knives
         }
 
         private bool HasReloaded;
+
         public override void Update()
         {
             if (gun.CurrentOwner && GameManager.Instance.CurrentFloor != 0 && GameManager.Instance.IsLoadingLevel == false)
@@ -357,6 +357,8 @@ namespace Knives
                 {
                     this.HasReloaded = true;
                 }
+
+                
             }
         }
 

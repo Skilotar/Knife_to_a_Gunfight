@@ -53,9 +53,10 @@ namespace Knives
                 Projectile projectile = UnityEngine.Object.Instantiate<Projectile>(gun.DefaultModule.projectiles[0]);
                 projectile.gameObject.SetActive(false);
                 projectileModule.projectiles[0] = projectile;
-                projectile.baseData.damage = 1;
+                projectile.baseData.damage = 1.5f;
                 projectile.baseData.speed *= 1f;
                 projectile.baseData.range = 20f;
+                projectile.baseData.force = 1;
                 projectile.SuppressHitEffects = true;
                 projectileModule.numberOfShotsInClip = int.MaxValue;
                 projectile.sprite.renderer.material.shader = ShaderCache.Acquire("Brave/LitBlendUber");
@@ -224,7 +225,7 @@ namespace Knives
             damageRadius = 5f,
             damageToPlayer = 0f,
             doDamage = true,
-            damage = 25f,
+            damage = 30f,
             doDestroyProjectiles = true,
             doForce = true,
             debrisForce = 0f,

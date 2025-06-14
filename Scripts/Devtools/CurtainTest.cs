@@ -57,6 +57,7 @@ namespace Knives
        
         public override void Pickup(PlayerController player)
         {
+            //player.gameObject.GetOrAddComponent<SlingerSpecialInteractionsController>();
             CurtainTest.BuildPrefab();
             user = player;
             base.Pickup(player);
@@ -90,7 +91,7 @@ namespace Knives
 
         public static void BuildPrefab()
         {
-            GameObject gameObject = SpriteBuilder.SpriteFromResource("Knives/Resources/better_kasa_obake_idle_001", null);
+            GameObject gameObject = SpriteBuilder.SpriteFromResource("Knives/Resources/BT-2512_main2", null);
             gameObject.SetActive(false);
             ItemAPI.FakePrefab.MarkAsFakePrefab(gameObject);
             UnityEngine.Object.DontDestroyOnLoad(gameObject);

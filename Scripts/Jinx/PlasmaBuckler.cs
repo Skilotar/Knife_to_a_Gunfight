@@ -100,7 +100,7 @@ namespace Knives
                     {
                         if (user == man)
                         {
-                            maxRadius *= .20f;
+                            maxRadius *= .15f;
 
                             distRadius *= .20f;
                         }
@@ -135,8 +135,8 @@ namespace Knives
             float max = player.CurrentGun.ClipCapacity;
             float multiplier = remain / max;
             multiplier = 1.0f - multiplier;
-            float radius = 4f * multiplier;
-            radius += 3f;
+            float radius = 3f * multiplier;
+            radius += 2.5f;
             StartCoroutine(this.DestroyEnemyBulletsInCircleForDuration(player.specRigidbody.UnitCenter, radius, .15f));
             
             Exploder.DoDistortionWave(player.CenterPosition, .5f, 0.04f, radius, .4f);
@@ -159,7 +159,7 @@ namespace Knives
 
         public override DebrisObject Drop(PlayerController player)
         {
-            this.Owner.OnReloadedGun -= this.onreload;
+            player.OnReloadedGun -= this.onreload;
             
             return base.Drop(player);
         }

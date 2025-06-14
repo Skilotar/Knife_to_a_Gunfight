@@ -74,7 +74,7 @@ namespace Knives
             FakePrefab.MarkAsFakePrefab(projectile.gameObject);
             UnityEngine.Object.DontDestroyOnLoad(projectile);
             gun.DefaultModule.projectiles[0] = projectile;
-            projectile.baseData.damage = 7f;
+            projectile.baseData.damage = 8f;
             projectile.baseData.speed = 15f;
             projectile.baseData.range = 20f;
             projectile.baseData.force = 5;

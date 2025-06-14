@@ -109,7 +109,7 @@ namespace Knives
 
                     }
                     AkSoundEngine.PostEvent("Play_obj_glass_break_01", base.gameObject);
-                    debris.TriggerDestruction();
+                    debris.TriggerDestruction(true);
                     
                 }
 

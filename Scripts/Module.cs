@@ -25,7 +25,7 @@ namespace Knives
     {
         public const string GUID = "skilotar.etg.knifetoagunfight";
         public const string NAME = "Knife to a Gunfight";
-        public const string VERSION = "2.2.1";
+        public const string VERSION = "2.3.0";
         
         public static string FilePath;
         public static readonly string MOD_NAME = "Knife_to_a_Gunfight";
@@ -69,7 +69,7 @@ namespace Knives
                 StaticStatusEffects.InitCustomEffects();
                 EasyGoopDefinitions.DefineDefaultGoops();
                 ReloadBreachShrineHooks.Init();
-
+                SludgeGoop.Init();
                 //register all items and synergies. if text at the bottom doesnt fire something along the way crashed/produced and error
                 //Not all scripts are loaded some are saved for a later date.
 
@@ -84,13 +84,11 @@ namespace Knives
                 Fly_Friend.Register();
                 Space_hammer.Register();
                 Sus_rounds.Register();
-                Fates_blessing.Register();
                 book.Register();
                 daft_helm.Register();
                 punk_helm.Register();
-                clean_soul.Register();
                 stardust.Register();
-                    //tabletech_dizzy.Register(); // bad items >:(
+                    //tabletech_dizzy.Register();  // bad items >:(
                     //SCP_323.Register();
                 Super_fly.Register();
                 Im_blue.Register();
@@ -101,11 +99,15 @@ namespace Knives
                 Danger_dance.Register();
                 disco_inferno.Register();
                 persuasive_bullets.Register();
+
                 Slide_tech.Register();   // slide baby slide
                 Slide_reload.Register();
                 Slide_counter.Register();
                 Slide_Shatter.Register();
                 Slide_Split.Register();
+                Slide_Surf.Register();
+                Slide_Bomb.Register(); // slide baby slide
+
                 PeaceStandard.Register();
                 SpeedyChamber.Register();
                 ChamberofChambers.Register();
@@ -162,19 +164,38 @@ namespace Knives
                 IceBoots.Register();
                 IgnitionTank.Register();
 
+                NonStickBandaids.Register();
+                Temporal_Mantle.Register();
+                PlanOfAttack.Register();
+                MackTheKnife.Register();
+                BlankSlate.Register();
+                GlassCage.Register();
+                WormholeAmmo.Register();
+                CompoundLense.Register();
+                BismuthBullets.Register();
+                Pouch_Dwarf.Register();  // Tiny Man :)
+                CoinOnAString.Register();
+                ThePill.Register();
+                WobblyCylinder.Register();
+                ImaginaryBlanks.Register();
+                HylianShield.Register();
+                SpyBullets.Register();
+                StellarOfficePlant.Register();
 
                 //Skater Exclusive
                 HoverBoard.Register();
                 HeavyImpact.Register();
                 JetSetterRadio.Register();
                 TaggAr.Add();
+                
 
                 // general active
                 Led_Maiden.Register();
+                Fates_blessing.Register();
                 jojo_arrow.Register();
                 nano_boost.Register();
                     //rad_board.Register();
-                koolbucks.Register();
+                
                 sandvich.Register();
                 dog.Register();
                 power_bracer.Register();
@@ -225,6 +246,20 @@ namespace Knives
                 BearArms.Register();
                 Surplus_Powder_bag.Register();
                 CloudInABottle.Register();
+                WreckingBall.Register();
+                HellFire.Register();
+                Murasama.Register();
+                FizzleNade.Register();
+
+                DecompilerItem.Register();
+                SingingFish.Init();
+                BlankCatalyst.Register();
+                PaladinsPrayerbook.Register();
+                GordianKnot.Init();
+                PocketSand.Register();
+
+
+
 
 
                 //Guns
@@ -238,7 +273,8 @@ namespace Knives
                 Lance2.Add();
                 MagicHat.Add();
                 Lil_Boom.Add();
-                BlackStabbith.Add();
+                //BlackStabbith.Add();
+                NewBlackStabbith.Add();
                 Ball.Add();
                     //harpoon.Add();
                 NEWharpoon.Add();
@@ -284,9 +320,9 @@ namespace Knives
                 PhaseBlade.Add();
                 Thumper.Add();
                 PeaceMaker.Add();
-                //FirstImpression_special.Add();  BEGONE FOUL DEMON!!!
+                    //FirstImpression_special.Add();  BEGONE FOUL DEMON!!!
                 FirstImpression.Add();
-                Followup.Add();
+                Followup.Add();                                
                 Steam_overheat.Add();
                 Steam_rifle.Add();
                 Cav.Add();
@@ -315,7 +351,7 @@ namespace Knives
                 Sponsword.Add();
                 Umbra_main.Add();
                 RockAndStone.Add(); // to the bone!
-                    //Salvo.Add();
+                Salvo.Add();
                 Big_Bertha.Add();
                 BigBaby.Add();
                 VectorMKTwo.Add();
@@ -331,13 +367,12 @@ namespace Knives
                 Fell.Add();
                 Explodia.Add();
 
-
                 PepperBox.Add();
                 Fourk.Add();
                 DoomShotty.Add();
                 Luna.Add();
                 Chainsaw.Add();
-                Lamp.Add();
+                LavaLamp.Add();
                 Pot.Add();
                 CandyCain.Add();
                 Artillery_Revolver.Add();
@@ -355,17 +390,46 @@ namespace Knives
                 Claw.Add();
                 TimeKeeper.Add();
 
+                Briefcase.Add();
+                ShatterBow.Add();
+                ShatterBow_big.Add();
+                MamaBear.Add();
+                ProcrastInator.Add();
+                RetroBoy.Add();
+                Plustle.Add();
+                Mingun.Add();
+                PickupObjectDatabase.GetById(Plustle.ID).associatedItemChanceMods.AddToArray(Mingun.mod);
+                PickupObjectDatabase.GetById(Mingun.ID).associatedItemChanceMods.AddToArray(Plustle.mod);
+                Citron.Add();
+                Regundant.Add();
+                BigMag.Add();
+                Bomislav.Add();
+                WhizzBanger.Add();
+                MikuBeam.Add();
+                ZweiBarrel.Add();
+                HeartBreaker.Add();
+                Spewer.Add();
+                Prawncher.Add();
+                Joker.Add();
+                RollingBlock.Add();
+                Galileo.Add();
+                RootShoot.Add();
+                BaikenBlade.Add();
+                SkudgePump.Add();
+                PlanZ.Add();
+                BioticRifle.Add();
 
                 //Devtools
                 //noclip.Register();
                 //ActiveCharger.Register();
                 //CurtainTest.Register();
-                //Semi.Register();
 
+                //Semi.Register();
 
 
                 //companions
                 BabyGoodDodoGama.Init();
+                //RhythmicHeart.Init();     // Come back to this one   :(
 
                 //orbitals
                 Stopda.Register();
@@ -376,6 +440,8 @@ namespace Knives
                 terracottaIoun.Register();
                 Micro.Register();
                 BackupDrone.Register();
+
+
                 //Explodia
                 Eye_otfg.Register();
                 Stock_otfg.Register();
@@ -386,28 +452,35 @@ namespace Knives
 
 
                 //JinxedItems
-                Greedy.Register();
+                clean_soul.Register();
+                Greedy.Register();              
                 Cacophony.Register();
                 HexingRounds.Register();
                 HexGlasses.Register();
-                WickerHeart.Register();
-                Book_of_misspelled_spells.Register();
-                Fallen_armor.Register();
+                WickerHeart.Register();         
+                Book_of_misspelled_spells.Register();       
+                Fallen_armor.Register();                          
                 FingerTrap.Init();
-                WitheringRose.Register();
-                LifeInsure.Register();
-                Sundail.Register();
-                loan.Register();
+                Thornstone.Register();
+                WitheringRose.Register();       
+                LifeInsure.Register();          
+                Sundail.Register();             
+                loan.Register();                
                 StonePotion.Register();  
-                MiniGlockodileHeart.Register();
+                MiniGlockodileHeart.Register();                    
                 HexEater.Add();
                 Cheshire_purfume.Register();
-                DiogenesCoinpurse.Register();
-                HellBound.Register();
+                DiogenesCoinpurse.Register();   
+                HellBound.Register();           
                 Ammochemy_belt.Register();
-                ChainFire_Reagent.Register();
-                BuiltDifferent.Register();
+                ChainFire_Reagent.Register();   
+                BuiltDifferent.Register();      
                 PlasmaBuckler.Register();
+
+                Black_Coffee.Register();
+                LunksAdventureGuide.Register();
+                TwitchingEye.Register();
+                CementShoes.Register();
 
 
                 //charms
@@ -419,21 +492,30 @@ namespace Knives
                 MouseCharm.Register();
                 PepperCharm.Register();
                 IceCharm.Register();
-                ShroomCharm.Register();
+                ShroomCharm.Register(); 
                 TargetCharm.Register();
                 WhammyCharm.Register();
                 DangoCharm.Register();
                 ClockCharm.Register();
                 LuckyStarCharm.Register();
-                RubberCharm.Register();
+                RubberCharm.Register(); 
                 BatteryCharm.Register();
                 PiggyBankCharm.Register();
                 ComboCharm.Register();
                 FeatherCharm.Register();
-                CoffeeCharm.Register();
+                CoffeeCharm.Register(); 
                 MeatCharm.Register();
                 SlimeCharm.Register();
                 RadioactiveCharm.Register();
+
+                BombCharm.Register();
+                SushiCharm.Register();
+                BoxingCharm.Register();
+                ChickenCharm.Register();
+                DawnCharm.Register();
+                VampireCharm.Register();
+                ChaosCharm.Register();
+                OroborosCharm.Register();
 
 
                 //synergies
@@ -507,7 +589,7 @@ namespace Knives
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Brt7() }).ToArray();
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ExtraSpicy() }).ToArray();
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ToolsOfTheTrade() }).ToArray();
-                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.UntilItISDone() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.UntilItISDone() }).ToArray(); // 72
 
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.LabRats() }).ToArray();
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.SpaceJammin() }).ToArray();
@@ -524,6 +606,49 @@ namespace Knives
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ChainSmoker() }).ToArray();
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Pots_of_Luck() }).ToArray();
                 GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Daft_Hands() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ShatterSlugs() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BFS() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BombArrow() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Charged() }).ToArray(); // 92
+                
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.SurgeSurfer() }).ToArray(); ///////////////////
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Citrush() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ImmoralConsumption() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.EveryRose() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.IAmTheSpy() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.MentleGen() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BiggestMag() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.GlassierCage() }).ToArray();              //100
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.TwoShotsOfVodka() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.OnTheRocks() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.FullSpectrumEyeExam() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.THINKFAST() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BadRomance() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.RollTide() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.RollingStones() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.StopRock() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.RampantGrowth() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.HeavyAffinity() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.WhiteRider() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BlazingSaddles() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.CounterFlurry() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ResonanceAlloy() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.ParryGrab() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.CatchAndRelease() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.UltraBall() }).ToArray();  
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.DoubleExpresso() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.HighCapacityTanks() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.GooBomberSpecial() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BowWow() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.BackupPlan() }).ToArray(); //122
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.MyTurn() }).ToArray(); //123
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.EyeOfHorus() }).ToArray();
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.HushBigBaby() }).ToArray(); //125
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.PlantCare() }).ToArray(); //126
+                GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.SandManSand() }).ToArray();
+
+                MiscToolMethods.AddItemToBasegameSynergy(GlobalSynergyDatabase.FullCircle, GordianKnot.ID);
+                MiscToolMethods.AddItemToBasegameSynergy(GlobalSynergyDatabase.MaxPane, GlassCage.ID); MiscToolMethods.AddItemToBasegameSynergy(GlobalSynergyDatabase.MaxPane, ShotGlass.ID);
                 CustomSynergies.Add("Upgraded", new List<string> { "ski:sir_lot_o_lance", "alien_engine" }, null, false);
                     //GameManager.Instance.SynergyManager.synergies = GameManager.Instance.SynergyManager.synergies.Concat(new AdvancedSynergyEntry[] { new Customsynergiesknives.Iron_grip() }).ToArray();
 
@@ -532,6 +657,7 @@ namespace Knives
                 tinyAmmo.Register();
                 CharmBauble.Register();
                 MeatPickup.Register();
+                koolbucks.Register();
 
                 //shrines
                 ShrineFakePrefabHooks.Init();
@@ -539,9 +665,9 @@ namespace Knives
                 OldShrineFactory.Init();
 
 
-                CharmingShrine.Add();
-                Theatre_Twins.Add();
-
+                //CharmingShrine.Add();
+                //Theatre_Twins.Add();
+                SlingerMinigame.Add();
 
                 ShrineFactory.PlaceBreachShrines();
 
@@ -550,13 +676,15 @@ namespace Knives
   
                 DualGunsManager.AddDual();
                 SynergyFormInitialiser.AddSynergyForms();
-                
                 GameActorillnessEffect.Init();
                 BlastBlightedStatusController.Initialise();
                 BlobuCrownController.Initialise();
+                GameActorBlindEffect.Initialise();
                 HexStatusEffectController.Initialise();
                 CoolEnemiesStatusController.Initialise();
+                SleepStatus.Initialise();
                 Explodia_part_holder_Controller.Initialise();
+                GlobalCharmList.ConcatCharmLists();
                 ETGModMainBehaviour.Instance.gameObject.GetOrAddComponent<CustomDarknessHandler>();
 
 
@@ -598,6 +726,8 @@ namespace Knives
                     ETGModConsole.Log(task); ;
                 }
                 */
+
+                
                 Commands.Init();
             }
             catch (Exception e)
@@ -661,6 +791,7 @@ namespace Knives
             self.gameObject.GetOrAddComponent<UnlockablesTracker>();
             self.gameObject.GetOrAddComponent<BlobuCrownController>();
             self.gameObject.GetOrAddComponent<JinxItemDisplay>();
+           
             orig(self, invisibleDelay);
         }
         public static void SpecialTutorialHook(Action<PlayerController> orig, PlayerController self)

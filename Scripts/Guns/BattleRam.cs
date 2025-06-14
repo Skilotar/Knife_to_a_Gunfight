@@ -44,7 +44,7 @@ namespace Knives
 			gun.DefaultModule.burstShotCount = 2;
 			gun.DefaultModule.burstCooldownTime = .2f;
 			gun.DefaultModule.sequenceStyle = ProjectileModule.ProjectileSequenceStyle.Random;
-			gun.DefaultModule.cooldownTime = .7f;
+			gun.DefaultModule.cooldownTime = .75f;
 			gun.DefaultModule.numberOfShotsInClip = 8;
 			gun.reloadTime = 2f;
 			gun.SetBaseMaxAmmo(300);
@@ -65,7 +65,7 @@ namespace Knives
 			Gun gun2 = PickupObjectDatabase.GetById(84) as Gun;
 			gun.shellCasing = gun2.shellCasing;
 			
-			projectile.baseData.damage = 16f;
+			projectile.baseData.damage = 14f;
 			projectile.baseData.speed *= 1.5f;
 			projectile.baseData.range = 20f;
 			gun.shellsToLaunchOnReload = 0;
@@ -88,8 +88,8 @@ namespace Knives
 			AkSoundEngine.PostEvent("Play_WPN_m1911_shot_01", base.gameObject);
 			
 		}
-
-        private void OnPreCollison(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
+		public RoomHandler lastRoomReset;
+		private void OnPreCollison(SpeculativeRigidbody myRigidbody, PixelCollider myPixelCollider, SpeculativeRigidbody otherRigidbody, PixelCollider otherPixelCollider)
         {
 			if(otherPixelCollider != null && otherRigidbody.aiActor == null)
             {
@@ -140,46 +140,72 @@ namespace Knives
 					}
 				}
 				//for door
-				if (otherRigidbody.gameObject.GetComponentInParent<DungeonDoorController>() != null && !inBossFight )
-                {
+				if (otherRigidbody.gameObject.GetComponentInParent<DungeonDoorController>() != null && !inBossFight)
+				{
 
 					DungeonDoorController door = otherRigidbody.gameObject.GetComponentInParent<DungeonDoorController>();
-					RoomHandler room = (this.gun.CurrentOwner as PlayerController).CurrentRoom;
-					
+
 					if (door.IsSealed)
 					{
-						gun.shellsToLaunchOnReload = 20;
 
-						gun.LoseAmmo(30);
-
-                        if (owner.IsInCombat)
-                        {
+						if (owner.IsInCombat)
+						{
+							
+							lastRoomReset = owner.CurrentRoom;
 							GameObject roomResetter = new GameObject("room resetter");
 							roomResetter.transform.position = owner.CurrentRoom.GetCenterCell().ToVector2();
-							roomResetter.AddComponent<LeaveRoomResetter>().parentRoom = owner.CurrentRoom;
+							LeaveRoomResetter leave = roomResetter.AddComponent<LeaveRoomResetter>();
+							leave.parentRoom = owner.CurrentRoom;
+							leave.player = owner;
+							
+							owner.CurrentRoom.UnsealRoom();
+                            if (door.OneWayDoor)
+                            {
+								door.DoUnseal(lastRoomReset);
+                            }
 						}
+						
+						
+						var ang = owner.CurrentGun.CurrentAngle;
+						if (ang > 135 || ang < -45)
+						{
+							door.Open(true);
+						}
+						else
+						{
+							door.Open();
 
+						}
 					}
-					
-					door.DoUnseal(room);
-					if (owner.CurrentGun.CurrentAngle > 135 || owner.CurrentGun.CurrentAngle < -45)
+					else
 					{
-						door.Open(true);
-					}
-                    else
-                    {
-						door.Open();
+						var ang = owner.CurrentGun.CurrentAngle;
+						if (ang > 135 || ang < -45)
+						{
+							door.Open(true);
+						}
+						else
+						{
+							door.Open();
 
+						}
 					}
 
-                    
+
+
+
 				}
-				
+
 
 
 			}
         }
-		
+
+		public void ResetRoomOnLeave()
+		{
+			lastRoomReset?.ResetPredefinedRoomLikeDarkSouls();
+			lastRoomReset = null;
+		}
 
 		public override void OnReload(PlayerController player, Gun gun)
 		{
@@ -232,7 +258,7 @@ namespace Knives
 			component.Owner = this.gun.CurrentOwner;
 			component.baseData.damage = 25;
 			ProjectileSlashingBehaviour slashy = component.gameObject.GetOrAddComponent<ProjectileSlashingBehaviour>();
-			slashy.SlashRange = 4.2f;
+			slashy.SlashRange = 3.6f;
 			slashy.DoSound = false;
 			slashy.SlashDimensions = 45;
 			slashy.StunApplyChance = 100;
